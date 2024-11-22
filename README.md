@@ -44,8 +44,10 @@ close #{3}
 - hotfix branch (추후 사용 예정)
   - 출시 버전에서 발생한 버그를 수정하는 브랜치
 
+<br>
 
-
+## Reference
+https://velog.io/@u-nij/Git-Flow-Commit-message-Issue-이용해서-협업하기
 
 
 
