@@ -12,7 +12,6 @@ import UtilityPlugin
 let project = Project.framework(
     name: "Shared",
     dependencies: [
-        .alamofire,
         .moya,
         .kingfisher,
         .lottie,

@@ -6,7 +6,6 @@ import ProjectDescription
 
 let packageSettings = PackageSettings(
   productTypes: [
-    "Alamofire": .framework,
     "Moya": .framework,
     "KingFisher": .framework,
     "Lottie": .framework,
@@ -19,7 +18,6 @@ let packageSettings = PackageSettings(
 let package = Package(
   name: "RaceOn",
   dependencies: [
-    .package(url: "https://github.com/Alamofire/Alamofire", from: "5.0.0"),
     .package(url: "https://github.com/Moya/Moya", from: "15.0.3"),
     .package(url: "https://github.com/onevcat/Kingfisher", from: "7.12.0"),
     .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.3"),

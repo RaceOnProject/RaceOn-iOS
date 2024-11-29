@@ -10,7 +10,6 @@ import ProjectDescription
 ///
 /// Dependencies + SPM
 public extension TargetDependency {
-    static let alamofire: TargetDependency  = .external(name: "Alamofire")
     static let moya: TargetDependency = .external(name: "Moya")
     static let kingfisher: TargetDependency = .external(name: "Kingfisher")
     static let lottie: TargetDependency = .external(name: "Lottie")
