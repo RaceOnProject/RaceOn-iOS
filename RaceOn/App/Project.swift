@@ -17,5 +17,5 @@ let project = Project.app(
         .Module.data,
         .Module.shared
     ],
-    resources: .default
+    resources: Project.Environment.resourceFile
 )

@@ -10,12 +10,38 @@ import ProjectDescription
 
 /// Dependencies + Module
 extension TargetDependency {
-    public enum Module {}
+    public enum Module {
+        public static let domain = TargetDependency.project(
+            target: TargetName.domain.rawValue,
+            path: .relativeToRoot(ProjectPath.domain.rawValue))
+        
+        public static let presentation = TargetDependency.project(
+            target:TargetName.presentation.rawValue,
+            path: .relativeToRoot(ProjectPath.presentation.rawValue))
+        
+        public static let data = TargetDependency.project(
+            target: TargetName.data.rawValue,
+            path: .relativeToRoot(ProjectPath.data.rawValue))
+        
+        public static let shared = TargetDependency.project(
+            target: TargetName.shared.rawValue,
+            path: .relativeToRoot(ProjectPath.shared.rawValue))
+        
+    }
 }
 
-extension TargetDependency.Module {
-    public static let domain = TargetDependency.project(target: "Domain", path: .relativeToRoot("RaceOn/Domain"))
-    public static let presentation = TargetDependency.project(target: "Presentation", path: .relativeToRoot("RaceOn/Presentation"))
-    public static let data = TargetDependency.project(target: "Data", path: .relativeToRoot("RaceOn/Data"))
-    public static let shared = TargetDependency.project(target: "Shared", path: .relativeToRoot("RaceOn/Shared"))
+public enum ProjectPath: String {
+    case app = "RaceOn/App"
+    case data = "RaceOn/Data"
+    case domain = "RaceOn/Domain"
+    case presentation = "RaceOn/Presentation"
+    case shared = "RaceOn/Shared"
+}
+
+public enum TargetName: String {
+    case app = "App"
+    case data = "Data"
+    case domain = "Domain"
+    case presentation = "Presentation"
+    case shared = "Shared"
 }

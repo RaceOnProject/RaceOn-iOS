@@ -17,7 +17,6 @@ let project = Project.framework(
         .lottie,
         .swiftyJson,
         .composableArchitecture
-        
     ],
-    resources: .default
+    resources: Project.Environment.resourceFile
 )

@@ -8,7 +8,7 @@ import UtilityPlugin
 ///
 public extension Project {
 
-    static let bundleId = "com.undefined.raceOniOS"
+    static let bundleId = "\(Environment.bundlePrefix).raceOniOS"
 //    public static let teamCode: String = ""
     static let version: SettingValue = "1.0.0"
     static let build: SettingValue = "1"
@@ -59,22 +59,22 @@ public extension Project {
             targets: [
                 Target.target(
                     name: name,
-                    destinations: .defaultDestinations,
+                    destinations: Environment.destinations,
                     product: product,
                     bundleId: "\(bundleId).\(name)",
-                    deploymentTargets: .defaultTarget,
-                    infoPlist: .defaultFile,
+                    deploymentTargets: Environment.deploymentTarget,
+                    infoPlist: Environment.infoPlist,
                     sources: ["Sources/**"],
                     resources: resources,
                     dependencies: dependencies
                 ),
                 Target.target(
                     name: "\(name)Tests",
-                    destinations: .defaultDestinations,
+                    destinations: Environment.destinations,
                     product: .unitTests,
                     bundleId: "\(bundleId).\(name)Tests",
-                    deploymentTargets: .defaultTarget,
-                    infoPlist: .defaultFile,
+                    deploymentTargets: Environment.deploymentTarget,
+                    infoPlist: Environment.infoPlist,
                     sources: ["Tests/**"],
                     dependencies: [.target(name: name)]
                 )

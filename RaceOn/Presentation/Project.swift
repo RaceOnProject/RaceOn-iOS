@@ -15,6 +15,6 @@ let project = Project.framework(
         .Module.domain,
         .Module.shared
     ],
-    resources: .default
+    resources: Project.Environment.resourceFile
     
 )

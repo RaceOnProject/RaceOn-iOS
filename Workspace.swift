@@ -6,15 +6,16 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
+import UtilityPlugin
 
 let workspace = Workspace(
     name: "RaceOn",
     projects: [
-        "RaceOn/App",
-        "RaceOn/Domain",
-        "RaceOn/Presentation",
-        "RaceOn/Data",
-        "RaceOn/CommonUI",
-        "RaceOn/Shared"
+        .path(ProjectPath.app.rawValue),
+        .path(ProjectPath.data.rawValue),
+        .path(ProjectPath.domain.rawValue),
+        .path(ProjectPath.presentation.rawValue),
+        .path(ProjectPath.shared.rawValue)
     ]
 )
