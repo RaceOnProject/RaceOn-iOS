@@ -1,22 +1,21 @@
 //
 //  Workspace.swift
-//  RaceOnManifests
+//  dippin-iOSManifests
 //
-//  Created by ukseung.dev on 11/27/24.
+//  Created by inforex on 9/13/24.
 //
 
-@preconcurrency import ProjectDescription
-import DependencyPlugin
+import ProjectDescription
+import ProjectDescriptionHelpers
+import UtilityPlugin
 
 let workspace = Workspace(
-    name: "RaceOnWorkspace",
+    name: "RaceOn",
     projects: [
         .path(ProjectPath.app.rawValue),
         .path(ProjectPath.data.rawValue),
         .path(ProjectPath.domain.rawValue),
         .path(ProjectPath.presentation.rawValue),
         .path(ProjectPath.shared.rawValue)
-    ],
-    generationOptions: .options(lastXcodeUpgradeCheck: .init(16, 1, 0))
+    ]
 )
-
