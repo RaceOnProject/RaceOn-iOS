@@ -38,7 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
  
         window?.makeKeyAndVisible()
         
-        let view = customView(screen: screen)
+        let view = LoginView()
         
         let vc = UIHostingController(rootView: view)
         window?.rootViewController = vc
