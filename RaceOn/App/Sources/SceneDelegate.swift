@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 
 import Presentation
+import ComposableArchitecture
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,7 +21,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
  
         window?.makeKeyAndVisible()
         
-        let view = TestView()
+        let view = LaunchView(
+            store: Store(
+                initialState: LaunchFeature.State(),
+                reducer: { LaunchFeature()._printChanges() }
+            )
+        )
         
         let vc = UIHostingController(rootView: view)
         
