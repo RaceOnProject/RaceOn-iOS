@@ -15,36 +15,37 @@ public struct LaunchView: View {
     }
     
     @EnvironmentObject var router: Router
+    @ObservedObject var viewStore: ViewStore<LaunchFeature.State, LaunchFeature.Action>
     let store: StoreOf<LaunchFeature>
+    
     
     init(store: StoreOf<LaunchFeature>) {
         self.store = store
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
     
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            NavigationStack(path: $router.route) {
-                ZStack {
-                    // TODO: 배경색 Default, #1A1A1B를 모든 화면에 적용하면 좋을 듯 함
-                    CommonConstants.defaultBackgroundColor
-                        .ignoresSafeArea()
-                    VStack {
-                        Constants.splashLogo
-                            .resizable()
-                            .frame(width: 220, height: 148.14)
-                    }
-                }
-                .navigationDestination(for: Screen.self) { type in
-                    screenView(type: type)
+        NavigationStack(path: $router.route) {
+            ZStack {
+                // TODO: 배경색 Default, #1A1A1B를 모든 화면에 적용하면 좋을 듯 함
+                CommonConstants.defaultBackgroundColor
+                    .ignoresSafeArea()
+                VStack {
+                    Constants.splashLogo
+                        .resizable()
+                        .frame(width: 220, height: 148.14)
                 }
             }
-            .onAppear {
-                store.send(.onAppear)
+            .navigationDestination(for: Screen.self) { type in
+                screenView(type: type)
             }
-            .onChange(of: viewStore.shouldNavigate) {
-                // TODO: 기존에 로그인 유무에 따라 Main 화면으로 이동할지 Login 화면으로 이동할지 분기처리
-                $0 ? router.changeToRoot(screen: .login) : nil
-            }
+        }
+        .onAppear {
+            store.send(.onAppear)
+        }
+        .onChange(of: viewStore.shouldNavigate) {
+            // TODO: 기존에 로그인 유무에 따라 Main 화면으로 이동할지 Login 화면으로 이동할지 분기처리
+            $0 ? router.changeToRoot(screen: .login) : nil
         }
     }
     
