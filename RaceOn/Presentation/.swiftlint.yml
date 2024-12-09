@@ -1,0 +1,83 @@
+
+--- # 문서의 시작
+# .swiftlint.yml
+
+# 비활성화할 규칙이 있으면 여기에 추가
+disabled_rules: [
+trailing_whitespace
+]
+
+# 옵트인 규칙을 사용할 경우 여기에 추가
+opt_in_rules: []
+
+# 검사할 폴더를 지정합니다. 기본적으로 'Sources'와 'Tests' 폴더를 검사합니다.
+# 여기에 추가하려는 폴더가 있으면 추가하면 됩니다.
+included:
+  - Sources
+  - Tests
+
+# 검사에서 제외할 폴더를 지정합니다. 예를 들어, Carthage, Pods, DerivedData 폴더는 제외합니다.
+excluded:
+  - Carthage
+  - Pods
+  - DerivedData
+
+# 규칙 설정
+
+# 'force_cast' 규칙: 강제 형변환(`as!`) 사용을 경고합니다.
+# 이는 런타임 오류를 초래할 수 있기 때문에 가능한 피하는 것이 좋습니다.
+force_cast:
+  severity: warning  # 경고로 설정
+
+# 'force_try' 규칙: 강제 `try!` 사용을 경고합니다.
+# 이는 런타임 오류를 초래할 수 있기 때문에 가능한 피하는 것이 좋습니다.
+force_try:
+  severity: warning  # 경고로 설정
+
+# 'line_length' 규칙: 한 줄의 길이를 제한합니다.
+# warning: 120자 이상일 때 경고
+# error: 150자 이상일 때 오류
+line_length:
+  warning: 120   # 한 줄이 120자 이상일 때 경고
+  error: 150     # 한 줄이 150자 이상일 때 오류
+
+# 'type_body_length' 규칙: 클래스, 구조체, 열거형 등의 본문 길이를 제한합니다.
+# warning: 200줄 이상일 때 경고
+# error: 300줄 이상일 때 오류
+type_body_length:
+  warning: 200   # 본문이 200줄 이상일 때 경고
+  error: 300     # 본문이 300줄 이상일 때 오류
+
+# 'trailing_whitespace' 규칙: 줄 끝의 공백을 제거하지 않으면 오류를 발생시킵니다.
+# 이 규칙은 불필요한 공백을 피하도록 돕습니다.
+# trailing_whitespace:
+#   severity: error  # 오류로 설정
+
+# 'identifier_name' 규칙: 변수, 상수, 함수 등의 이름에 대한 규칙입니다.
+# 최소 길이(min_length)와 최대 길이(max_length)를 설정할 수 있습니다.
+# case sensitive는 기본적으로 'false'로 설정하여 대소문자를 구분하지 않도록 합니다.
+identifier_name:
+  min_length: 2          # 변수명, 함수명, 상수명 등은 최소 2자 이상이어야 합니다.
+  max_length: 50         # 최대 50자까지 허용
+  #allow_case_sensitive: false  # 대소문자 구분하지 않음
+
+# 'unused_closure_parameter' 규칙: 사용되지 않는 클로저 파라미터를 경고합니다.
+# 코드를 깔끔하게 유지하기 위해 사용되지 않는 파라미터는 제거하는 것이 좋습니다.
+unused_closure_parameter:
+  severity: warning  # 경고로 설정
+
+# 'nesting' 규칙: 코드 내에서의 중첩 깊이를 제한합니다.
+# 너무 깊은 중첩은 가독성을 떨어뜨리고 유지보수를 어렵게 만들 수 있습니다.
+nesting:
+  type_level:
+    warning: 3
+    error: 6
+  function_level:
+    warning: 5
+    error: 10
+
+# 'comment_spacing' 규칙: 주석과 코드 간의 공백을 체크합니다.
+# 주석은 코드와 적절한 간격을 두어 가독성을 높여야 합니다.
+comment_spacing:
+  severity: warning  # 경고로 설정
+... # 문서의 끝

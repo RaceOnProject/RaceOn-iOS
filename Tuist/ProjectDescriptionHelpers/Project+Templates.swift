@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 import UtilityPlugin
 
 /// Project helpers are functions that simplify the way you define your project.
@@ -66,6 +67,28 @@ public extension Project {
                     infoPlist: Environment.infoPlist,
                     sources: ["Sources/**"],
                     resources: resources,
+//                    scripts: [.pre(
+//                        script: """
+//                        ROOT_DIR=\(ProcessInfo.processInfo.environment["TUIST_ROOT_DIR"] ?? "")
+//                                
+//                        ${ROOT_DIR}/swiftlint --config ${ROOT_DIR}/.swiftlint.yml
+//                                
+//                        """,
+//                        name: "SwiftLint",
+//                        basedOnDependencyAnalysis: false
+//                    )],
+                    scripts: [.pre(
+                        script: """
+                        export PATH="$PATH:/opt/homebrew/bin"
+                        if which swiftlint > /dev/null; then
+                          swiftlint
+                        else
+                          echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
+                        fi    
+                        """,
+                        name: "SwiftLint",
+                        basedOnDependencyAnalysis: false
+                    )],
                     dependencies: dependencies
                 ),
                 Target.target(
