@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 import UtilityPlugin
 
 /// Project helpers are functions that simplify the way you define your project.
@@ -66,6 +67,7 @@ public extension Project {
                     infoPlist: Environment.infoPlist,
                     sources: ["Sources/**"],
                     resources: resources,
+                    scripts: [.swiftlintScript],
                     dependencies: dependencies
                 ),
                 Target.target(

@@ -18,8 +18,7 @@ public struct LaunchView: View {
     @ObservedObject var viewStore: ViewStore<LaunchFeature.State, LaunchFeature.Action>
     let store: StoreOf<LaunchFeature>
     
-    
-    init(store: StoreOf<LaunchFeature>) {
+    public init(store: StoreOf<LaunchFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
     }

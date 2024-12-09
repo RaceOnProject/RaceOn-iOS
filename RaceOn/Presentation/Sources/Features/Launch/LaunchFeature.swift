@@ -9,6 +9,8 @@ import Foundation
 import ComposableArchitecture
 
 public struct LaunchFeature: Reducer {
+    public init() {}
+    
     public struct State: Equatable {
         var shouldNavigate: Bool = false
         
@@ -34,4 +36,3 @@ public struct LaunchFeature: Reducer {
         }
     }
 }
-

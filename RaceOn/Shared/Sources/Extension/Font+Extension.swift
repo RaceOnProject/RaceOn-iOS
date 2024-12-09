@@ -44,4 +44,3 @@ public extension Font {
         return SharedFontFamily.Pretendard.thin.swiftUIFont(size: size)
     }
 }
-
