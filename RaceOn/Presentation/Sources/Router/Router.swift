@@ -14,6 +14,8 @@ public enum Screen: Hashable {
 //    case launch
     case main
     case login
+    case friend
+    case addFriend
 }
 
 public final class Router: ObservableObject {

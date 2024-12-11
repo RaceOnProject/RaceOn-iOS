@@ -27,6 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 reducer: { LaunchFeature()._printChanges() }
             )
         )
+        .environmentObject(Router())
         
         let vc = UIHostingController(rootView: view)
         

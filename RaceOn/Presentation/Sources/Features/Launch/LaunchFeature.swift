@@ -9,6 +9,8 @@ import Foundation
 import ComposableArchitecture
 
 public struct LaunchFeature: Reducer {
+    public init() {}
+    
     public struct State: Equatable {
         var shouldNavigate: Bool = false
         
@@ -24,7 +26,11 @@ public struct LaunchFeature: Reducer {
         switch action {
         case .onAppear:
             return .run { send in
-                try await Task.sleep(nanoseconds: 2_000_000_000)
+                #if DEBUG
+                    try await Task.sleep(nanoseconds: 500_000_000)
+                #else
+                    try await Task.sleep(nanoseconds: 3_000_000_000)
+                #endif
                 await send(.navigateTriggered)
             }
             
