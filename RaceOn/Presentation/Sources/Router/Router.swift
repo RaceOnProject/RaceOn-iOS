@@ -29,11 +29,13 @@ public final class Router: ObservableObject {
     
     @MainActor
     public func pop() {
+        guard !route.isEmpty else { return }
         route.removeLast()
     }
     
     @MainActor
     public func pop(depth: Int) {
+        guard route.count >= depth else { return }
         route.removeLast(depth)
     }
     
