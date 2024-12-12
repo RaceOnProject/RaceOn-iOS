@@ -54,13 +54,7 @@ struct FriendView: View {
             }
         }
         .navigationDestination(for: Screen.self) { type in
-            AddFriendView(
-                store: Store(
-                    initialState: AddFriendFeature.State(),
-                    reducer: { AddFriendFeature()._printChanges() }
-                )
-            )
-            .environmentObject(router)
+            router.screenView(type: type)
         }
         .onAppear {
             viewStore.send(.testAction)

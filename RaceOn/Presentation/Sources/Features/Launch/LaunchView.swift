@@ -37,7 +37,7 @@ public struct LaunchView: View {
                 }
             }
             .navigationDestination(for: Screen.self) { type in
-                screenView(type: type)
+                router.screenView(type: type)
             }
         }
         .onAppear {
@@ -45,36 +45,7 @@ public struct LaunchView: View {
         }
         .onChange(of: viewStore.shouldNavigate) {
             // TODO: 기존에 로그인 유무에 따라 Main 화면으로 이동할지 Login 화면으로 이동할지 분기처리
-//            $0 ? router.changeToRoot(screen: .login) : nil
-            $0 ? router.push(screen: .friend) : nil
-        }
-    }
-    
-    @ViewBuilder
-    private func screenView(type: Screen) -> some View {
-        switch type {
-        case .login:
-            LoginView()
-                .environmentObject(router)
-        case .main:
-            MainView()
-                .environmentObject(router)
-        case .friend:
-            FriendView(
-                store: Store(
-                    initialState: FriendFeature.State(),
-                    reducer: { FriendFeature()._printChanges() }
-                )
-            )
-            .environmentObject(router)
-        case .addFriend:
-            AddFriendView(
-                store: Store(
-                    initialState: AddFriendFeature.State(),
-                    reducer: { AddFriendFeature()._printChanges() }
-                )
-            )
-            .environmentObject(router)
+            $0 ? router.changeToRoot(screen: .login) : nil
         }
     }
 }

@@ -12,10 +12,7 @@ import UtilityPlugin
 let workspace = Workspace(
     name: "RaceOn",
     projects: [
-        .path(ProjectPath.app.rawValue),
-        .path(ProjectPath.data.rawValue),
-        .path(ProjectPath.domain.rawValue),
-        .path(ProjectPath.presentation.rawValue),
-        .path(ProjectPath.shared.rawValue)
+        "RaceOn/**",
+        "DemoApps/**"
     ]
 )
