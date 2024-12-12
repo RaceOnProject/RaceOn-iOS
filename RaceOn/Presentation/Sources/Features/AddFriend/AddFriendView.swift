@@ -14,7 +14,6 @@ struct AddFriendView: View {
     
     enum Constants {
         static let title = "친구 코드를 입력해 주세요"
-        static let subTitle = "첫 번째 칸을 꾹 누르면 코드 붙여넣기가 가능해요"
         
         static let on = PresentationAsset.primaryNormal.swiftUIColor
         static let off = PresentationAsset.gray5.swiftUIColor
@@ -51,15 +50,6 @@ struct AddFriendView: View {
                 
                 Spacer()
                     .frame(height: 8)
-                
-                HStack {
-                    Spacer()
-                        .frame(width: 20)
-                    
-                    Text(Constants.subTitle)
-                        .font(.regular(16))
-                        .foregroundColor(PresentationAsset.gray3.swiftUIColor)
-                }
                 
                 Spacer()
                 
@@ -225,6 +215,12 @@ struct AddFriendView: View {
             }
         }
         .toolbarBackground(CommonConstants.defaultBackgroundColor, for: .navigationBar)
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
     }
 }
 

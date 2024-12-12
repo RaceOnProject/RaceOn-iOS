@@ -12,6 +12,8 @@ import Foundation
 @Reducer
 struct AddFriendFeature {
     struct State: Equatable {
+        var toast: Toast?
+        
         var firstLetter: String = ""
         var secondLetter: String = ""
         var thirdLetter: String = ""
@@ -37,6 +39,9 @@ struct AddFriendFeature {
         case writeLetter(index: Int, text: String)
         case addUpTotalLetter
         case addFriendButtonTapped
+        
+        case showToast(content: String)
+        case dismissToast
         
         case noAction
     }
@@ -76,8 +81,13 @@ struct AddFriendFeature {
             return .none
         case .addFriendButtonTapped:
             print("\(state.totalLetter)")
+            return .send(.showToast(content: "친구 추가하기 완료(테스트, API 연동 안됨)"))
+        case .showToast(let content):
+            state.toast = Toast(content: content)
             return .none
-            
+        case .dismissToast:
+            state.toast = nil
+            return .none
         case .noAction:
             return .none
         }
