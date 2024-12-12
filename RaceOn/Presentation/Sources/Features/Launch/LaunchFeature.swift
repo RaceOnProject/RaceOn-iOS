@@ -40,4 +40,3 @@ public struct LaunchFeature: Reducer {
         }
     }
 }
-

@@ -5,8 +5,7 @@
 //  Created by ukseung.dev on 12/5/24.
 //
 
-
 enum CommonConstants {
-    //Color
+    // Color
     static let defaultBackgroundColor = PresentationAsset.gray6.swiftUIColor
 }
