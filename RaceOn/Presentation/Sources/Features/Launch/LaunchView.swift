@@ -10,9 +10,6 @@ import Shared
 import ComposableArchitecture
 
 public struct LaunchView: View {
-    enum Constants {
-        static let splashLogo = PresentationAsset.splashLogo.swiftUIImage
-    }
     
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<LaunchFeature.State, LaunchFeature.Action>
@@ -26,17 +23,17 @@ public struct LaunchView: View {
     public var body: some View {
         NavigationStack(path: $router.route) {
             ZStack {
-                // TODO: 배경색 Default, #1A1A1B를 모든 화면에 적용하면 좋을 듯 함
-                CommonConstants.defaultBackgroundColor
+                // TODO: Default 배경색을 모든 화면에 적용하면 좋을 듯 함
+                ColorConstants.gray6
                     .ignoresSafeArea()
                 VStack {
-                    Constants.splashLogo
+                    ImageConstants.splashLogo
                         .resizable()
                         .frame(width: 220, height: 148.14)
                 }
             }
             .navigationDestination(for: Screen.self) { type in
-                screenView(type: type)
+                router.screenView(type: type)
             }
         }
         .onAppear {
@@ -45,18 +42,6 @@ public struct LaunchView: View {
         .onChange(of: viewStore.shouldNavigate) {
             // TODO: 기존에 로그인 유무에 따라 Main 화면으로 이동할지 Login 화면으로 이동할지 분기처리
             $0 ? router.changeToRoot(screen: .login) : nil
-        }
-    }
-    
-    @ViewBuilder
-    private func screenView(type: Screen) -> some View {
-        switch type {
-        case .login:
-            LoginView()
-                .environmentObject(Router())
-        case .main:
-            MainView()
-                .environmentObject(Router())
         }
     }
 }

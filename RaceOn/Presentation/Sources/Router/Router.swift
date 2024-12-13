@@ -11,9 +11,10 @@ import ComposableArchitecture
 import SwiftUI
 
 public enum Screen: Hashable {
-//    case launch
     case main
     case login
+    case friend
+    case addFriend
 }
 
 public final class Router: ObservableObject {
@@ -50,5 +51,31 @@ public final class Router: ObservableObject {
     @MainActor
     public func changeToRoot(screen: Screen) {
         route = [screen]
+    }
+    
+    @ViewBuilder
+    public func screenView(type: Screen) -> some View {
+        switch type {
+        case .main:
+            MainView()
+        case .login:
+            LoginView()
+        case .friend:
+            FriendView(
+                store: Store(
+                    initialState: FriendFeature.State(),
+                    reducer: { FriendFeature()._printChanges() }
+                )
+            )
+            .environmentObject(self)
+        case .addFriend:
+            AddFriendView(
+                store: Store(
+                    initialState: AddFriendFeature.State(),
+                    reducer: { AddFriendFeature()._printChanges() }
+                )
+            )
+            .environmentObject(self)
+        }
     }
 }

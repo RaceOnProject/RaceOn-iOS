@@ -13,7 +13,7 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            CommonConstants.defaultBackgroundColor
+            ColorConstants.gray6
                 .ignoresSafeArea()
             VStack {
                 Text("LoginView")
