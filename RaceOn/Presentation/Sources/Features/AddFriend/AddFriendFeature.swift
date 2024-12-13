@@ -14,23 +14,25 @@ struct AddFriendFeature {
     struct State: Equatable {
         var toast: Toast?
         
-        var firstLetter: String = ""
-        var secondLetter: String = ""
-        var thirdLetter: String = ""
-        var fourthLetter: String = ""
-        var fifthLetter: String = ""
-        var sixthLetter: String = ""
+        var letters: [String] = Array(repeating: "", count: 6)
         
         var totalLetter = ""
         var isButtonEnabled = false
         
         enum Field: String, Hashable {
-            case first
-            case second
-            case third
-            case fourth
-            case fifth
-            case sixth
+            case first, second, third, fourth, fifth, sixth
+            
+            init?(_ index: Int) {
+                switch index {
+                case 0: self = .first
+                case 1: self = .second
+                case 2: self = .third
+                case 3: self = .fourth
+                case 4: self = .fifth
+                case 5: self = .sixth
+                default: return nil
+                }
+            }
         }
     }
     
@@ -65,18 +67,10 @@ struct AddFriendFeature {
             return .none
         case .writeLetter(let index, let text):
             guard (0...5).contains(index) else { return .none }
-                switch index {
-                case 0: state.firstLetter = text
-                case 1: state.secondLetter = text
-                case 2: state.thirdLetter = text
-                case 3: state.fourthLetter = text
-                case 4: state.fifthLetter = text
-                case 5: state.sixthLetter = text
-                default: break
-                }
+            state.letters[index] = text
             return .send(.addUpTotalLetter)
         case .addUpTotalLetter:
-            state.totalLetter = state.firstLetter + state.secondLetter + state.thirdLetter + state.fourthLetter + state.fifthLetter + state.sixthLetter
+            state.totalLetter = state.letters.reduce("", +)
             state.isButtonEnabled = state.totalLetter.count >= 6 ? true : false
             return .none
         case .addFriendButtonTapped:

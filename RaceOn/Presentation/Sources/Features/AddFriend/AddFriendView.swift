@@ -54,122 +54,29 @@ struct AddFriendView: View {
                     Spacer()
                         .frame(width: 10)
                     
-                    AddFriendTextField(
-                        text: viewStore.binding(
-                            get: \.firstLetter,
-                            send: { .writeLetter(index: 0, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .first)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .first ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.firstLetter) { newValue in
-                        if newValue.count > 0 {
-                            focusedField = .second
-                        }
-                    }
-                    
-                    AddFriendTextField(text: viewStore.binding(
-                        get: \.secondLetter,
-                        send: { .writeLetter(index: 1, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .second)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .second ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.secondLetter) { newValue in
-                        if newValue.count > 0 {
-                            focusedField = .third
-                        } else if newValue.count == 0 {
-                            focusedField = .first
-                        }
-                    }
-                    
-                    AddFriendTextField(text: viewStore.binding(
-                        get: \.thirdLetter,
-                        send: { .writeLetter(index: 2, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .third)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .third ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.thirdLetter) { newValue in
-                        if newValue.count > 0 {
-                            focusedField = .fourth
-                        } else if newValue.count == 0 {
-                            focusedField = .second
-                        }
-                    }
-                    
-                    AddFriendTextField(text: viewStore.binding(
-                        get: \.fourthLetter,
-                        send: { .writeLetter(index: 3, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .fourth)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .fourth ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.fourthLetter) { newValue in
-                        if newValue.count > 0 {
-                            focusedField = .fifth
-                        } else if newValue.count == 0 {
-                            focusedField = .third
-                        }
-                    }
-
-                    AddFriendTextField(text: viewStore.binding(
-                        get: \.fifthLetter,
-                        send: { .writeLetter(index: 4, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .fifth)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .fifth ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.fifthLetter) { newValue in
-                        if newValue.count > 0 {
-                            focusedField = .sixth
-                        } else if newValue.count == 0 {
-                            focusedField = .fourth
-                        }
-                    }
-                    
-                    AddFriendTextField(text: viewStore.binding(
-                        get: \.sixthLetter,
-                        send: { .writeLetter(index: 5, text: $0) }
-                    ))
-                    .focused($focusedField, equals: .sixth)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .sixth ? ColorConstants.primaryNormal : ColorConstants.gray5)
-                            .offset(y: 0), // TextField 하단으로 위치 조정
-                        alignment: .bottom
-                    )
-                    .onChange(of: viewStore.state.sixthLetter) { newValue in
-                        if newValue.count == 0 {
-                            focusedField = .fifth
-                        }
-                    }
+                    ForEach(0..<6, id: \.self) { index in
+                            AddFriendTextField(
+                                text: viewStore.binding(
+                                    get: { $0.letters[index] },
+                                    send: { .writeLetter(index: index, text: $0) }
+                                )
+                            )
+                            .focused($focusedField, equals: AddFriendFeature.State.Field(index))
+                            .overlay(
+                                Rectangle()
+                                    .frame(height: 1)
+                                    .foregroundColor(focusedField == AddFriendFeature.State.Field(index) ? ColorConstants.primaryNormal : ColorConstants.gray5)
+                                    .offset(y: 0),
+                                alignment: .bottom
+                            )
+                            .onChange(of: viewStore.state.letters[index]) { newValue in
+                                if newValue.count > 0 {
+                                    focusedField = AddFriendFeature.State.Field(index + 1)
+                                } else if newValue.count == 0, index > 0 {
+                                    focusedField = AddFriendFeature.State.Field(index - 1)
+                                }
+                            }
+                     }
                     
                     Spacer()
                         .frame(width: 10)
