@@ -41,4 +41,7 @@ enum ImageConstants {
     static let graphicLogo = PresentationAsset.graphicLogo.swiftUIImage
     static let iconSetting = PresentationAsset.iconSetting.swiftUIImage
     static let iconFriends = PresentationAsset.iconFriends.swiftUIImage
+    static let iconChevronLeft = PresentationAsset.iconChevronLeft.swiftUIImage
+    static let iconChevronRight = PresentationAsset.iconChevronRight.swiftUIImage
+    
 }
