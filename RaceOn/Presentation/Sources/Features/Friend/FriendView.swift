@@ -17,7 +17,6 @@ struct FriendView: View {
     @ObservedObject var viewStore: ViewStore<FriendFeature.State, FriendFeature.Action>
     let store: StoreOf<FriendFeature>
     
-    
     init(store: StoreOf<FriendFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
@@ -40,7 +39,7 @@ struct FriendView: View {
                 }
             } else {
                 List {
-                    ForEach(viewStore.tData) { data in
+                    ForEach(viewStore.tData) { _ in
                         FriendInfoView(onKebabTapped: {
                             viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
                         })
@@ -88,8 +87,7 @@ struct FriendView: View {
                 }, label: {
                     ImageConstants.navigationBack
                 })
-                .padding(10) // 터치 영역 확장
-            ,
+                .padding(10), // 터치 영역 확장
             trailing:
                 Button(action: {
                     router.push(screen: .addFriend)

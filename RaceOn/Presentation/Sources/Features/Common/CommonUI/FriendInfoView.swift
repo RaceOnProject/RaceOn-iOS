@@ -47,12 +47,12 @@ struct FriendInfoView: View {
                 
                 Button(action: {
                     onKebabTapped()
-                }) {
+                }, label: {
                     ImageConstants.kebab
                         .resizable()
                         .scaledToFill()
                         .frame(width: 2.87, height: 17)
-                }
+                })
                 .padding(20) // 이미지 주변에 패딩 추가
             }
         }
