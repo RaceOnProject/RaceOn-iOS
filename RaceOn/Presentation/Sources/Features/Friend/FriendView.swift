@@ -25,12 +25,12 @@ struct FriendView: View {
     
     var body: some View {
         ZStack {
-            CommonConstants.defaultBackgroundColor
+            ColorConstants.gray6
                 .ignoresSafeArea()
             
             if viewStore.tData.isEmpty {
                 VStack {
-                    PresentationAsset.graphicNothing.swiftUIImage
+                    ImageConstants.graphicNothing
                         .resizable()
                         .frame(width: 143.97, height: 180)
                         .padding(.bottom, 16)
@@ -45,12 +45,12 @@ struct FriendView: View {
                             viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
                         })
                         .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
-                        .listRowBackground(CommonConstants.defaultBackgroundColor)
+                        .listRowBackground(ColorConstants.gray6)
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden) // 기본 배경색 숨기기
-                .background(CommonConstants.defaultBackgroundColor)
+                .background(ColorConstants.gray6)
             }
         }
         .navigationDestination(for: Screen.self) { type in
@@ -86,7 +86,7 @@ struct FriendView: View {
                 Button(action: {
                     router.pop()
                 }, label: {
-                    PresentationAsset.navigationBackButton.swiftUIImage
+                    ImageConstants.navigationBack
                 })
                 .padding(10) // 터치 영역 확장
             ,
@@ -94,7 +94,7 @@ struct FriendView: View {
                 Button(action: {
                     router.push(screen: .addFriend)
                 }, label: {
-                    PresentationAsset.addFriend.swiftUIImage
+                    ImageConstants.addFriend
                 })
                 .padding(10) // 터치 영역 확장
         )
@@ -105,7 +105,7 @@ struct FriendView: View {
                     .foregroundColor(.white)
             }
         }
-        .toolbarBackground(CommonConstants.defaultBackgroundColor, for: .navigationBar)
+        .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
     }
 }

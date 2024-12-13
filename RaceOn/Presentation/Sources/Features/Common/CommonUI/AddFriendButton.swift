@@ -22,7 +22,7 @@ struct AddFriendButton: View {
                 .frame(maxWidth: .infinity)
         }
         .frame(height: 54) // 버튼의 높이 설정
-        .background(isButtonEnabled ? PresentationAsset.primaryNormal.swiftUIColor : PresentationAsset.gray4.swiftUIColor)
+        .background(isButtonEnabled ? ColorConstants.primaryNormal : ColorConstants.gray4)
         .cornerRadius(30) // 버튼의 모서리 둥글게 설정
         .padding(.horizontal, 20) // 좌우 여백 추가
     }

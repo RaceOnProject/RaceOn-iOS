@@ -13,7 +13,7 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            CommonConstants.defaultBackgroundColor
+            ColorConstants.gray6
                 .ignoresSafeArea()
             VStack {
                 Text("MainView")

@@ -12,14 +12,14 @@ struct FriendInfoView: View {
 
     var body: some View {
         ZStack {
-            CommonConstants.defaultBackgroundColor
+            ColorConstants.gray6
             
             HStack {
                 Spacer()
                     .frame(width: 20)
                 
                 ZStack(alignment: .bottomTrailing) { // ZStack을 우하단 정렬로 설정
-                    PresentationAsset.profile2.swiftUIImage
+                    ImageConstants.profile2
                         .resizable()
                         .scaledToFill()
                         .frame(width: 48, height: 48)
@@ -27,7 +27,7 @@ struct FriendInfoView: View {
                     
                     Circle()
                         .frame(width: 12, height: 12)
-                        .foregroundColor(PresentationAsset.primaryNormal.swiftUIColor)
+                        .foregroundColor(ColorConstants.primaryNormal)
                         .overlay( // 테두리를 추가
                             Circle()
                                 .stroke(Color.clear, lineWidth: 2) // 테두리 색상과 두께 설정
@@ -40,7 +40,7 @@ struct FriendInfoView: View {
                         .foregroundColor(.white)
                     Text("접속 중")
                         .font(.regular(14))
-                        .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                        .foregroundColor(ColorConstants.gray4)
                 }
                 
                 Spacer()
@@ -48,7 +48,7 @@ struct FriendInfoView: View {
                 Button(action: {
                     onKebabTapped()
                 }) {
-                    PresentationAsset.kebab.swiftUIImage
+                    ImageConstants.kebab
                         .resizable()
                         .scaledToFill()
                         .frame(width: 2.87, height: 17)

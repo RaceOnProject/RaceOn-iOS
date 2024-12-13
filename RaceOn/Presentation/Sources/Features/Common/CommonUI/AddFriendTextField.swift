@@ -9,8 +9,6 @@ import SwiftUI
 
 struct AddFriendTextField: View {
     enum Constants {
-        static let on = PresentationAsset.primaryNormal.swiftUIColor
-        static let off = PresentationAsset.gray5.swiftUIColor
         static let maxLength = 1 // 최대 글자 수
     }
     

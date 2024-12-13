@@ -14,9 +14,6 @@ struct AddFriendView: View {
     
     enum Constants {
         static let title = "친구 코드를 입력해 주세요"
-        
-        static let on = PresentationAsset.primaryNormal.swiftUIColor
-        static let off = PresentationAsset.gray5.swiftUIColor
     }
     
     @EnvironmentObject var router: Router
@@ -32,7 +29,7 @@ struct AddFriendView: View {
     
     var body: some View {
         ZStack {
-            CommonConstants.defaultBackgroundColor
+            ColorConstants.gray6
                 .ignoresSafeArea()
             
             VStack (alignment: .leading) {
@@ -66,7 +63,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .first ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .first ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -84,7 +81,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .second ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .second ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -104,7 +101,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .third ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .third ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -124,7 +121,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .fourth ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .fourth ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -144,7 +141,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .fifth ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .fifth ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -164,7 +161,7 @@ struct AddFriendView: View {
                     .overlay(
                         Rectangle()
                             .frame(height: 1) // Border 두께 설정
-                            .foregroundColor(focusedField == .sixth ? Constants.on : Constants.off)
+                            .foregroundColor(focusedField == .sixth ? ColorConstants.primaryNormal : ColorConstants.gray5)
                             .offset(y: 0), // TextField 하단으로 위치 조정
                         alignment: .bottom
                     )
@@ -204,7 +201,7 @@ struct AddFriendView: View {
                 Button(action: {
                     router.pop()
                 }, label: {
-                    PresentationAsset.navigationBackButton.swiftUIImage
+                    ImageConstants.navigationBack
                 })
                 .padding(10)
             }
@@ -214,7 +211,7 @@ struct AddFriendView: View {
                     .foregroundColor(.white)
             }
         }
-        .toolbarBackground(CommonConstants.defaultBackgroundColor, for: .navigationBar)
+        .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
         .toastView(
             toast: viewStore.binding(
                 get: \.toast,

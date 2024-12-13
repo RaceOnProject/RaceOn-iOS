@@ -11,9 +11,9 @@ import Shared
 public enum ToastStyle {
     case info
     
-    public var iconFileName: Image {
+    public var icon: Image {
         switch self {
-        case .info: return PresentationAsset.circleExclamationMark.swiftUIImage
+        case .info: return ImageConstants.circleExclamationMark
         }
     }
 }

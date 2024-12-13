@@ -10,9 +10,6 @@ import Shared
 import ComposableArchitecture
 
 public struct LaunchView: View {
-    enum Constants {
-        static let splashLogo = PresentationAsset.splashLogo.swiftUIImage
-    }
     
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<LaunchFeature.State, LaunchFeature.Action>
@@ -27,10 +24,10 @@ public struct LaunchView: View {
         NavigationStack(path: $router.route) {
             ZStack {
                 // TODO: Default 배경색을 모든 화면에 적용하면 좋을 듯 함
-                CommonConstants.defaultBackgroundColor
+                ColorConstants.gray6
                     .ignoresSafeArea()
                 VStack {
-                    Constants.splashLogo
+                    ImageConstants.splashLogo
                         .resizable()
                         .frame(width: 220, height: 148.14)
                 }
