@@ -9,7 +9,6 @@ import SwiftUI
 import ComposableArchitecture
 import UIKit
 
-
 struct AddFriendView: View {
     
     enum Constants {
@@ -32,7 +31,7 @@ struct AddFriendView: View {
             ColorConstants.gray6
                 .ignoresSafeArea()
             
-            VStack (alignment: .leading) {
+            VStack(alignment: .leading) {
                 Spacer()
                     .frame(height: 20)
                 
@@ -50,7 +49,7 @@ struct AddFriendView: View {
                 
                 Spacer()
                 
-                HStack (spacing: 10){
+                HStack(spacing: 10) {
                     Spacer()
                         .frame(width: 10)
                     
@@ -65,7 +64,9 @@ struct AddFriendView: View {
                             .overlay(
                                 Rectangle()
                                     .frame(height: 1)
-                                    .foregroundColor(focusedField == AddFriendFeature.State.Field(index) ? ColorConstants.primaryNormal : ColorConstants.gray5)
+                                    .foregroundColor(
+                                        focusedField == AddFriendFeature.State.Field(index) ? ColorConstants.primaryNormal : ColorConstants.gray5
+                                    )
                                     .offset(y: 0),
                                 alignment: .bottom
                             )
@@ -92,7 +93,6 @@ struct AddFriendView: View {
                 ) {
                     viewStore.send(.addFriendButtonTapped)
                 }
-                
                 
                 Spacer()
                     .frame(height: 18)

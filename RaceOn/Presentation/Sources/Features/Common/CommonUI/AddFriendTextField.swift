@@ -32,7 +32,6 @@ struct AddFriendTextField: View {
     }
 }
 
-
 #Preview {
     @State var text: String = ""
     
@@ -40,4 +39,3 @@ struct AddFriendTextField: View {
         text: $text
     )
 }
-

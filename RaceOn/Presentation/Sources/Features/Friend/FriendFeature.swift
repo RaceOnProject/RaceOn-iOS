@@ -29,8 +29,8 @@ struct FriendFeature {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .testAction:
-            for x in 0 ..< 10 {
-                state.tData.append(TestData(index: x))
+            for index in 0 ..< 10 {
+                state.tData.append(TestData(index: index))
             }
             return .none
         case .kebabButtonTapped:

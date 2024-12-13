@@ -22,4 +22,3 @@ public struct SettingLaunchView: View {
     SettingLaunchView()
         .environmentObject(Router())
 }
-

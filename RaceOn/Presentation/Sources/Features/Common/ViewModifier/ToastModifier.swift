@@ -18,7 +18,6 @@ public enum ToastStyle {
     }
 }
 
-
 struct Toast: Equatable {
     var type: ToastStyle = .info
     var content: String
@@ -38,8 +37,8 @@ struct ToastModifier: ViewModifier {
                         .offset(y: -30)
                 }.animation(.spring(), value: toast)
             )
-            .onChange(of: toast) { value in
-                showToast()
+            .onChange(of: toast) {
+                if $0 != nil { showToast() }
             }
     }
     
