@@ -16,19 +16,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="SplashLogo" translatesAutoresizingMaskIntoConstraints="NO" id="A0J-qf-hiu">
-                                <rect key="frame" x="95" y="354.66666666666669" width="200" height="134.66666666666669"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="134.66999999999999" id="Faq-pX-dp9"/>
-                                    <constraint firstAttribute="width" constant="200" id="o76-uU-hUc"/>
-                                </constraints>
-                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Friend Demo App" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YYY-bI-4L6">
+                                <rect key="frame" x="93.666666666666671" y="406" width="202.66666666666663" height="32.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="27"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.10196078431372549" green="0.10196078431372549" blue="0.10588235294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="A0J-qf-hiu" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="YJx-pd-gGa"/>
-                            <constraint firstItem="A0J-qf-hiu" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="wiv-hc-zdr"/>
+                            <constraint firstItem="YYY-bI-4L6" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="WjO-4x-tV0"/>
+                            <constraint firstItem="YYY-bI-4L6" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="kTt-hR-jbl"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -37,7 +36,4 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="SplashLogo" width="220" height="148.66667175292969"/>
-    </resources>
 </document>

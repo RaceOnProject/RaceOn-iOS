@@ -8,10 +8,11 @@
 import SwiftUI
 import Shared
 
-struct MainView: View {
+public struct MainView: View {
+    public init() {}
     @EnvironmentObject var router: Router
     
-    var body: some View {
+    public var body: some View {
         ZStack {
             ColorConstants.gray6
                 .ignoresSafeArea()
