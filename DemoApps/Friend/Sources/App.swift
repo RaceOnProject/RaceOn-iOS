@@ -16,7 +16,7 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $router.route) {
-                Text("Friend Demo App")
+                Text("Friend Demo App Root View")
                     .navigationDestination(for: Screen.self) { type in
                         router.screenView(type: type)
                     }
