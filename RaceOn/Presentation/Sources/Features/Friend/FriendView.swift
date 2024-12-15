@@ -8,7 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct FriendView: View {
+public struct FriendView: View {
     enum Constants {
         static let friendlessDescription = "아직 추가된 친구가 없어요"
     }
@@ -17,12 +17,12 @@ struct FriendView: View {
     @ObservedObject var viewStore: ViewStore<FriendFeature.State, FriendFeature.Action>
     let store: StoreOf<FriendFeature>
     
-    init(store: StoreOf<FriendFeature>) {
+    public init(store: StoreOf<FriendFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
     }
     
-    var body: some View {
+    public var body: some View {
         ZStack {
             ColorConstants.gray6
                 .ignoresSafeArea()

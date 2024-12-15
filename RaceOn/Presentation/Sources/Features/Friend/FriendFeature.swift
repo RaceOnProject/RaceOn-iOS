@@ -14,19 +14,23 @@ struct TestData: Equatable, Identifiable {
 }
 
 @Reducer
-struct FriendFeature {
-    struct State: Equatable {
+public struct FriendFeature {
+    public init() {}
+    
+    public struct State: Equatable {
         var tData: [TestData] = []
         var isActionSheetPresented: Bool = false
+        
+        public init() {}
     }
     
-    enum Action: Equatable {
+    public enum Action: Equatable {
         case testAction
         case kebabButtonTapped
         case dismissActionSheet
     }
     
-    func reduce(into state: inout State, action: Action) -> Effect<Action> {
+    public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .testAction:
             for index in 0 ..< 10 {
