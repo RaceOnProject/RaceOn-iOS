@@ -15,6 +15,7 @@ public enum Screen: Hashable {
     case login
     case friend
     case addFriend
+    case setting
 }
 
 public final class Router: ObservableObject {
@@ -76,6 +77,8 @@ public final class Router: ObservableObject {
                 )
             )
             .environmentObject(self)
+        case .setting:
+            SettingView()
         }
     }
 }
