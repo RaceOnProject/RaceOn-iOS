@@ -13,24 +13,29 @@ public struct MainView: View {
     @EnvironmentObject var router: Router
     
     public var body: some View {
-        ZStack {
-            //TODO: 배경 그라데이션
-            ColorConstants.gray5
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                topBar
+        NavigationStack(path: $router.route) {
+            ZStack {
+                //TODO: 배경 그라데이션
+                ColorConstants.gray5
+                    .ignoresSafeArea()
                 
-                title
-                
-                distanceTabView
-                
-                startButton
-                
-                Spacer().frame(height: 76)
+                VStack(spacing: 0) {
+                    topBar
+                    
+                    title
+                    
+                    distanceTabView
+                    
+                    startButton
+                    
+                    Spacer().frame(height: 76)
+                }
+            }
+            .navigationBarBackButtonHidden(true)
+            .navigationDestination(for: Screen.self) { type in
+                router.screenView(type: type)
             }
         }
-        .navigationBarBackButtonHidden(true)
     }
     
     @ViewBuilder
@@ -48,14 +53,14 @@ public struct MainView: View {
                         .resizable()
                         .frame(width: 24, height: 24)
                         .onTapGesture {
-                            print("친구 탭")
+                            router.push(screen: .addFriend)
                         }
                     
                     ImageConstants.iconSetting
                         .resizable()
                         .frame(width: 24, height: 24)
                         .onTapGesture {
-                            print("설정 탭")
+                            router.push(screen: .setting)
                         }
                 }
             }
@@ -130,7 +135,7 @@ public struct MainView: View {
     var startButton: some View {
 
         Button {
-            print("경쟁 탭")
+            router.push(screen: .friend)
         } label: {
             Text("경쟁할 친구 선택하기")
                 .font(.semiBold(17))

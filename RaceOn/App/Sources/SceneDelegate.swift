@@ -19,7 +19,7 @@ enum RootScreen {
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // TODO: 자동 로그인 유무로 분기처리 해야함
-    @State var screen: RootScreen = .login
+    @State var screen: RootScreen = .main
 
     var window: UIWindow?
 
