@@ -35,6 +35,33 @@ public enum SettingCategory: CaseIterable {
     }
 }
 
+public enum AlertType {
+    case logout
+    case deleteAccount
+    
+    var title: Text {
+        switch self {
+        case .logout: return Text("로그아웃")
+        case .deleteAccount: return Text("회원탈퇴")
+        }
+    }
+    
+    var message: Text {
+        switch self {
+        case .logout: return Text("'RACE ON'에서 로그아웃 하시겠습니까?")
+        case .deleteAccount: return Text("정말 계정을 삭제하시겠습니까?")
+        }
+    }
+    
+    var cancelButton: Alert.Button {
+        return .cancel(Text("취소"))
+    }
+    
+    func defaultButton(action: @escaping () -> Void) -> Alert.Button {
+        return .default(Text("확인"), action: action)
+    }
+}
+
 public struct SettingView: View {
     
     @EnvironmentObject var router: Router
@@ -84,7 +111,7 @@ public struct SettingView: View {
                 
                 HStack(alignment: .center) {
                     Button(action: {
-                        print("로그아웃")
+                        viewStore.send(.logoutButtonTapped)
                     }, label: {
                         HStack {
                             Text("로그아웃")
@@ -97,7 +124,7 @@ public struct SettingView: View {
                     ImageConstants.dividingLine
                     
                     Button(action: {
-                        print("회원탈퇴")
+                        viewStore.send(.deleteAccountButtonTapped)
                     }, label: {
                         HStack {
                             Text("회원탈퇴")
@@ -111,6 +138,19 @@ public struct SettingView: View {
         }
         .onAppear {
             viewStore.send(.onAppear)
+        }
+        .alert(item: viewStore.binding(
+            get: \.alertInfo,
+            send: .noAction
+        )) { alertInfo in
+            Alert(
+                title: alertInfo.alert.title,
+                message: alertInfo.alert.message,
+                primaryButton: alertInfo.alert.defaultButton {
+                    viewStore.send(.alertConfirmed(alertInfo.alert))
+                },
+                secondaryButton: alertInfo.alert.cancelButton
+            )
         }
         .navigationBarBackButtonHidden()
         .toolbar {
