@@ -80,7 +80,13 @@ public final class Router: ObservableObject {
             )
             .environmentObject(self)
         case .setting:
-            SettingView()
+            SettingView(
+                store: Store(
+                    initialState: SettingFeature.State(),
+                    reducer: { SettingFeature()._printChanges() }
+                )
+            )
+            .environmentObject(self)
         }
     }
 }
