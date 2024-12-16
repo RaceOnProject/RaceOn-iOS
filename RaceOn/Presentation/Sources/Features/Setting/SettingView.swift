@@ -84,7 +84,8 @@ public struct SettingView: View {
                 List(settings, id: \.self) { settings in
                     Button(action: {
                         switch settings {
-                        case .myProfile: print("myProfile")
+                        case .myProfile:
+                            router.push(screen: .myProfile)
                         case .termsOfService, .privacyPolicy:
                             router.push(screen: .legalNotice(type: settings))
                         default: break
