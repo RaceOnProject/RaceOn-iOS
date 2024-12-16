@@ -24,6 +24,15 @@ public enum SettingCategory: CaseIterable {
         case .privacyPolicy: return "개인정보처리방침"
         }
     }
+    
+    var urlString: String {
+        switch self {
+        // TODO: notion 완성 되면 변경 할 것.
+        case .termsOfService: return "https://www.google.com"
+        case .privacyPolicy: return "https://www.naver.com"
+        default: return ""
+        }
+    }
 }
 
 public struct SettingView: View {
@@ -49,7 +58,8 @@ public struct SettingView: View {
                     Button(action: {
                         switch settings {
                         case .myProfile: print("myProfile")
-                        case .termsOfService, .privacyPolicy: print(settings)
+                        case .termsOfService, .privacyPolicy:
+                            router.push(screen: .legalNotice(type: settings))
                         default: break
                         }
                     }, label: {
