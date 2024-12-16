@@ -6,6 +6,10 @@
 //
 
 enum ImageConstants {
+    // Common
+    static let chevronCompactRight = PresentationAsset.chevronCompactRight.swiftUIImage
+    static let dividingLine = PresentationAsset.dividingLine.swiftUIImage
+    
     // Splash
     static let splashLogo = PresentationAsset.splashLogo.swiftUIImage
     
