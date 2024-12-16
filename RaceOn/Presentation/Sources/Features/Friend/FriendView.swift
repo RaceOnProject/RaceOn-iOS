@@ -86,7 +86,7 @@ public struct FriendView: View {
                 router.pop()
             }
             ToolbarView.principalItem(title: "친구 목록")
-            ToolbarView.trailingItems(buttonImage: ImageConstants.addFriend) {
+            ToolbarView.trailingItems(ImageConstants.addFriend) {
                 router.push(screen: .addFriend)
             }
         }

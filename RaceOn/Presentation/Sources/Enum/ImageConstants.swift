@@ -24,6 +24,11 @@ enum ImageConstants {
     static let profile3 = PresentationAsset.profile3.swiftUIImage
     static let profile4 = PresentationAsset.profile4.swiftUIImage
     
+    // Setting
+    static let profileDefault = PresentationAsset.profileDefault.swiftUIImage
+    static let copyIcon = PresentationAsset.copyIcon.swiftUIImage
+    static let profileEditIcon = PresentationAsset.profileEditIcon.swiftUIImage
+    
     // Navigation
     // LeftItems
     static let navigationBack = PresentationAsset.navigationBack.swiftUIImage
