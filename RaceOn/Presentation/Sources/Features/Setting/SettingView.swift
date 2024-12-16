@@ -10,7 +10,14 @@ import Presentation
 import ComposableArchitecture
 
 struct SettingView: View {
+    
+    @EnvironmentObject var router: Router
+    
+    
     var body: some View {
         Text("SettingView")
+            .onTapGesture {
+                router.pop()
+            }
     }
 }
