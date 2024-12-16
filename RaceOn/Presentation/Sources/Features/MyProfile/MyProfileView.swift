@@ -8,6 +8,24 @@
 import SwiftUI
 import ComposableArchitecture
 
+enum MyProfileTrailing {
+    case edit
+    case save
+    
+    var Items: some View {
+        switch self {
+        case .edit:
+            Text("편집")
+                .font(.semiBold(15))
+                .foregroundColor(.white)
+        case .save:
+            Text("저장")
+                .font(.semiBold(15))
+                .foregroundColor(ColorConstants.primaryNormal)
+        }
+    }
+}
+
 struct MyProfileView: View {
     
     @EnvironmentObject var router: Router
@@ -25,15 +43,58 @@ struct MyProfileView: View {
             ColorConstants.gray6.ignoresSafeArea()
             
             VStack {
-                Text("MyProfileView").foregroundColor(.white)
+                Spacer().frame(height: 30)
+                
+                ZStack(alignment: .bottomTrailing) {
+                    ImageConstants.profileDefault
+                        .resizable()
+                        .frame(width: 128, height: 128)
+                    
+                    ImageConstants.profileEditIcon
+                        .frame(width: 36, height: 36)
+                }
+                
+                Spacer().frame(height: 20)
+                
+                Text("random name")
+                    .font(.semiBold(20))
+                    .foregroundColor(.white)
+                
+                Spacer().frame(height: 12)
+                
+                    Button(action: {
+                        viewStore.send(.copyButtonTapped)
+                    }, label: {
+                        HStack(spacing: 4) {
+                            Text("GD231E")
+                                .font(.semiBold(15))
+                                .foregroundColor(.white)
+                            
+                            ImageConstants.copyIcon
+                        }
+                    })
+                    .padding(14)
+                    .background(ColorConstants.gray5)
+                    .cornerRadius(30)
+                
+                Spacer()
             }
         }
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()
             }
             ToolbarView.principalItem(title: "내 프로필")
+            ToolbarView.trailingItems(MyProfileTrailing.edit.Items) {
+                print("편집")
+            }
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
     }

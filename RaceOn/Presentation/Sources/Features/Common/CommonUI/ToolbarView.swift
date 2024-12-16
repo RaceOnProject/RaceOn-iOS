@@ -29,12 +29,12 @@ struct ToolbarView {
         }
     }
     
-    static func trailingItems(buttonImage: Image, onTrailingButtonTap: @escaping () -> Void) -> some ToolbarContent {
+    static func trailingItems(_ view: some View, onTrailingButtonTap: @escaping () -> Void) -> some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button(action: {
                 onTrailingButtonTap()
             }, label: {
-                buttonImage
+                view
             })
             .padding(10)
 //            .border(Color.red, width: 1) // 터치 영역 표시
