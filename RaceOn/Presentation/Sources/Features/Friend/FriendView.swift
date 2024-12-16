@@ -43,6 +43,7 @@ public struct FriendView: View {
                         FriendInfoView(onKebabTapped: {
                             viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
                         })
+                        .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
                         .listRowBackground(ColorConstants.gray6)
                     }
