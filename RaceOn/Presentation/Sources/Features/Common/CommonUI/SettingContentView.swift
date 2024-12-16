@@ -11,11 +11,7 @@ struct SettingContentView: View {
     
     var type: SettingCategory
     @State var competitionInvites: Bool = true
-    @State var appVersion: String = "1.0.0"
-    
-    init(type: SettingCategory) {
-        self.type = type
-    }
+    @Binding var appVersion: String?
     
     var body: some View {
         HStack {
@@ -37,17 +33,27 @@ struct SettingContentView: View {
                 .tint(ColorConstants.primaryNormal)
                 .frame(width: 54, height: 30)
             case .appInfo:
-                Text("현재 버전 \(appVersion)")
-                    .font(.regular(15))
-                    .foregroundColor(.white)
+                if let appVersion = appVersion {
+                    Text("현재 버전 \(appVersion)")
+                        .font(.regular(15))
+                        .foregroundColor(.white)
+                } else {
+                    Text("버전을 가져오는데 실패하였습니다.")
+                        .font(.regular(15))
+                        .foregroundColor(.red)
+                }
             }
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 30)
         .background(ColorConstants.gray6)
     }
 }
 
 #Preview {
-    SettingContentView(type: .competitionInvites)
+    @State var appVersion: String? = "1.0.0"
+    
+    return SettingContentView(
+        type: .appInfo,
+        appVersion: $appVersion
+    )
 }

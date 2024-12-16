@@ -8,19 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-<<<<<<< HEAD
-struct SettingView: View {
-    
-    @EnvironmentObject var router: Router
-    
-    
-    var body: some View {
-        Text("SettingView")
-            .onTapGesture {
-                router.pop()
-            }
-=======
-enum SettingCategory: CaseIterable {
+public enum SettingCategory: CaseIterable {
     case myProfile            // 내 프로필
     case competitionInvites   // 경쟁 초대 알림
     case appInfo              // 앱 정보
@@ -35,7 +23,6 @@ enum SettingCategory: CaseIterable {
         case .termsOfService: return "이용약관"
         case .privacyPolicy: return "개인정보처리방침"
         }
->>>>>>> 51413f4 (feat: 설정 화면 UI 개발)
     }
 }
 
@@ -66,7 +53,13 @@ public struct SettingView: View {
                         default: break
                         }
                     }, label: {
-                        SettingContentView(type: settings)
+                        SettingContentView(
+                            type: settings,
+                            appVersion: viewStore.binding(
+                                get: \.currentVersion,
+                                send: .noAction
+                            )
+                        )
                     })
                     .listRowSeparator(.hidden)
                     .listRowBackground(ColorConstants.gray6)
@@ -105,6 +98,9 @@ public struct SettingView: View {
                     })
                 }
             }
+        }
+        .onAppear {
+            viewStore.send(.onAppear)
         }
         .navigationBarBackButtonHidden()
         .toolbar {
