@@ -16,6 +16,7 @@ public enum Screen: Hashable {
     case friend
     case addFriend
     case setting
+    case legalNotice(type: SettingCategory)
 }
 
 public final class Router: ObservableObject {
@@ -87,6 +88,16 @@ public final class Router: ObservableObject {
                 )
             )
             .environmentObject(self)
+        case .legalNotice(let type):
+            switch type {
+            case .termsOfService, .privacyPolicy:
+                LegalNoticeView(
+                    type: type
+                )
+                .environmentObject(self)
+            default: Text("화면 이동 오류")
+            }
+            
         }
     }
 }
