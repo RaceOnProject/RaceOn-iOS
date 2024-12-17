@@ -28,6 +28,9 @@ enum MyProfileTrailing {
 
 struct MyProfileView: View {
     
+    @State private var nickname: String = ""
+    @FocusState private var isNicknameFocused: Bool  // 포커스 상태 관리
+    
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<MyProfileFeature.State, MyProfileFeature.Action>
     
@@ -45,40 +48,64 @@ struct MyProfileView: View {
             VStack {
                 Spacer().frame(height: 30)
                 
-                ZStack(alignment: .bottomTrailing) {
-                    ImageConstants.profileDefault
-                        .resizable()
-                        .frame(width: 128, height: 128)
-                    
-                    ImageConstants.profileEditIcon
-                        .frame(width: 36, height: 36)
-                }
+                Button(action: {
+                    print("Photo Picker")
+                }, label: {
+                    ZStack(alignment: .bottomTrailing) {
+                        
+                        ImageConstants.profileDefault
+                            .resizable()
+                            .frame(width: 128, height: 128)
+                        
+                        ImageConstants.profileEditIcon
+                            .frame(width: 36, height: 36)
+                    }
+                })
                 
                 Spacer().frame(height: 20)
                 
-                Text("random name")
+                if viewStore.state.isEditing {
+                    TextField(
+                        "",
+                        text: $nickname,
+                        prompt: Text(viewStore.state.nickname)
+                            .font(.semiBold(20))
+                            .foregroundColor(ColorConstants.gray4)
+                    )
                     .font(.semiBold(20))
                     .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .frame(height: 28)
+                    .focused($isNicknameFocused) // 포커스 추가
+                } else {
+                    Text(viewStore.state.nickname)
+                        .font(.semiBold(20))
+                        .foregroundColor(.white)
+                        .frame(height: 28)
+                }
                 
                 Spacer().frame(height: 12)
                 
-                    Button(action: {
-                        viewStore.send(.copyButtonTapped)
-                    }, label: {
-                        HStack(spacing: 4) {
-                            Text("GD231E")
-                                .font(.semiBold(15))
-                                .foregroundColor(.white)
-                            
-                            ImageConstants.copyIcon
-                        }
-                    })
-                    .padding(14)
-                    .background(ColorConstants.gray5)
-                    .cornerRadius(30)
+                Button(action: {
+                    viewStore.send(.copyButtonTapped)
+                }, label: {
+                    HStack(spacing: 4) {
+                        Text("GD231E")
+                            .font(.semiBold(15))
+                            .foregroundColor(.white)
+                        
+                        ImageConstants.copyIcon
+                    }
+                })
+                .padding(14)
+                .background(ColorConstants.gray5)
+                .cornerRadius(30)
                 
                 Spacer()
             }
+        }
+        .onAppear {
+            viewStore.send(.onAppear)
         }
         .toastView(
             toast: viewStore.binding(
@@ -92,8 +119,17 @@ struct MyProfileView: View {
                 router.pop()
             }
             ToolbarView.principalItem(title: "내 프로필")
-            ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
-                print("편집")
+            
+            if viewStore.state.isEditing { // 편집중
+                ToolbarView.trailingItems(MyProfileTrailing.save.items) {
+                    viewStore.send(.navigationTrailingButtonTapped(isEditing: false))
+                    isNicknameFocused = false  // 편집을 종료할 때 포커스를 해제
+                }
+            } else {
+                ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
+                    viewStore.send(.navigationTrailingButtonTapped(isEditing: true))
+                    isNicknameFocused = true  // 편집을 시작할 때 포커스를 설정
+                }
             }
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
