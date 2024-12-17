@@ -12,7 +12,7 @@ enum MyProfileTrailing {
     case edit
     case save
     
-    var Items: some View {
+    var items: some View {
         switch self {
         case .edit:
             Text("편집")
@@ -92,7 +92,7 @@ struct MyProfileView: View {
                 router.pop()
             }
             ToolbarView.principalItem(title: "내 프로필")
-            ToolbarView.trailingItems(MyProfileTrailing.edit.Items) {
+            ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
                 print("편집")
             }
         }
