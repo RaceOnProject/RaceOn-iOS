@@ -53,7 +53,7 @@ public struct MainView: View {
                         .resizable()
                         .frame(width: 24, height: 24)
                         .onTapGesture {
-                            router.push(screen: .addFriend)
+                            router.push(screen: .friend)
                         }
                     
                     ImageConstants.iconSetting
