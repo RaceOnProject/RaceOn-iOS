@@ -8,9 +8,18 @@
 import SwiftUI
 import Shared
 
+public enum MatchingDistance {
+    case three
+    case five
+    case ten
+}
+
 public struct MainView: View {
     public init() {}
     @EnvironmentObject var router: Router
+    
+    //TODO: Feature로 이동 예정
+    @State var selectedMatchingDistance: MatchingDistance = .three
     
     public var body: some View {
         NavigationStack(path: $router.route) {
@@ -87,53 +96,59 @@ public struct MainView: View {
     var distanceTabView: some View {
         
         ZStack {
-            TabView {
+            TabView(selection: $selectedMatchingDistance) {
                 ImageConstants.card3km
                     .resizable()
                     .cornerRadius(24)
                     .aspectRatio(280/400, contentMode: .fit)
                     .padding(.horizontal, 55)
+                    .tag(MatchingDistance.three)
                     
                 ImageConstants.card5km
                     .resizable()
                     .cornerRadius(24)
                     .aspectRatio(280/400, contentMode: .fit)
                     .padding(.horizontal, 55)
+                    .tag(MatchingDistance.five)
                 
                 ImageConstants.card10km
                     .resizable()
                     .cornerRadius(24)
                     .aspectRatio(280/400, contentMode: .fit)
                     .padding(.horizontal, 55)
+                    .tag(MatchingDistance.ten)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeOut(duration: 0.2), value: selectedMatchingDistance)
             
             HStack {
-                ImageConstants.iconChevronLeft
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .onTapGesture {
-                        print("왼쪽 탭")
-                    }
+                if selectedMatchingDistance != .three {
+                    ImageConstants.iconChevronLeft
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .onTapGesture {
+                            leftTabButtonTapped()
+                        }
+                }
                 
                 Spacer()
                 
-                ImageConstants.iconChevronRight
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .onTapGesture {
-                        print("오른쪽 탭")
-                    }
+                if selectedMatchingDistance != .ten {
+                    ImageConstants.iconChevronRight
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .onTapGesture {
+                            rightTabButtonTapped()
+                        }
+                }
             }
             .padding(.horizontal, 20)
         }
         .padding(.top, 50)
-        
     }
     
     @ViewBuilder
     var startButton: some View {
-
         Button {
             router.push(screen: .friend)
         } label: {
@@ -147,6 +162,30 @@ public struct MainView: View {
         .cornerRadius(30)
         .padding(.top, 30)
         .padding(.horizontal, 55)
+    }
+    
+    /// 탭뷰 왼쪽 버튼 탭
+    private func leftTabButtonTapped() {
+        switch selectedMatchingDistance {
+        case .five:
+            selectedMatchingDistance = .three
+        case .ten:
+            selectedMatchingDistance = .five
+        default:
+            return
+        }
+    }
+    
+    /// 탭뷰 오른쪽 버튼 탭
+    private func rightTabButtonTapped() {
+        switch selectedMatchingDistance {
+        case .three:
+            selectedMatchingDistance = .five
+        case .five:
+            selectedMatchingDistance = .ten
+        default:
+            return
+        }
     }
 }
 
