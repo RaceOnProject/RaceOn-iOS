@@ -16,7 +16,8 @@ let project = Project.framework(
         .kingfisher,
         .lottie,
         .swiftyJson,
-        .composableArchitecture
+        .composableArchitecture,
+        .swiftyCrop
     ],
     resources: Project.Environment.resourceFile
 )

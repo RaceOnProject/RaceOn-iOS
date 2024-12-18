@@ -10,7 +10,8 @@ let packageSettings = PackageSettings(
     "KingFisher": .framework,
     "Lottie": .framework,
     "SwiftyJSON": .framework,
-    "ComposableArchitecture": .framework
+    "ComposableArchitecture": .framework,
+    "SwiftyCrop": .framework
   ]
 )
 #endif
@@ -22,6 +23,7 @@ let package = Package(
     .package(url: "https://github.com/onevcat/Kingfisher", from: "7.12.0"),
     .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.3"),
     .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0"),
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.9.3")
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.9.3"),
+    .package(url: "https://github.com/benedom/SwiftyCrop", branch: "master")
   ]
 )
