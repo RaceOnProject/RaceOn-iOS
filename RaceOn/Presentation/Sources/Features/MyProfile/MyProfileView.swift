@@ -29,7 +29,6 @@ enum MyProfileTrailing {
 struct MyProfileView: View {
     
     @State private var nickname: String = ""
-    @FocusState private var isNicknameFocused: Bool  // 포커스 상태 관리
     
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<MyProfileFeature.State, MyProfileFeature.Action>
@@ -76,7 +75,6 @@ struct MyProfileView: View {
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .frame(height: 28)
-                    .focused($isNicknameFocused) // 포커스 추가
                 } else {
                     Text(viewStore.state.nickname)
                         .font(.semiBold(20))
@@ -123,12 +121,10 @@ struct MyProfileView: View {
             if viewStore.state.isEditing { // 편집중
                 ToolbarView.trailingItems(MyProfileTrailing.save.items) {
                     viewStore.send(.navigationTrailingButtonTapped(isEditing: false))
-                    isNicknameFocused = false  // 편집을 종료할 때 포커스를 해제
                 }
             } else {
                 ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
                     viewStore.send(.navigationTrailingButtonTapped(isEditing: true))
-                    isNicknameFocused = true  // 편집을 시작할 때 포커스를 설정
                 }
             }
         }
