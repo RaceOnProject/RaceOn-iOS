@@ -24,9 +24,10 @@ public struct MainView: View {
     public var body: some View {
         NavigationStack(path: $router.route) {
             ZStack {
-                //TODO: 배경 그라데이션
-                ColorConstants.gray5
+                ColorConstants.gray6
                     .ignoresSafeArea()
+                
+                gradation
                 
                 VStack(spacing: 0) {
                     topBar
@@ -43,6 +44,43 @@ public struct MainView: View {
             .navigationBarBackButtonHidden(true)
             .navigationDestination(for: Screen.self) { type in
                 router.screenView(type: type)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var gradation: some View {
+        GeometryReader { proxy in
+            switch selectedMatchingDistance {
+            case .three:
+                RadialGradient(
+                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
+                            .init(color: Color(r: 223, g: 84, b: 56, a: 0), location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height / 2 )
+                .opacity(0.3)
+                .ignoresSafeArea()
+            case .five:
+                RadialGradient(
+                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
+                            .init(color: Color(r: 122, g: 83, b: 252), location: 0.6),
+                            .init(color: ColorConstants.gray6, location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height * 0.7)
+                .opacity(0.3)
+                .ignoresSafeArea()
+            case .ten:
+                RadialGradient(
+                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
+                            .init(color: Color(r: 122, g: 83, b: 252), location: 0.5),
+                            .init(color: ColorConstants.gray6, location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height )
+                .opacity(0.3)
+                .ignoresSafeArea()
             }
         }
     }
