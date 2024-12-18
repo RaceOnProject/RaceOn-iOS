@@ -20,7 +20,7 @@ struct MyProfileFeature {
     enum Action {
         case onAppear
         case copyButtonTapped
-        case navigationTrailingButtonTapped(isEditing: Bool)
+        case enterEditMode(isEditing: Bool)
         case dismissToast
     }
     
@@ -33,7 +33,7 @@ struct MyProfileFeature {
             UIPasteboard.general.string = state.friendCode
             state.toast = Toast(content: "내 코드가 복사되었어요")
             return .none
-        case .navigationTrailingButtonTapped(let isEditing):
+        case .enterEditMode(let isEditing):
             state.isEditing = isEditing
             return .none
         case .dismissToast:

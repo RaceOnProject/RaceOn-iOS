@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import SwiftyCrop
 
 enum MyProfileTrailing {
     case edit
@@ -33,6 +34,10 @@ struct MyProfileView: View {
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<MyProfileFeature.State, MyProfileFeature.Action>
     
+    @State var showImagePicker = false
+    @State var selectedImage: UIImage?
+    @State private var isCroppingPresented = false
+    
     let store: StoreOf<MyProfileFeature>
     
     public init(store: StoreOf<MyProfileFeature>) {
@@ -48,14 +53,20 @@ struct MyProfileView: View {
                 Spacer().frame(height: 30)
                 
                 Button(action: {
-                    print("Photo Picker")
+                    viewStore.send(.enterEditMode(isEditing: true))
+                    showImagePicker.toggle()
                 }, label: {
                     ZStack(alignment: .bottomTrailing) {
-                        
-                        ImageConstants.profileDefault
-                            .resizable()
-                            .frame(width: 128, height: 128)
-                        
+                        if let image = selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .frame(width: 128, height: 128)
+                                .clipShape(.circle)
+                        } else {
+                            ImageConstants.profileDefault
+                                .resizable()
+                                .frame(width: 128, height: 128)
+                        }
                         ImageConstants.profileEditIcon
                             .frame(width: 36, height: 36)
                     }
@@ -105,6 +116,38 @@ struct MyProfileView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
+        .onTapGesture {
+            self.endTextEditing()
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $selectedImage, isCroppingPresented: $isCroppingPresented)
+        }
+        .fullScreenCover(isPresented: $isCroppingPresented, content: {
+            ZStack {
+                ColorConstants.gray6
+                    .ignoresSafeArea()
+                
+                if let imageToCrop = selectedImage {
+                    SwiftyCropView(
+                        imageToCrop: imageToCrop,
+                        maskShape: .circle,
+                        configuration: SwiftyCropConfiguration(
+                            texts: SwiftyCropConfiguration.Texts(
+                                cancelButton: "취소",
+                                interactionInstructions: "프로필 수정",
+                                saveButton: "확인"
+                            )
+                        )
+                    ) { croppedImage in
+                        if let croppedImage = croppedImage {
+                            selectedImage = croppedImage
+                        }
+                        
+                        isCroppingPresented = false
+                    }
+                }
+            }
+        })
         .toastView(
             toast: viewStore.binding(
                 get: \.toast,
@@ -120,11 +163,11 @@ struct MyProfileView: View {
             
             if viewStore.state.isEditing { // 편집중
                 ToolbarView.trailingItems(MyProfileTrailing.save.items) {
-                    viewStore.send(.navigationTrailingButtonTapped(isEditing: false))
+                    viewStore.send(.enterEditMode(isEditing: false))
                 }
             } else {
                 ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
-                    viewStore.send(.navigationTrailingButtonTapped(isEditing: true))
+                    viewStore.send(.enterEditMode(isEditing: true))
                 }
             }
         }

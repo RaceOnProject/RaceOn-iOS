@@ -8,13 +8,13 @@
 import SwiftUI
 
 // ActionSheet에 필요한 버튼 유형 정의
-enum ActionSheetButton {
+public enum ActionSheetButton {
     case defaultButton(title: String, action: () -> Void)
     case cancel(title: String, action: () -> Void)
 }
 
 // ActionSheet를 생성하는 익스텐션
-extension View {
+public extension View {
     func actionSheet(
         isPresented: Binding<Bool>,
         title: String?,
@@ -35,5 +35,9 @@ extension View {
                 }
             )
         }
+    }
+    
+    func endTextEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
