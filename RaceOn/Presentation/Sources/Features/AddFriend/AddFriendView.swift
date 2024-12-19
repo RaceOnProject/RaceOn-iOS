@@ -102,6 +102,9 @@ struct AddFriendView: View {
             focusedField = .first
             viewStore.send(.onAppear)
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            viewStore.send(.willEnterForeground)
+        }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarView.leadingItems {
