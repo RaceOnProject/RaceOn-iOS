@@ -24,6 +24,9 @@ public struct MainView: View {
     
     public init() {}
     
+    //TODO: Feature로 이동 예정
+    @State var selectedMatchingDistance: MatchingDistance = .three
+    
     public var body: some View {
         NavigationStack(path: $router.route) {
             ZStack {
