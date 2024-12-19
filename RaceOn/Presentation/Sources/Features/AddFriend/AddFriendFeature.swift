@@ -38,6 +38,8 @@ struct AddFriendFeature {
     
     enum Action: Equatable {
         case onAppear
+        case willEnterForeground
+        case processCopiedText
         case writeLetter(index: Int, text: String)
         case addUpTotalLetter
         case addFriendButtonTapped
@@ -51,6 +53,10 @@ struct AddFriendFeature {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
+            return .send(.processCopiedText)
+        case .willEnterForeground:
+            return .send(.processCopiedText)
+        case .processCopiedText:
             if let copiedText = UIPasteboard.general.string?.uppercased() {
                 print("복사 한 문자 => \(copiedText)")
                 
