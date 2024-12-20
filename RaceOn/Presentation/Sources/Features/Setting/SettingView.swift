@@ -27,8 +27,8 @@ public enum SettingCategory: CaseIterable {
     
     var urlString: String {
         switch self {
-        case .termsOfService: return "https://www.notion.so/heewonp/7eef2b58c96b4256b27cd54ab4333851?pvs=4"
-        case .privacyPolicy: return "https://www.notion.so/heewonp/f67621a3ee514a8580373f51a8e3aba1?pvs=4"
+        case .termsOfService: return "https://heewonp.notion.site/7eef2b58c96b4256b27cd54ab4333851?pvs=4"
+        case .privacyPolicy: return "https://heewonp.notion.site/f67621a3ee514a8580373f51a8e3aba1?pvs=4"
         default: return ""
         }
     }
