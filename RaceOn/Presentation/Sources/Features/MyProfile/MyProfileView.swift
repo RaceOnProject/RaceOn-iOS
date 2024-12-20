@@ -34,10 +34,6 @@ struct MyProfileView: View {
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<MyProfileFeature.State, MyProfileFeature.Action>
     
-    @State var showImagePicker = false
-    @State var selectedImage: UIImage?
-    @State private var isCroppingPresented = false
-    
     let store: StoreOf<MyProfileFeature>
     
     public init(store: StoreOf<MyProfileFeature>) {
@@ -54,10 +50,10 @@ struct MyProfileView: View {
                 
                 Button(action: {
                     viewStore.send(.enterEditMode(isEditing: true))
-                    showImagePicker.toggle()
+                    viewStore.send(.setImagePickerPresented(isPresented: true))
                 }, label: {
                     ZStack(alignment: .bottomTrailing) {
-                        if let image = selectedImage {
+                        if let image = viewStore.state.selectedImage {
                             Image(uiImage: image)
                                 .resizable()
                                 .frame(width: 128, height: 128)
@@ -119,15 +115,34 @@ struct MyProfileView: View {
         .onTapGesture {
             self.endTextEditing()
         }
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $selectedImage, isCroppingPresented: $isCroppingPresented)
+        .sheet(
+            isPresented: viewStore.binding(
+                get: \.showImagePicker,
+                send: { .setImagePickerPresented(isPresented: $0) }
+            )
+        ) {
+            ImagePicker(
+                image: viewStore.binding(
+                    get: \.selectedImage,
+                    send: { .setSelectedImage(image: $0 ?? UIImage()) }
+                ),
+                isCroppingPresented: viewStore.binding(
+                    get: \.isCroppingPresented,
+                    send: .setIsCroppingPresented(isPresented: true)
+                )
+            )
         }
-        .fullScreenCover(isPresented: $isCroppingPresented, content: {
+        .fullScreenCover(
+            isPresented: viewStore.binding(
+                get: \.isCroppingPresented,
+                send: { .setIsCroppingPresented(isPresented: $0) }
+            ),
+            content: {
             ZStack {
                 ColorConstants.gray6
                     .ignoresSafeArea()
                 
-                if let imageToCrop = selectedImage {
+                if let imageToCrop = viewStore.state.selectedImage {
                     SwiftyCropView(
                         imageToCrop: imageToCrop,
                         maskShape: .circle,
@@ -140,10 +155,8 @@ struct MyProfileView: View {
                         )
                     ) { croppedImage in
                         if let croppedImage = croppedImage {
-                            selectedImage = croppedImage
+                            viewStore.send(.setSelectedImage(image: croppedImage))
                         }
-                        
-                        isCroppingPresented = false
                     }
                 }
             }
