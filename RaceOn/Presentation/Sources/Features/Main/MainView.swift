@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import Shared
 
 public enum MatchingDistance {
@@ -15,18 +16,20 @@ public enum MatchingDistance {
 }
 
 public struct MainView: View {
-    public init() {}
+
     @EnvironmentObject var router: Router
-    
     //TODO: Feature로 이동 예정
     @State var selectedMatchingDistance: MatchingDistance = .three
+    @State private var isThrottling = false
+    
+    public init() {}
     
     public var body: some View {
         NavigationStack(path: $router.route) {
             ZStack {
-                //TODO: 배경 그라데이션
-                ColorConstants.gray5
-                    .ignoresSafeArea()
+                ColorConstants.gray6.ignoresSafeArea()
+                
+                gradation
                 
                 VStack(spacing: 0) {
                     topBar
@@ -43,6 +46,43 @@ public struct MainView: View {
             .navigationBarBackButtonHidden(true)
             .navigationDestination(for: Screen.self) { type in
                 router.screenView(type: type)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var gradation: some View {
+        GeometryReader { proxy in
+            switch selectedMatchingDistance {
+            case .three:
+                RadialGradient(
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 223, green: 84, blue: 56, alpha: 0), location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height / 2 )
+                .opacity(0.3)
+                .ignoresSafeArea()
+            case .five:
+                RadialGradient(
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 122, green: 83, blue: 252), location: 0.6),
+                            .init(color: ColorConstants.gray6, location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height * 0.7)
+                .opacity(0.3)
+                .ignoresSafeArea()
+            case .ten:
+                RadialGradient(
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 122, green: 83, blue: 252), location: 0.5),
+                            .init(color: ColorConstants.gray6, location: 1.0)],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: proxy.size.height )
+                .opacity(0.3)
+                .ignoresSafeArea()
             }
         }
     }
@@ -119,7 +159,6 @@ public struct MainView: View {
                     .tag(MatchingDistance.ten)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.easeOut(duration: 0.2), value: selectedMatchingDistance)
             
             HStack {
                 if selectedMatchingDistance != .three {
@@ -127,7 +166,14 @@ public struct MainView: View {
                         .resizable()
                         .frame(width: 30, height: 30)
                         .onTapGesture {
-                            leftTabButtonTapped()
+                            if !isThrottling {
+                                isThrottling = true
+                                leftTabButtonTapped()
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    isThrottling = false
+                                }
+                            }
                         }
                 }
                 
@@ -138,7 +184,14 @@ public struct MainView: View {
                         .resizable()
                         .frame(width: 30, height: 30)
                         .onTapGesture {
-                            rightTabButtonTapped()
+                            if !isThrottling {
+                                isThrottling = true
+                                rightTabButtonTapped()
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    isThrottling = false
+                                }
+                            }
                         }
                 }
             }
@@ -163,33 +216,38 @@ public struct MainView: View {
         .padding(.top, 30)
         .padding(.horizontal, 55)
     }
-    
+}
+
+private extension MainView {
     /// 탭뷰 왼쪽 버튼 탭
     private func leftTabButtonTapped() {
-        switch selectedMatchingDistance {
-        case .five:
-            selectedMatchingDistance = .three
-        case .ten:
-            selectedMatchingDistance = .five
-        default:
-            return
+        withAnimation(.easeOut(duration: 0.2)) {
+            switch selectedMatchingDistance {
+            case .five:
+                selectedMatchingDistance = .three
+                print("3")
+            case .ten:
+                selectedMatchingDistance = .five
+                print("5")
+            default:
+                return
+            }
         }
     }
     
     /// 탭뷰 오른쪽 버튼 탭
     private func rightTabButtonTapped() {
-        switch selectedMatchingDistance {
-        case .three:
-            selectedMatchingDistance = .five
-        case .five:
-            selectedMatchingDistance = .ten
-        default:
-            return
+        withAnimation(.easeOut(duration: 0.2)) {
+            switch selectedMatchingDistance {
+            case .three:
+                selectedMatchingDistance = .five
+                print("5")
+            case .five:
+                selectedMatchingDistance = .ten
+                print("10")
+            default:
+                return
+            }
         }
     }
-}
-
-#Preview {
-    MainView()
-        .environmentObject(Router())
 }
