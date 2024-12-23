@@ -8,21 +8,20 @@
 import Foundation
 import SwiftUI
 
-
 public extension Color {
-    init(r: CGFloat, g: CGFloat, b: CGFloat, a: Double = 1) {
+    init(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: Double = 1) {
         
-        let calculatedRed: Double = r / 255.0
-        let calculatedGreen: Double = g / 255.0
-        let calculatedBlue: Double = b / 255.0
+        let calculatedRed: Double = red / 255.0
+        let calculatedGreen: Double = green / 255.0
+        let calculatedBlue: Double = blue / 255.0
         
-        self.init(red: calculatedRed, green: calculatedGreen, blue: calculatedBlue, opacity: a)
+        self.init(red: calculatedRed, green: calculatedGreen, blue: calculatedBlue, opacity: alpha)
     }
     
-    init(rgb: CGFloat, a: Double = 1) {
+    init(rgb: CGFloat, alpha: Double = 1) {
         
         let calculatedDouble: Double = rgb / 255.0
         
-        self.init(red: calculatedDouble, green: calculatedDouble, blue: calculatedDouble, opacity: a)
+        self.init(red: calculatedDouble, green: calculatedDouble, blue: calculatedDouble, opacity: alpha)
     }
 }

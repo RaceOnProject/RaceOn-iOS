@@ -56,8 +56,8 @@ public struct MainView: View {
             switch selectedMatchingDistance {
             case .three:
                 RadialGradient(
-                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
-                            .init(color: Color(r: 223, g: 84, b: 56, a: 0), location: 1.0)],
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 223, green: 84, blue: 56, alpha: 0), location: 1.0)],
                     center: .bottom,
                     startRadius: 0,
                     endRadius: proxy.size.height / 2 )
@@ -65,8 +65,8 @@ public struct MainView: View {
                 .ignoresSafeArea()
             case .five:
                 RadialGradient(
-                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
-                            .init(color: Color(r: 122, g: 83, b: 252), location: 0.6),
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 122, green: 83, blue: 252), location: 0.6),
                             .init(color: ColorConstants.gray6, location: 1.0)],
                     center: .bottom,
                     startRadius: 0,
@@ -75,8 +75,8 @@ public struct MainView: View {
                 .ignoresSafeArea()
             case .ten:
                 RadialGradient(
-                    stops: [.init(color: Color(r: 223, g: 84, b: 56), location: 0.0),
-                            .init(color: Color(r: 122, g: 83, b: 252), location: 0.5),
+                    stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
+                            .init(color: Color(red: 122, green: 83, blue: 252), location: 0.5),
                             .init(color: ColorConstants.gray6, location: 1.0)],
                     center: .bottom,
                     startRadius: 0,
