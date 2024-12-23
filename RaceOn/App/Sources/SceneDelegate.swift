@@ -27,8 +27,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         
-        print(#function)
-        
         #if DEBUG
             Thread.sleep(forTimeInterval: 0.5)
         #else

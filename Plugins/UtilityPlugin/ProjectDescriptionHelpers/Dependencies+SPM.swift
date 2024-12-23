@@ -15,31 +15,33 @@ public extension TargetDependency {
     static let lottie: TargetDependency = .external(externalDependency: .lottie)
     static let swiftyJson: TargetDependency = .external(externalDependency: .swiftyJson)
     static let composableArchitecture: TargetDependency = .external(externalDependency: .composableArchitecture)
+    static let swiftyCrop: TargetDependency = .external(externalDependency: .swiftyCrop)
 }
 
 
 extension TargetDependency {
     public static func external(externalDependency: ExternalDependency) -> TargetDependency {
-      return .external(name: externalDependency.rawValue)
+        return .external(name: externalDependency.rawValue)
     }
     
     public static func target(name: TargetName) -> TargetDependency {
-      return .target(name: name.rawValue)
+        return .target(name: name.rawValue)
     }
     
     public static func project(target: TargetName, projectPath: ProjectPath) -> TargetDependency {
-      return .project(
-        target: target.rawValue,
-        path: .relativeToRoot(projectPath.rawValue)
-      )
+        return .project(
+            target: target.rawValue,
+            path: .relativeToRoot(projectPath.rawValue)
+        )
     }
 }
 
 
 public enum ExternalDependency: String {
-  case moya = "Moya"
-  case kingfisher = "Kingfisher"
-  case lottie = "Lottie"
-  case swiftyJson = "SwiftyJSON"
-  case composableArchitecture = "ComposableArchitecture"
+    case moya = "Moya"
+    case kingfisher = "Kingfisher"
+    case lottie = "Lottie"
+    case swiftyJson = "SwiftyJSON"
+    case composableArchitecture = "ComposableArchitecture"
+    case swiftyCrop = "SwiftyCrop"
 }

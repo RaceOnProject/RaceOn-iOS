@@ -43,6 +43,7 @@ public struct FriendView: View {
                         FriendInfoView(onKebabTapped: {
                             viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
                         })
+                        .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
                         .listRowBackground(ColorConstants.gray6)
                     }
@@ -80,27 +81,13 @@ public struct FriendView: View {
                 ]
             )
         }
-        .navigationBarItems(
-            leading:
-                Button(action: {
-                    router.pop()
-                }, label: {
-                    ImageConstants.navigationBack
-                })
-                .padding(10), // 터치 영역 확장
-            trailing:
-                Button(action: {
-                    router.push(screen: .addFriend)
-                }, label: {
-                    ImageConstants.addFriend
-                })
-                .padding(10) // 터치 영역 확장
-        )
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("친구 목록")
-                    .font(.regular(17))
-                    .foregroundColor(.white)
+            ToolbarView.leadingItems {
+                router.pop()
+            }
+            ToolbarView.principalItem(title: "친구 목록")
+            ToolbarView.trailingItems(ImageConstants.addFriend) {
+                router.push(screen: .addFriend)
             }
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)

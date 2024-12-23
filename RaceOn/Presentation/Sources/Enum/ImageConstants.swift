@@ -6,6 +6,10 @@
 //
 
 enum ImageConstants {
+    // Common
+    static let chevronCompactRight = PresentationAsset.chevronCompactRight.swiftUIImage
+    static let dividingLine = PresentationAsset.dividingLine.swiftUIImage
+    
     // Splash
     static let splashLogo = PresentationAsset.splashLogo.swiftUIImage
     
@@ -19,6 +23,11 @@ enum ImageConstants {
     static let profile2 = PresentationAsset.profile2.swiftUIImage
     static let profile3 = PresentationAsset.profile3.swiftUIImage
     static let profile4 = PresentationAsset.profile4.swiftUIImage
+    
+    // Setting
+    static let profileDefault = PresentationAsset.profileDefault.swiftUIImage
+    static let copyIcon = PresentationAsset.copyIcon.swiftUIImage
+    static let profileEditIcon = PresentationAsset.profileEditIcon.swiftUIImage
     
     // Navigation
     // LeftItems

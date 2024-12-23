@@ -102,21 +102,15 @@ struct AddFriendView: View {
             focusedField = .first
             viewStore.send(.onAppear)
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            viewStore.send(.willEnterForeground)
+        }
         .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(action: {
-                    router.pop()
-                }, label: {
-                    ImageConstants.navigationBack
-                })
-                .padding(10)
+            ToolbarView.leadingItems {
+                router.pop()
             }
-            ToolbarItem(placement: .principal) {
-                Text("친구 추가")
-                    .font(.regular(17))
-                    .foregroundColor(.white)
-            }
+            ToolbarView.principalItem(title: "친구 추가")
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
         .toastView(

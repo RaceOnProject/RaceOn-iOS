@@ -16,6 +16,8 @@ public enum Screen: Hashable {
     case friend
     case addFriend
     case setting
+    case myProfile
+    case legalNotice(type: SettingCategory)
 }
 
 public final class Router: ObservableObject {
@@ -80,7 +82,31 @@ public final class Router: ObservableObject {
             )
             .environmentObject(self)
         case .setting:
-            SettingView()
+            SettingView(
+                store: Store(
+                    initialState: SettingFeature.State(),
+                    reducer: { SettingFeature()._printChanges() }
+                )
+            )
+            .environmentObject(self)
+        case .myProfile:
+            MyProfileView(
+                store: Store(
+                    initialState: MyProfileFeature.State(),
+                    reducer: { MyProfileFeature()._printChanges() }
+                )
+            )
+            .environmentObject(self)
+        case .legalNotice(let type):
+            switch type {
+            case .termsOfService, .privacyPolicy:
+                LegalNoticeView(
+                    type: type
+                )
+                .environmentObject(self)
+            default: Text("화면 이동 오류")
+            }
+            
         }
     }
 }
