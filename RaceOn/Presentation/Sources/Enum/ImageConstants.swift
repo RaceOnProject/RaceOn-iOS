@@ -13,6 +13,16 @@ enum ImageConstants {
     // Splash
     static let splashLogo = PresentationAsset.splashLogo.swiftUIImage
     
+    // Login
+    static let appleLogin = PresentationAsset.appleLogin.swiftUIImage
+    static let kakaoLogin = PresentationAsset.kakaoLogin.swiftUIImage
+    static let loginCenter = PresentationAsset.loginCenter.swiftUIImage
+    static let loginLogo = PresentationAsset.loginLogo.swiftUIImage
+    static let iconLocation = PresentationAsset.iconLocation.swiftUIImage
+    static let iconActivity = PresentationAsset.iconActivity.swiftUIImage
+    static let iconAlarm = PresentationAsset.iconAlarm.swiftUIImage
+    static let iconGallery = PresentationAsset.iconGallery.swiftUIImage
+    
     // Friend
     static let graphicNothing = PresentationAsset.graphicNothing.swiftUIImage
     static let kebab = PresentationAsset.kebab.swiftUIImage

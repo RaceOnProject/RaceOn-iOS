@@ -19,7 +19,7 @@ enum RootScreen {
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // TODO: 자동 로그인 유무로 분기처리 해야함
-    @State var screen: RootScreen = .main
+    @State var screen: RootScreen = .login
 
     var window: UIWindow?
 
@@ -58,7 +58,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func customView(screen: RootScreen) -> some View {
         switch screen {
         case .login:
-            LoginView().environmentObject(Router())
+            LoginView(
+                store: Store(
+                    initialState: LoginFeature.State(),
+                    reducer: { LoginFeature()._printChanges() }
+                )
+            )
+            .environmentObject(Router())
         case .main:
             MainView().environmentObject(Router())
         }
