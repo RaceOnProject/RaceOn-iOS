@@ -13,6 +13,7 @@ import SwiftUI
 public enum Screen: Hashable {
     case main
     case login
+    case allowAccess
     case friend
     case addFriend
     case setting
@@ -64,7 +65,20 @@ public final class Router: ObservableObject {
         case .main:
             MainView()
         case .login:
-            LoginView()
+            LoginView(
+                store: Store(
+                    initialState: LoginFeature.State(),
+                    reducer: { LoginFeature()._printChanges() }
+                )
+            )
+            .environmentObject(Router())
+        case .allowAccess:
+            AllowAccessView(
+                store: Store(
+                    initialState: AllowAccessFeature.State(),
+                    reducer: { AllowAccessFeature()._printChanges() }
+                )
+            )
         case .friend:
             FriendView(
                 store: Store(
