@@ -7,28 +7,83 @@
 
 import SwiftUI
 
-struct AddFriendTextField: View {
-    enum Constants {
-        static let maxLength = 1 // 최대 글자 수
-    }
-    
+struct AddFriendTextField: UIViewRepresentable {
     @Binding var text: String
-    
-    var body: some View {
-        TextField("", text: $text)
-            .onChange(of: text) { newValue in
-                let upperCased = newValue.uppercased()
-                // 최대 글자 수 초과 시 잘라내기
-                if upperCased.count > Constants.maxLength {
-                    text = String(upperCased.prefix(Constants.maxLength))
+    var onDeleteBackward: (() -> Void)?
+    var maxLength: Int = 1
+
+    func makeUIView(context: Context) -> UITextField {
+        let textField = CustomUITextField()
+        textField.delegate = context.coordinator
+        textField.text = text
+        textField.font = UIFont.boldSystemFont(ofSize: 24)
+        textField.textAlignment = .center
+        textField.textColor = .white
+        textField.backgroundColor = .clear
+        textField.tintColor = .clear // 커서 색을 투명하게 설정
+        textField.addTarget(
+            context.coordinator,
+            action: #selector(Coordinator.textDidChange),
+            for: .editingChanged
+        )
+        textField.onDeleteBackward = onDeleteBackward
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        uiView.text = text
+        
+        // 포커스가 갈 때 커서를 텍스트 끝으로 이동
+        let endPosition = uiView.endOfDocument
+        if uiView.isFirstResponder  {
+            uiView.selectedTextRange = uiView.textRange(from: endPosition, to: endPosition)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: AddFriendTextField
+
+        init(_ parent: AddFriendTextField) {
+            self.parent = parent
+        }
+        
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            // 포커스가 갈 때 커서를 텍스트 끝으로 이동
+            
+            let endPosition = textField.endOfDocument
+            textField.selectedTextRange = textField.textRange(from: endPosition, to: endPosition)
+        }
+
+        @objc func textDidChange(_ textField: UITextField) {
+            // 대문자로 변환 및 텍스트 업데이트
+            if let text = textField.text {
+                let upperCased = text.uppercased()
+                if upperCased.count > parent.maxLength {
+                    if let lastCharacter = upperCased.last {
+                        textField.text = String(lastCharacter)
+                    }
                 } else {
-                    text = upperCased
+                    textField.text = upperCased
                 }
+                parent.text = textField.text ?? ""
             }
-            .font(.bold(24))
-            .foregroundColor(.white)
-            .multilineTextAlignment(.center) // 텍스트 가운데 정렬
-            .frame(height: 66)
+        }
+    }
+}
+
+class CustomUITextField: UITextField {
+    var onDeleteBackward: (() -> Void)?
+    var onCharacterEmitted: ((String) -> Void)? // 특정 문자 방출 클로저
+
+    override func deleteBackward() {
+        if text?.isEmpty ?? true {
+            onDeleteBackward?()
+        }
+        super.deleteBackward()
     }
 }
 
@@ -36,6 +91,10 @@ struct AddFriendTextField: View {
     @State var text: String = ""
     
     return AddFriendTextField(
-        text: $text
+        text: $text,
+        onDeleteBackward: {
+            print("Delete")
+        }
     )
+    .border(.black, width: 1)
 }
