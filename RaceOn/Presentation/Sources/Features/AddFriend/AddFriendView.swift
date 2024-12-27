@@ -54,12 +54,19 @@ struct AddFriendView: View {
                         .frame(width: 10)
                     
                     ForEach(0..<6, id: \.self) { index in
-                            AddFriendTextField(
-                                text: viewStore.binding(
-                                    get: { $0.letters[index] },
-                                    send: { .writeLetter(index: index, text: $0) }
-                                )
-                            )
+                        AddFriendTextField(
+                            text: viewStore.binding(
+                                get: { $0.letters[index] },
+                                send: { .writeLetter(index: index, text: $0) }
+                            ),
+                            onDeleteBackward: {
+                                if index > 0 {
+                                    viewStore.send(.writeLetter(index: index - 1, text: ""))
+                                    focusedField = AddFriendFeature.State.Field(index - 1)
+                                }
+                            }
+                        )
+                            .frame(height: 66)
                             .focused($focusedField, equals: AddFriendFeature.State.Field(index))
                             .overlay(
                                 Rectangle()
