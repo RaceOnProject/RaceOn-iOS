@@ -17,6 +17,7 @@ public extension TargetDependency {
     static let composableArchitecture: TargetDependency = .external(externalDependency: .composableArchitecture)
     static let swiftyCrop: TargetDependency = .external(externalDependency: .swiftyCrop)
     static let kakaoSDK: TargetDependency = .external(externalDependency: .kakaoSDK)
+    static let firebaseMessaging: TargetDependency = .external(externalDependency: .firebaseMessaging)
 }
 
 
@@ -46,4 +47,5 @@ public enum ExternalDependency: String {
     case composableArchitecture = "ComposableArchitecture"
     case swiftyCrop = "SwiftyCrop"
     case kakaoSDK = "KakaoSDK"
+    case firebaseMessaging = "FirebaseMessaging"
 }

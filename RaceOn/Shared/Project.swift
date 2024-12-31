@@ -18,7 +18,8 @@ let project = Project.framework(
         .swiftyJson,
         .composableArchitecture,
         .swiftyCrop,
-        .kakaoSDK
+        .kakaoSDK,
+        .firebaseMessaging
     ],
     resources: Project.Environment.resourceFile
 )

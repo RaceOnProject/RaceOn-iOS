@@ -19,13 +19,15 @@ public extension Project {
         name: String,
         product: Product = .app,
         dependencies: [TargetDependency] = [],
-        resources: ProjectDescription.ResourceFileElements? = nil
+        resources: ProjectDescription.ResourceFileElements? = nil,
+        entitlements: Entitlements? = nil
     ) -> Project {
         return project(
             name: name,
             product: product,
             dependencies: dependencies,
-            resources: resources
+            resources: resources,
+            entitlements: entitlements
         )
     }
 
@@ -51,7 +53,8 @@ public extension Project {
         name: String,
         product: Product,
         dependencies: [TargetDependency] = [],
-        resources: ProjectDescription.ResourceFileElements? = nil
+        resources: ProjectDescription.ResourceFileElements? = nil,
+        entitlements: Entitlements? = nil
     ) -> Project{
         return Project(
             name: name,
@@ -66,6 +69,7 @@ public extension Project {
                     infoPlist: Environment.infoPlist,
                     sources: ["Sources/**"],
                     resources: resources,
+                    entitlements: entitlements,
                     scripts: [.swiftlintScript],
                     dependencies: dependencies
                 ),
