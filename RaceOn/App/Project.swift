@@ -10,7 +10,7 @@ import ProjectDescriptionHelpers
 import UtilityPlugin
 
 let project = Project.app(
-    name: "App",
+    name: Project.Environment.appName,
     dependencies: [
         .Module.domain,
         .Module.presentation,
