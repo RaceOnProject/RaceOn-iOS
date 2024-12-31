@@ -17,5 +17,10 @@ let project = Project.app(
         .Module.data,
         .Module.shared
     ],
-    resources: Project.Environment.resourceFile
+    resources: Project.Environment.resourceFile,
+    entitlements: .dictionary(
+        [
+            "aps-environment" : .string("development"),
+        ]
+    )
 )
