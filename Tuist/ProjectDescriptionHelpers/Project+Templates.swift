@@ -9,8 +9,7 @@ import UtilityPlugin
 ///
 public extension Project {
 
-    static let bundleId = "\(Environment.bundlePrefix).raceOniOS"
-//    public static let teamCode: String = ""
+    static let bundleId = "\(Environment.bundlePrefix)"
     static let version: SettingValue = "1.0.0"
     static let build: SettingValue = "1"
 
