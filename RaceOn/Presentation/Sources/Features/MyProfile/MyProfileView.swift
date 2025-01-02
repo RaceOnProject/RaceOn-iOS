@@ -95,11 +95,15 @@ struct MyProfileView: View {
                     viewStore.send(.copyButtonTapped)
                 }, label: {
                     HStack(spacing: 4) {
-                        Text("GD231E")
-                            .font(.semiBold(15))
-                            .foregroundColor(.white)
-                        
-                        ImageConstants.copyIcon
+                        if let friendCode = viewStore.state.friendCode {
+                            Text(friendCode)
+                                .font(.semiBold(15))
+                                .foregroundColor(.white)
+                            
+                            ImageConstants.copyIcon
+                        } else {
+                            
+                        }
                     }
                 })
                 .padding(14)
