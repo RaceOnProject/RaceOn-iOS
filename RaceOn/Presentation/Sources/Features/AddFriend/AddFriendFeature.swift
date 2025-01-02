@@ -8,9 +8,26 @@
 import ComposableArchitecture
 import SwiftUI
 import Foundation
+import Domain
+import Data
+import Combine
+
+extension DependencyValues {
+    var friendUseCase: FriendUseCaseProtocol {
+        get { self[FriendUseCaseKey.self] }
+        set { self[FriendUseCaseKey.self] = newValue }
+    }
+    
+    private enum FriendUseCaseKey: DependencyKey {
+        static let liveValue: FriendUseCaseProtocol = FriendUseCase(repository: FriendRepositoryImpl())
+    }
+}
 
 @Reducer
 struct AddFriendFeature {
+    
+    @Dependency(\.friendUseCase) var friendUseCase
+    
     struct State: Equatable {
         var toast: Toast?
         
@@ -47,6 +64,9 @@ struct AddFriendFeature {
         case showToast(content: String)
         case dismissToast
         
+        case setAddFriendResponse(AddFriendResponse)
+        case setError(String)
+        
         case noAction
     }
     
@@ -81,12 +101,29 @@ struct AddFriendFeature {
             return .none
         case .addFriendButtonTapped:
             print("\(state.totalLetter)")
-            return .send(.showToast(content: "친구 추가하기 완료(테스트, API 연동 안됨)"))
+//            return .send(.showToast(content: "친구 추가하기 완료(테스트, API 연동 안됨)"))
+            return Effect.publisher {
+                friendUseCase.excute(state.totalLetter)
+                    .receive(on: DispatchQueue.main)
+                    .map {
+                        Action.setAddFriendResponse($0)
+                    }
+                    .catch { error in
+                        Just(Action.setError(error.localizedDescription))
+                    }
+                    .eraseToAnyPublisher()
+            }
         case .showToast(let content):
             state.toast = Toast(content: content)
             return .none
         case .dismissToast:
             state.toast = nil
+            return .none
+        case .setAddFriendResponse(let response):
+            dump(response)
+            return .none
+        case .setError(let error):
+            print(error)
             return .none
         case .noAction:
             return .none
