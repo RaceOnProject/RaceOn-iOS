@@ -34,7 +34,7 @@ extension ImagePicker {
             self.parent = parent
         }
         
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.image = image
                 parent.isCroppingPresented = true // 이미지를 선택한 후 크롭 뷰를 표시

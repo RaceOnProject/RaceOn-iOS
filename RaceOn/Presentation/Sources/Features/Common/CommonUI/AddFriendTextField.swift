@@ -35,7 +35,7 @@ struct AddFriendTextField: UIViewRepresentable {
         
         // 포커스가 갈 때 커서를 텍스트 끝으로 이동
         let endPosition = uiView.endOfDocument
-        if uiView.isFirstResponder  {
+        if uiView.isFirstResponder {
             uiView.selectedTextRange = uiView.textRange(from: endPosition, to: endPosition)
         }
     }
