@@ -7,12 +7,26 @@
 
 import ComposableArchitecture
 import SwiftUI
+import Domain
+import Data
+import Combine
+
+extension DependencyValues {
+    var profileUseCase: ProfileUseCaseProtocol {
+        get { self[ProfileUseCaseKey.self] }
+        set { self[ProfileUseCaseKey.self] = newValue }
+    }
+    
+    private enum ProfileUseCaseKey: DependencyKey {
+        static let liveValue: ProfileUseCaseProtocol = ProfileUseCase(repository: ProfileRepositoryImpl())
+    }
+}
 
 @Reducer
 struct MyProfileFeature {
     struct State: Equatable {
         var nickname: String = ""
-        var friendCode: String = "GD231E"
+        var friendCode: String?
         var isEditing: Bool = false
         
         var showImagePicker = false
@@ -31,13 +45,28 @@ struct MyProfileFeature {
         case setImagePickerPresented(isPresented: Bool)
         case setSelectedImage(image: UIImage)
         case setIsCroppingPresented(isPresented: Bool)
+        
+        case setNickname(String)  // nickname을 업데이트하는 액션
+        case setError(String)  // 오류 메시지를 설정하는 액션
     }
+    
+    @Dependency(\.profileUseCase) var profileUseCase
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
             state.nickname = "random name"
-            return .none
+            return Effect.publisher {
+                profileUseCase.fetchMemberCode()
+                    .receive(on: DispatchQueue.main)
+                    .map {
+                        Action.setNickname($0.data.memberCode)
+                    }
+                    .catch { error in
+                        Just(Action.setError(error.localizedDescription))
+                    }
+                    .eraseToAnyPublisher()
+            }
         case .copyButtonTapped:
             UIPasteboard.general.string = state.friendCode
             state.toast = Toast(content: "내 코드가 복사되었어요")
@@ -56,6 +85,13 @@ struct MyProfileFeature {
             return .none
         case .setIsCroppingPresented(let isPresented):
             state.isCroppingPresented = isPresented
+            return .none
+            
+        case .setNickname(let code):
+            state.friendCode = code
+            return .none
+        case .setError(let errorMessage):
+            state.friendCode = errorMessage // 오류 메시지를 상태에 반영 (예시)
             return .none
         }
     }
