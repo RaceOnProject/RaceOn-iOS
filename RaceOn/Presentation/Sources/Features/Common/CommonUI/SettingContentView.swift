@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingContentView: View {
     
     var type: SettingCategory
-    @State var competitionInvites: Bool = true
+    @Binding var competitionInvites: Bool
     @Binding var appVersion: String?
     
     var body: some View {
@@ -51,9 +51,11 @@ struct SettingContentView: View {
 
 #Preview {
     @State var appVersion: String? = "1.0.0"
+    @State var competitionInvites: Bool = true
     
     return SettingContentView(
         type: .appInfo,
+        competitionInvites: $competitionInvites,
         appVersion: $appVersion
     )
 }

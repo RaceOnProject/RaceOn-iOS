@@ -92,6 +92,10 @@ public struct SettingView: View {
                     }, label: {
                         SettingContentView(
                             type: settings,
+                            competitionInvites: viewStore.binding(
+                                get: \.competitionInvites,
+                                send: .competitionInvitesToggled
+                            ),
                             appVersion: viewStore.binding(
                                 get: \.currentVersion,
                                 send: .noAction
@@ -138,6 +142,9 @@ public struct SettingView: View {
         }
         .onAppear {
             viewStore.send(.onAppear)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            viewStore.send(.willEnterForeground)
         }
         .alert(item: viewStore.binding(
             get: \.alertInfo,
