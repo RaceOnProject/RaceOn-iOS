@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseMessaging
+import Shared
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -61,6 +62,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken else { return }
+        UserDefaultsManager.shared.set(fcmToken, forKey: .FCMToken)
+        
         print("FCM 토큰: \(fcmToken)")
     }
 }
