@@ -36,4 +36,23 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
         }
         .eraseToAnyPublisher()
     }
+    
+    public func fetchFriendList() -> AnyPublisher<FriendResponse, any Error> {
+        Future { promise in
+            self.provider.request(.fetchFriendList) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let result = try JSONDecoder().decode(FriendResponse.self, from: response.data)
+                        promise(.success(result))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }

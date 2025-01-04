@@ -9,7 +9,8 @@ import ComposableArchitecture
 import Combine
 
 public protocol FriendUseCaseProtocol {
-    func excute(_ code: String) -> AnyPublisher<AddFriendResponse, Error>
+    func sendFriendCode(_ code: String) -> AnyPublisher<AddFriendResponse, Error>
+    func fetchFriendList() -> AnyPublisher<FriendResponse, Error>
 }
 
 public final class FriendUseCase: FriendUseCaseProtocol {
@@ -19,7 +20,11 @@ public final class FriendUseCase: FriendUseCaseProtocol {
         self.repository = repository
     }
     
-    public func excute(_ code: String) -> AnyPublisher<AddFriendResponse, Error> {
+    public func sendFriendCode(_ code: String) -> AnyPublisher<AddFriendResponse, Error> {
         repository.sendFriendCode(code)
+    }
+    
+    public func fetchFriendList() -> AnyPublisher<FriendResponse, any Error> {
+        repository.fetchFriendList()
     }
 }

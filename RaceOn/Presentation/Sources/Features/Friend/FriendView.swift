@@ -27,7 +27,7 @@ public struct FriendView: View {
             ColorConstants.gray6
                 .ignoresSafeArea()
             
-            if viewStore.tData.isEmpty {
+            if viewStore.friendList.isEmpty {
                 VStack {
                     ImageConstants.graphicNothing
                         .resizable()
@@ -39,10 +39,12 @@ public struct FriendView: View {
                 }
             } else {
                 List {
-                    ForEach(viewStore.tData) { _ in
-                        FriendInfoView(onKebabTapped: {
-                            viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
-                        })
+                    ForEach(viewStore.friendList) { friend in
+                        FriendInfoView(
+                            friend: friend,
+                            onKebabTapped: {
+                                viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
+                            })
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
                         .listRowBackground(ColorConstants.gray6)
@@ -57,7 +59,7 @@ public struct FriendView: View {
             router.screenView(type: type)
         }
         .onAppear {
-            viewStore.send(.testAction)
+            viewStore.send(.onAppear)
         }
         .actionSheet(isPresented: Binding(
             get: { viewStore.state.isActionSheetPresented },

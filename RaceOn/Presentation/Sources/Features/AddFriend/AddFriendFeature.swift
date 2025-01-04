@@ -103,7 +103,7 @@ struct AddFriendFeature {
             print("\(state.totalLetter)")
 //            return .send(.showToast(content: "친구 추가하기 완료(테스트, API 연동 안됨)"))
             return Effect.publisher {
-                friendUseCase.excute(state.totalLetter)
+                friendUseCase.sendFriendCode(state.totalLetter)
                     .receive(on: DispatchQueue.main)
                     .map {
                         Action.setAddFriendResponse($0)

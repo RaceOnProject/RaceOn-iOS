@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import Domain
+import Shared
 
 struct FriendInfoView: View {
+    var friend: Friend
     var onKebabTapped: () -> Void // 버튼이 눌렸을 때 실행될 클로저
 
     var body: some View {
@@ -25,20 +28,22 @@ struct FriendInfoView: View {
                         .frame(width: 48, height: 48)
                         .clipShape(Circle()) // 이미지를 동그랗게 클리핑
                     
-                    Circle()
-                        .frame(width: 12, height: 12)
-                        .foregroundColor(ColorConstants.primaryNormal)
-                        .overlay( // 테두리를 추가
-                            Circle()
-                                .stroke(Color.clear, lineWidth: 2) // 테두리 색상과 두께 설정
-                        )
+                    if friend.playing {
+                        Circle()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor(ColorConstants.primaryNormal)
+                            .overlay( // 테두리를 추가
+                                Circle()
+                                    .stroke(Color.clear, lineWidth: 2) // 테두리 색상과 두께 설정
+                            )
+                    }
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("김지호")
+                    Text(friend.friendNickname)
                         .font(.semiBold(17))
                         .foregroundColor(.white)
-                    Text("접속 중")
+                    Text(timeAgo(from: friend.lastActiveAt))
                         .font(.regular(14))
                         .foregroundColor(ColorConstants.gray4)
                 }
@@ -58,9 +63,10 @@ struct FriendInfoView: View {
         }
     }
 }
-
-#Preview {
-    FriendInfoView {
-        print("Kekebab Touch")
-    }
-}
+//
+//#Preview {
+//    FriendInfoView(
+//        friend: Friend(,
+//        onKebabTapped: <#T##() -> Void#>
+//    )
+//}
