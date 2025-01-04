@@ -10,6 +10,7 @@ import Foundation
 
 public enum FriendAPI {
     case sendFriendCode(code: String)
+    case fetchFriendList
 }
 
 extension FriendAPI: TargetType {
@@ -19,13 +20,14 @@ extension FriendAPI: TargetType {
     
     public var path: String {
         switch self {
-        case .sendFriendCode: return "/friends"
+        case .sendFriendCode, .fetchFriendList: return "/friends"
         }
     }
     
     public var method: Moya.Method {
         switch self {
         case .sendFriendCode: return .post
+        case .fetchFriendList: return .get
         }
     }
     
@@ -38,13 +40,15 @@ extension FriendAPI: TargetType {
                 ],
                 encoding: JSONEncoding.default
             )
+        case .fetchFriendList:
+            return .requestPlain
         }
     }
     
     public var headers: [String: String]? {
         return [
             "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IkFDQ0VTU19UT0tFTiIsInN1YiI6IjIiLCJleHAiOjE3MzU4MDM2Mzh9.JTqmd6Z3mZH859tUpLttQm88fJQmCSMd43pZeB2jFAeQqVCB5Jw7YosHvr8WNlG_m3qZOfrUOA1a9_yc2oAknQ"
+            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IkFDQ0VTU19UT0tFTiIsInN1YiI6IjEiLCJleHAiOjE3MzYwMDc4MzB9.1Tx4QlCMti7cNosFDS6x5ehjiYQ3_e_1Xvp2Jk72-CxSgGsVBPFbDCA6odIspDBnEMWp3ey-M_uTlcAaFqU8vQ"
         ]
     }
 }
