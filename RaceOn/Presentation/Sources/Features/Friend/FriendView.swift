@@ -61,6 +61,9 @@ public struct FriendView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
+        .onDisappear {
+            viewStore.send(.onDisappear)
+        }
         .actionSheet(isPresented: Binding(
             get: { viewStore.state.isActionSheetPresented },
             set: { newValue in
