@@ -17,7 +17,8 @@ let project = Project.framework(
         .lottie,
         .swiftyJson,
         .composableArchitecture,
-        .swiftyCrop
+        .swiftyCrop,
+        .kakaoSDK
     ],
     resources: Project.Environment.resourceFile
 )

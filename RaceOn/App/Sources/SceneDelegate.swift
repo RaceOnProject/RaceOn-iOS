@@ -10,6 +10,7 @@ import SwiftUI
 
 import Presentation
 import ComposableArchitecture
+import KakaoSDKCommon
 
 enum RootScreen {
     case login
@@ -38,10 +39,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
  
         window?.makeKeyAndVisible()
         
-        let view = LoginView()
+        let view = customView(screen: screen)
         
         let vc = UIHostingController(rootView: view)
         window?.rootViewController = vc
+        
+        
+        KakaoSDK.initSDK(appKey: "8d7586b19e44d18f82eb280b3e57bae1")
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}
