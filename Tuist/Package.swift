@@ -11,7 +11,8 @@ let packageSettings = PackageSettings(
     "Lottie": .framework,
     "SwiftyJSON": .framework,
     "ComposableArchitecture": .framework,
-    "SwiftyCrop": .framework
+    "SwiftyCrop": .framework,
+    "KakaoSDK": .framework
   ]
 )
 #endif
@@ -24,6 +25,7 @@ let package = Package(
     .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.3"),
     .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.9.3"),
-    .package(url: "https://github.com/benedom/SwiftyCrop", branch: "master")
+    .package(url: "https://github.com/benedom/SwiftyCrop", branch: "master"),
+    .package(url: "https://github.com/kakao/kakao-ios-sdk", branch: "master")
   ]
 )
