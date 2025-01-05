@@ -10,11 +10,17 @@ import Domain
 import ComposableArchitecture
 import Foundation
 import Combine
+import Alamofire
 
 public final class FriendRepositoryImpl: FriendRepositoryProtocol {
     private let provider: MoyaProvider<FriendAPI>
     
-    public init(provider: MoyaProvider<FriendAPI> = MoyaProvider<FriendAPI>(plugins: [NetworkLoggerPlugin()])) {
+    public init(provider: MoyaProvider<FriendAPI> = MoyaProvider<FriendAPI>(
+            session: Session(interceptor: APIRequestRetrier()), // AuthInterceptor를 Session에 추가
+            plugins: [
+                NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
+            ]
+        )) {
         self.provider = provider
     }
     
@@ -24,8 +30,8 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
                 switch result {
                 case .success(let response):
                     do {
-                        let result = try JSONDecoder().decode(AddFriendResponse.self, from: response.data)
-                        promise(.success(result))
+                        let response = try JSONDecoder().decode(AddFriendResponse.self, from: response.data)
+                        promise(.success(response))
                     } catch {
                         promise(.failure(error))
                     }
@@ -43,8 +49,8 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
                 switch result {
                 case .success(let response):
                     do {
-                        let result = try JSONDecoder().decode(FriendResponse.self, from: response.data)
-                        promise(.success(result))
+                        let response = try JSONDecoder().decode(FriendResponse.self, from: response.data)
+                        promise(.success(response))
                     } catch {
                         promise(.failure(error))
                     }

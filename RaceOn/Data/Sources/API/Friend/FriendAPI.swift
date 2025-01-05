@@ -7,6 +7,7 @@
 
 import Moya
 import Foundation
+import Shared
 
 public enum FriendAPI {
     case sendFriendCode(code: String)
@@ -45,10 +46,14 @@ extension FriendAPI: TargetType {
         }
     }
     
+    public var validationType: ValidationType {
+        return .successCodes
+    }
+    
     public var headers: [String: String]? {
         return [
             "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IkFDQ0VTU19UT0tFTiIsInN1YiI6IjEiLCJleHAiOjE3MzYwMDc4MzB9.1Tx4QlCMti7cNosFDS6x5ehjiYQ3_e_1Xvp2Jk72-CxSgGsVBPFbDCA6odIspDBnEMWp3ey-M_uTlcAaFqU8vQ"
+            "Authorization": "Bearer \(UserDefaultsManager.shared.get(forKey: .accessToken) ?? "")"
         ]
     }
 }

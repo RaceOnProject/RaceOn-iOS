@@ -7,6 +7,7 @@
 
 import Moya
 import Foundation
+import Shared
 
 public enum ProfileAPI {
     case fetchMemberCode
@@ -35,10 +36,14 @@ extension ProfileAPI: TargetType {
         }
     }
     
+    public var validationType: ValidationType {
+        return .successCodes
+    }
+    
     public var headers: [String: String]? {
         return [
             "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IkFDQ0VTU19UT0tFTiIsInN1YiI6IjEiLCJleHAiOjE3MzU3OTU2MDh9.cK7E5nNekusGWAFPkpg_XCWhHzMY_NzAN2DL_zujHQrh8K_L_Cq6vslTL-S1ulANx6u4bpJtFlDRb5ukVtyQbA"
+            "Authorization": "Bearer \(UserDefaultsManager.shared.get(forKey: .accessToken) ?? "")"
         ]
     }
 }

@@ -9,7 +9,10 @@ import Foundation
 
 // UserDefaults에 저장되는 키를 정의하는 열거형
 public enum UserDefaultsKey: String {
+    // Auth
     case FCMToken
+    case accessToken
+    case refreshToken
 }
 
 // UserDefaults를 관리하는 클래스

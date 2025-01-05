@@ -22,7 +22,7 @@ public struct FriendFeature {
     public init() {}
     
     public struct State: Equatable {
-        var friendList: [Friend] = []
+        var friendList: [Friend]?
         var isActionSheetPresented: Bool = false
         
         var errorMessage: String?
