@@ -120,7 +120,6 @@ struct AddFriendFeature {
             state.toast = nil
             return .none
         case .setAddFriendResponse(let response):
-            dump(response)
             return .none
         case .setError(let error):
             print(error)

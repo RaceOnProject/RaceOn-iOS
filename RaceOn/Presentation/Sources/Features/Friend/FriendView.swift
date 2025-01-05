@@ -27,7 +27,35 @@ public struct FriendView: View {
             ColorConstants.gray6
                 .ignoresSafeArea()
             
-            if viewStore.friendList.isEmpty {
+            if let friendList = viewStore.friendList {
+                if friendList.isEmpty {
+                    VStack {
+                        ImageConstants.graphicNothing
+                            .resizable()
+                            .frame(width: 143.97, height: 180)
+                            .padding(.bottom, 16)
+                        Text(Constants.friendlessDescription)
+                            .font(.semiBold(16))
+                            .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                    }
+                } else {
+                    List {
+                        ForEach(friendList) { friend in
+                            FriendInfoView(
+                                friend: friend,
+                                onKebabTapped: {
+                                    viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
+                                })
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
+                            .listRowBackground(ColorConstants.gray6)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden) // 기본 배경색 숨기기
+                    .background(ColorConstants.gray6)
+                }
+            } else {
                 VStack {
                     ImageConstants.graphicNothing
                         .resizable()
@@ -37,22 +65,6 @@ public struct FriendView: View {
                         .font(.semiBold(16))
                         .foregroundColor(PresentationAsset.gray4.swiftUIColor)
                 }
-            } else {
-                List {
-                    ForEach(viewStore.friendList) { friend in
-                        FriendInfoView(
-                            friend: friend,
-                            onKebabTapped: {
-                                viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
-                            })
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
-                        .listRowBackground(ColorConstants.gray6)
-                    }
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden) // 기본 배경색 숨기기
-                .background(ColorConstants.gray6)
             }
         }
         .navigationDestination(for: Screen.self) { type in
