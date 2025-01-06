@@ -171,7 +171,6 @@ struct MyProfileView: View {
                 send: .dismissToast
             )
         )
-        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()
@@ -189,6 +188,8 @@ struct MyProfileView: View {
             }
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

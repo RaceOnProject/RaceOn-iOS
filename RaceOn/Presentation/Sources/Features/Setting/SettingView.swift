@@ -159,7 +159,6 @@ public struct SettingView: View {
                 secondaryButton: alertInfo.alert.cancelButton
             )
         }
-        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()
@@ -167,6 +166,8 @@ public struct SettingView: View {
             ToolbarView.principalItem(title: "설정")
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

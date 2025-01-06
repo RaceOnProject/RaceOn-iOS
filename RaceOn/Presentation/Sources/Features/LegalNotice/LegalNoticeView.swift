@@ -38,7 +38,6 @@ struct LegalNoticeView: View {
             
             // 웹 페이지를 로드하는 WebView 사용
             WebView(url: URL(string: type.urlString)!)
-                .navigationBarBackButtonHidden()
                 .toolbar {
                     ToolbarView.leadingItems {
                         router.pop()
@@ -46,6 +45,8 @@ struct LegalNoticeView: View {
                     ToolbarView.principalItem(title: type.title)
                 }
                 .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
+                .navigationBarBackButtonHidden()
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

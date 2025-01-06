@@ -108,7 +108,8 @@ public struct FriendView: View {
             }
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
