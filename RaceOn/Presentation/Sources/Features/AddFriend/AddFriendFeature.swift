@@ -12,17 +12,6 @@ import Domain
 import Data
 import Combine
 
-extension DependencyValues {
-    var friendUseCase: FriendUseCaseProtocol {
-        get { self[FriendUseCaseKey.self] }
-        set { self[FriendUseCaseKey.self] = newValue }
-    }
-    
-    private enum FriendUseCaseKey: DependencyKey {
-        static let liveValue: FriendUseCaseProtocol = FriendUseCase(repository: FriendRepositoryImpl())
-    }
-}
-
 @Reducer
 struct AddFriendFeature {
     

@@ -16,17 +16,6 @@ struct AlertInfo: Equatable, Identifiable {
     let alert: AlertType
 }
 
-struct NotificationUseCaseKey: DependencyKey {
-    static let liveValue: CheckPushStatusUseCaseProtocol = CheckPushStatusUseCase(notificationRepository: NotificationRepositoryImpl())
-}
-
-extension DependencyValues {
-    var notificationUseCase: CheckPushStatusUseCaseProtocol {
-        get { self[NotificationUseCaseKey.self] }
-        set { self[NotificationUseCaseKey.self] = newValue }
-    }
-}
-
 @Reducer
 public struct SettingFeature {
     
