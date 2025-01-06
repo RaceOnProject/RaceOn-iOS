@@ -24,13 +24,13 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
         self.provider = provider
     }
     
-    public func sendFriendCode(_ code: String) -> AnyPublisher<AddFriendResponse, any Error> {
+    public func sendFriendCode(_ code: String) -> AnyPublisher<CommonResponse, any Error> {
         Future { promise in
             self.provider.request(.sendFriendCode(code: code)) { result in
                 switch result {
                 case .success(let response):
                     do {
-                        let response = try JSONDecoder().decode(AddFriendResponse.self, from: response.data)
+                        let response = try JSONDecoder().decode(CommonResponse.self, from: response.data)
                         promise(.success(response))
                     } catch {
                         promise(.failure(error))
@@ -50,6 +50,44 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
                 case .success(let response):
                     do {
                         let response = try JSONDecoder().decode(FriendResponse.self, from: response.data)
+                        promise(.success(response))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func reportFriend(memberId: Int) -> AnyPublisher<CommonResponse, any Error> {
+        Future { promise in
+            self.provider.request(.reportFriend(memberId: memberId)) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let response = try JSONDecoder().decode(CommonResponse.self, from: response.data)
+                        promise(.success(response))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func unFriend(memberId: Int) -> AnyPublisher<Domain.CommonResponse, any Error> {
+        Future { promise in
+            self.provider.request(.unFriend(memberId: memberId)) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let response = try JSONDecoder().decode(CommonResponse.self, from: response.data)
                         promise(.success(response))
                     } catch {
                         promise(.failure(error))

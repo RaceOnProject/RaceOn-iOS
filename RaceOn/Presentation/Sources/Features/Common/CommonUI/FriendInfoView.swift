@@ -12,7 +12,7 @@ import Kingfisher
 
 struct FriendInfoView: View {
     var friend: Friend
-    var onKebabTapped: () -> Void // 버튼이 눌렸을 때 실행될 클로저
+    var onKebabTapped: (Friend) -> Void // 버튼이 눌렸을 때 실행될 클로저
 
     var body: some View {
         ZStack {
@@ -55,7 +55,7 @@ struct FriendInfoView: View {
                 Spacer()
                 
                 Button(action: {
-                    onKebabTapped()
+                    onKebabTapped(friend)
                 }, label: {
                     ImageConstants.kebab
                         .resizable()

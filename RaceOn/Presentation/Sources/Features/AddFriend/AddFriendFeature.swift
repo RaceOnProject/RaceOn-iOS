@@ -64,7 +64,7 @@ struct AddFriendFeature {
         case showToast(content: String)
         case dismissToast
         
-        case setAddFriendResponse(AddFriendResponse)
+        case setAddFriendResponse(CommonResponse)
         case setError(String)
         
         case noAction
