@@ -39,6 +39,7 @@ public final class APIRequestRetrier: Retrier {
         provider.request(.refreshAccessToken(refreshToken: refreshToken)) { [weak self] result in
             switch result {
             case .success(let response):
+                print("🔥 토큰 재발급")
                 do {
                     let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: response.data)
                     self?.tokenManager.saveTokens(accessToken: tokenResponse.data.accessToken, refreshToken: tokenResponse.data.refreshToken)
@@ -46,6 +47,7 @@ public final class APIRequestRetrier: Retrier {
                     if let urlRequest = request.request {
                         // Retry the request with the updated access token
                         session.request(urlRequest).response { _ in
+                            print("재요청 성공")
                             completion(.doNotRetry)
                         }
                     }

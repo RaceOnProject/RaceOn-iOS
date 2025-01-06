@@ -10,7 +10,7 @@ import Foundation
 import Shared
 
 public enum MemberAPI {
-    case fetchMemberCode(memberId: Int)
+    case fetchMemberInfo(memberId: Int)
     case deleteAccount(memberId: Int)
 }
 
@@ -21,23 +21,21 @@ extension MemberAPI: TargetType {
     
     public var path: String {
         switch self {
-        case .fetchMemberCode(let memberId): return "/members/\(memberId)/member-code"
-        case .deleteAccount(let memberId): return "/members/\(memberId)"
+        case .fetchMemberInfo(let memberId), .deleteAccount(let memberId): 
+            return "/members/\(memberId)"
         }
     }
     
     public var method: Moya.Method {
         switch self {
-        case .fetchMemberCode: return .get
+        case .fetchMemberInfo: return .get
         case .deleteAccount: return .delete
         }
     }
     
     public var task: Task {
         switch self {
-        case .fetchMemberCode:
-            return .requestPlain
-        case .deleteAccount(let memberId):
+        case .fetchMemberInfo, .deleteAccount:
             return .requestPlain
         }
     }

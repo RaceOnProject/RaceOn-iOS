@@ -9,7 +9,7 @@ import ComposableArchitecture
 import Combine
 
 public protocol MemberUseCaseProtocol {
-    func fetchMemberCode(memberId: Int) -> AnyPublisher<MemberCode, Error>
+    func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error>
     func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, Error>
 }
 
@@ -20,8 +20,8 @@ public final class MemberUseCase: MemberUseCaseProtocol {
         self.repository = repository
     }
     
-    public func fetchMemberCode(memberId: Int) -> AnyPublisher<MemberCode, Error> {
-        repository.fetchMemberCode(memberId: memberId)
+    public func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error> {
+        repository.fetchMemberInfo(memberId: memberId)
     }
     
     public func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, any Error> {
