@@ -15,7 +15,8 @@ import Shared
 @Reducer
 struct MyProfileFeature {
     struct State: Equatable {
-        var nickname: String = ""
+        var memberInfo: MemberInfo?
+        
         var friendCode: String?
         var isEditing: Bool = false
         
@@ -36,8 +37,10 @@ struct MyProfileFeature {
         case setSelectedImage(image: UIImage)
         case setIsCroppingPresented(isPresented: Bool)
         
-        case setNickname(String)  // nickname을 업데이트하는 액션
+        case setMemberInfo(MemberInfo)  // nickname을 업데이트하는 액션
         case setError(String)  // 오류 메시지를 설정하는 액션
+        
+        case noAction
     }
     
     @Dependency(\.memberUseCase) var memberUseCase
@@ -45,17 +48,15 @@ struct MyProfileFeature {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.nickname = "random name"
-            
 //            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
             // TODO: TEST 용(임시 로그인)
             let memberId: Int = 1
             
             return Effect.publisher {
-                memberUseCase.fetchMemberCode(memberId: memberId)
+                memberUseCase.fetchMemberInfo(memberId: memberId)
                     .receive(on: DispatchQueue.main)
                     .map {
-                        Action.setNickname($0.data.memberCode)
+                        Action.setMemberInfo($0)
                     }
                     .catch { error in
                         Just(Action.setError(error.localizedDescription))
@@ -63,7 +64,8 @@ struct MyProfileFeature {
                     .eraseToAnyPublisher()
             }
         case .copyButtonTapped:
-            UIPasteboard.general.string = state.friendCode
+            guard let memberInfo = state.memberInfo else { return .none }
+            UIPasteboard.general.string = memberInfo.data.memberCode
             state.toast = Toast(content: "내 코드가 복사되었어요")
             return .none
         case .enterEditMode(let isEditing):
@@ -82,11 +84,16 @@ struct MyProfileFeature {
             state.isCroppingPresented = isPresented
             return .none
             
-        case .setNickname(let code):
-            state.friendCode = code
+        case .setMemberInfo(let memberInfo):
+            dump(memberInfo)
+            state.memberInfo = memberInfo
             return .none
         case .setError(let errorMessage):
-            state.friendCode = errorMessage // 오류 메시지를 상태에 반영 (예시)
+            // TODO: 에러 처리
+//            state.friendCode = errorMessage // 오류 메시지를 상태에 반영 (예시)
+            return .none
+            
+        case .noAction:
             return .none
         }
     }

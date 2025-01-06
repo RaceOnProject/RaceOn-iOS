@@ -24,13 +24,13 @@ public final class MemberRepositoryImpl: MemberRepositoryProtocol {
         self.provider = provider
     }
     
-    public func fetchMemberCode(memberId: Int) -> AnyPublisher<MemberCode, Error> {
+    public func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error> {
         Future { promise in
-            self.provider.request(.fetchMemberCode(memberId: memberId)) { result in
+            self.provider.request(.fetchMemberInfo(memberId: memberId)) { result in
                 switch result {
                 case .success(let response):
                     do {
-                        let response = try JSONDecoder().decode(MemberCode.self, from: response.data)
+                        let response = try JSONDecoder().decode(MemberInfo.self, from: response.data)
                         promise(.success(response))
                     } catch {
                         promise(.failure(error))

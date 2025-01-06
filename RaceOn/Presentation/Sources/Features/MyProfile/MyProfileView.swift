@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import SwiftyCrop
+import Kingfisher
 
 enum MyProfileTrailing {
     case edit
@@ -53,16 +54,33 @@ struct MyProfileView: View {
                     viewStore.send(.setImagePickerPresented(isPresented: true))
                 }, label: {
                     ZStack(alignment: .bottomTrailing) {
-                        if let image = viewStore.state.selectedImage {
+                        if let image = viewStore.state.selectedImage { // 이미지 select 했을때
                             Image(uiImage: image)
                                 .resizable()
                                 .frame(width: 128, height: 128)
                                 .clipShape(.circle)
                         } else {
-                            ImageConstants.profileDefault
-                                .resizable()
-                                .frame(width: 128, height: 128)
+                            if let memberInfo = viewStore.state.memberInfo { // 서버 통신 후 memberInfo가 nil이 아니면
+                                if let url = URL(string: memberInfo.data.profileImageUrl) {
+                                    KFImage(url)
+                                        .placeholder { progress in
+                                            ProgressView(progress)
+                                        }
+                                        .resizable()
+                                        .frame(width: 128, height: 128)
+                                        .clipShape(.circle)
+                                } else { // URL이 유효하지 않을 때
+                                    ImageConstants.profileDefault
+                                        .resizable()
+                                        .frame(width: 128, height: 128)
+                                }
+                            } else { // 서버 통신 실패 시
+                                ImageConstants.profileDefault
+                                    .resizable()
+                                    .frame(width: 128, height: 128)
+                            }
                         }
+                        
                         ImageConstants.profileEditIcon
                             .frame(width: 36, height: 36)
                     }
@@ -70,45 +88,53 @@ struct MyProfileView: View {
                 
                 Spacer().frame(height: 20)
                 
-                if viewStore.state.isEditing {
-                    TextField(
-                        "",
-                        text: $nickname,
-                        prompt: Text(viewStore.state.nickname)
-                            .font(.semiBold(20))
-                            .foregroundColor(ColorConstants.gray4)
-                    )
-                    .font(.semiBold(20))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .frame(height: 28)
-                } else {
-                    Text(viewStore.state.nickname)
+                if let memberInfo = viewStore.state.memberInfo {
+                    if viewStore.state.isEditing {
+                        TextField(
+                            "",
+                            text: viewStore.binding(
+                                get: { _ in viewStore.state.memberInfo?.data.nickname ?? "" },
+                                send: .noAction
+                            ),
+                            prompt: Text(memberInfo.data.nickname)
+                                .font(.semiBold(20))
+                                .foregroundColor(ColorConstants.gray4)
+                        )
                         .font(.semiBold(20))
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                         .frame(height: 28)
+                    } else {
+                        Text(memberInfo.data.nickname)
+                            .font(.semiBold(20))
+                            .foregroundColor(.white)
+                            .frame(height: 28)
+                    }
+                } else {
+                    // TODO: 서버에서 memberInfo를 받아올수 없음, 기획에 문의
                 }
                 
                 Spacer().frame(height: 12)
                 
-                Button(action: {
-                    viewStore.send(.copyButtonTapped)
-                }, label: {
-                    HStack(spacing: 4) {
-                        if let friendCode = viewStore.state.friendCode {
-                            Text(friendCode)
+                
+                if let memberInfo = viewStore.state.memberInfo {
+                    Button(action: {
+                        viewStore.send(.copyButtonTapped)
+                    }, label: {
+                        HStack(spacing: 4) {
+                            Text(memberInfo.data.memberCode)
                                 .font(.semiBold(15))
                                 .foregroundColor(.white)
                             
                             ImageConstants.copyIcon
-                        } else {
-                            
                         }
-                    }
-                })
-                .padding(14)
-                .background(ColorConstants.gray5)
-                .cornerRadius(30)
+                    })
+                    .padding(14)
+                    .background(ColorConstants.gray5)
+                    .cornerRadius(30)
+                } else {
+                    // TODO: 서버에서 memberInfo를 받아올수 없음, 기획에 문의
+                }
                 
                 Spacer()
             }
@@ -142,29 +168,29 @@ struct MyProfileView: View {
                 send: { .setIsCroppingPresented(isPresented: $0) }
             ),
             content: {
-            ZStack {
-                ColorConstants.gray6
-                    .ignoresSafeArea()
-                
-                if let imageToCrop = viewStore.state.selectedImage {
-                    SwiftyCropView(
-                        imageToCrop: imageToCrop,
-                        maskShape: .circle,
-                        configuration: SwiftyCropConfiguration(
-                            texts: SwiftyCropConfiguration.Texts(
-                                cancelButton: "취소",
-                                interactionInstructions: "프로필 수정",
-                                saveButton: "확인"
+                ZStack {
+                    ColorConstants.gray6
+                        .ignoresSafeArea()
+                    
+                    if let imageToCrop = viewStore.state.selectedImage {
+                        SwiftyCropView(
+                            imageToCrop: imageToCrop,
+                            maskShape: .circle,
+                            configuration: SwiftyCropConfiguration(
+                                texts: SwiftyCropConfiguration.Texts(
+                                    cancelButton: "취소",
+                                    interactionInstructions: "프로필 수정",
+                                    saveButton: "확인"
+                                )
                             )
-                        )
-                    ) { croppedImage in
-                        if let croppedImage = croppedImage {
-                            viewStore.send(.setSelectedImage(image: croppedImage))
+                        ) { croppedImage in
+                            if let croppedImage = croppedImage {
+                                viewStore.send(.setSelectedImage(image: croppedImage))
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
         .toastView(
             toast: viewStore.binding(
                 get: \.toast,
