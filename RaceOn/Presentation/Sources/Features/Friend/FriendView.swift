@@ -43,8 +43,8 @@ public struct FriendView: View {
                         ForEach(friendList) { friend in
                             FriendInfoView(
                                 friend: friend,
-                                onKebabTapped: {
-                                    viewStore.send(.kebabButtonTapped) // Composable Architecture 액션 예시
+                                onKebabTapped: { friend in
+                                    viewStore.send(.kebabButtonTapped(friend: friend)) // Composable Architecture 액션 예시
                                 })
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
@@ -85,19 +85,29 @@ public struct FriendView: View {
             }
         )) {
             ActionSheet(
-                title: Text("알림"),
+                title: Text("\(viewStore.selectFriend?.friendNickname ?? "") 님에 대해"),
                 message: nil,
                 buttons: [
                     .destructive(Text("신고하기")) {
-                        print("신고하기")
+                        guard let selectFriend = viewStore.selectFriend else { return }
+                        viewStore.send(.reportFriend(friend: selectFriend))
                     },
                     .destructive(Text("친구끊기")) {
-                        print("친구끊기")
+                        guard let selectFriend = viewStore.selectFriend else { return }
+                        viewStore.send(.unfriend(friend: selectFriend))
                     },
-                    .cancel(Text("취소하기"))
+                    .cancel(Text("취소하기")) {
+                        viewStore.send(.cancelButtonTapped)
+                    }
                 ]
             )
         }
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()

@@ -12,6 +12,8 @@ import Shared
 public enum FriendAPI {
     case sendFriendCode(code: String)
     case fetchFriendList
+    case reportFriend(memberId: Int)
+    case unFriend(memberId: Int)
 }
 
 extension FriendAPI: TargetType {
@@ -21,7 +23,8 @@ extension FriendAPI: TargetType {
     
     public var path: String {
         switch self {
-        case .sendFriendCode, .fetchFriendList: return "/friends"
+        case .sendFriendCode, .fetchFriendList, .unFriend: return "/friends"
+        case .reportFriend: return "/report/members"
         }
     }
     
@@ -29,6 +32,8 @@ extension FriendAPI: TargetType {
         switch self {
         case .sendFriendCode: return .post
         case .fetchFriendList: return .get
+        case .reportFriend: return .post
+        case .unFriend: return .delete
         }
     }
     
@@ -43,6 +48,20 @@ extension FriendAPI: TargetType {
             )
         case .fetchFriendList:
             return .requestPlain
+        case .reportFriend(let memberId):
+            return .requestParameters(
+                parameters: [
+                    "reportedMemberId": memberId
+                ],
+                encoding: JSONEncoding.default
+            )
+        case .unFriend(let memberId):
+            return .requestParameters(
+                parameters: [
+                    "friendId": memberId
+                ],
+                encoding: JSONEncoding.default
+            )
         }
     }
     
