@@ -13,6 +13,7 @@ public enum UserDefaultsKey: String {
     case FCMToken
     case accessToken
     case refreshToken
+    case memberId
 }
 
 // UserDefaults를 관리하는 클래스
