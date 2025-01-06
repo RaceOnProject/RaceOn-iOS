@@ -8,6 +8,7 @@
 import SwiftUI
 import Domain
 import Shared
+import Kingfisher
 
 struct FriendInfoView: View {
     var friend: Friend
@@ -22,7 +23,10 @@ struct FriendInfoView: View {
                     .frame(width: 20)
                 
                 ZStack(alignment: .bottomTrailing) { // ZStack을 우하단 정렬로 설정
-                    ImageConstants.profile2
+                    KFImage.url(URL(string: friend.profileImageUrl)!)
+                        .placeholder { progress in
+                            ProgressView(progress)
+                        }
                         .resizable()
                         .scaledToFill()
                         .frame(width: 48, height: 48)
@@ -63,10 +67,3 @@ struct FriendInfoView: View {
         }
     }
 }
-//
-//#Preview {
-//    FriendInfoView(
-//        friend: Friend(,
-//        onKebabTapped: <#T##() -> Void#>
-//    )
-//}
