@@ -11,17 +11,6 @@ import Domain
 import Data
 import Combine
 
-extension DependencyValues {
-    var profileUseCase: ProfileUseCaseProtocol {
-        get { self[ProfileUseCaseKey.self] }
-        set { self[ProfileUseCaseKey.self] = newValue }
-    }
-    
-    private enum ProfileUseCaseKey: DependencyKey {
-        static let liveValue: ProfileUseCaseProtocol = ProfileUseCase(repository: ProfileRepositoryImpl())
-    }
-}
-
 @Reducer
 struct MyProfileFeature {
     struct State: Equatable {
