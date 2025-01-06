@@ -11,6 +11,7 @@ import SwiftUI
 import Presentation
 import ComposableArchitecture
 import KakaoSDKCommon
+import KakaoSDKAuth
 
 enum RootScreen {
     case login
@@ -44,8 +45,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vc = UIHostingController(rootView: view)
         window?.rootViewController = vc
         
-        
         KakaoSDK.initSDK(appKey: "8d7586b19e44d18f82eb280b3e57bae1")
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}

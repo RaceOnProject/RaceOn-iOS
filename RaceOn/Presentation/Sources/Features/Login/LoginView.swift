@@ -55,11 +55,7 @@ public struct LoginView: View {
                         .resizable()
                         .frame(width: 350, height: 54)
                         .onTapGesture {
-                            if hasLocationAccess() {
-                                router.changeToRoot(screen: .main)
-                            } else {
-                                router.push(screen: .allowAccess)
-                            }
+                            viewStore.send(.kakaoLoginButtonTapped)
                         }
                     
                     Spacer().frame(height: 12)
