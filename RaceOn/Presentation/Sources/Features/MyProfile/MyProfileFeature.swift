@@ -10,6 +10,7 @@ import SwiftUI
 import Domain
 import Data
 import Combine
+import Shared
 
 @Reducer
 struct MyProfileFeature {
@@ -39,14 +40,19 @@ struct MyProfileFeature {
         case setError(String)  // 오류 메시지를 설정하는 액션
     }
     
-    @Dependency(\.profileUseCase) var profileUseCase
+    @Dependency(\.memberUseCase) var memberUseCase
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
             state.nickname = "random name"
+            
+//            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+            // TODO: TEST 용(임시 로그인)
+            let memberId: Int = 1
+            
             return Effect.publisher {
-                profileUseCase.fetchMemberCode()
+                memberUseCase.fetchMemberCode(memberId: memberId)
                     .receive(on: DispatchQueue.main)
                     .map {
                         Action.setNickname($0.data.memberCode)

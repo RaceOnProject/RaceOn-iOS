@@ -20,12 +20,12 @@ extension DependencyValues {
     }
     
     // Profile
-    var profileUseCase: ProfileUseCaseProtocol {
+    var memberUseCase: MemberUseCaseProtocol {
         get { self[ProfileUseCaseKey.self] }
         set { self[ProfileUseCaseKey.self] = newValue }
     }
     private enum ProfileUseCaseKey: DependencyKey {
-        static let liveValue: ProfileUseCaseProtocol = ProfileUseCase(repository: ProfileRepositoryImpl())
+        static let liveValue: MemberUseCaseProtocol = MemberUseCase(repository: MemberRepositoryImpl())
     }
     
     // Notification

@@ -10,6 +10,8 @@ import ComposableArchitecture
 import UIKit
 import Domain
 import Data
+import Combine
+import Shared
 
 struct AlertInfo: Equatable, Identifiable {
     let id = UUID()
@@ -20,6 +22,7 @@ struct AlertInfo: Equatable, Identifiable {
 public struct SettingFeature {
     
     @Dependency(\.notificationUseCase) var notificationUseCase
+    @Dependency(\.memberUseCase) var memberUseCase
     
     public init() {}
     
@@ -27,6 +30,8 @@ public struct SettingFeature {
         var currentVersion: String? = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         var alertInfo: AlertInfo?
         var competitionInvites: Bool = true
+        
+        var errorMessage: String?
         
         public init() {}
     }
@@ -40,6 +45,9 @@ public struct SettingFeature {
         case alertConfirmed(AlertType)
         
         case setCompetitionInvites(Bool)
+        
+        case deleteAccountResponse(response: CommonResponse)
+        case setErrorMessage(errorMessage: String)
         
         case noAction
     }
@@ -77,7 +85,22 @@ public struct SettingFeature {
                 print("로그아웃 확인")
             case .deleteAccount:
                 print("회원탈퇴 확인")
+                guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+                
+                return Effect.publisher {
+                    memberUseCase.deleteAccount(memberId: memberId)
+                        .map { Action.deleteAccountResponse(response: $0) }
+                        .catch { Just(Action.setErrorMessage(errorMessage: $0.localizedDescription)) }
+                        .eraseToAnyPublisher()
+                }
             }
+            return .none
+            
+        case .deleteAccountResponse(let response):
+            dump(response)
+            return .none
+        case .setErrorMessage(let error):
+            state.errorMessage = error
             return .none
         case .noAction:
             return .none
