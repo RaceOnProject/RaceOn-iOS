@@ -25,6 +25,7 @@ public struct Friend: Codable, Equatable, Identifiable {
     public let id = UUID()
     public let friendId: Int
     public let friendNickname: String
+    public let profileImageUrl: String
     public let lastActiveAt: String
     public let playing: Bool
 }

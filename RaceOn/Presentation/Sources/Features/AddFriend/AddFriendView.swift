@@ -112,7 +112,6 @@ struct AddFriendView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             viewStore.send(.willEnterForeground)
         }
-        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()
@@ -120,6 +119,8 @@ struct AddFriendView: View {
             ToolbarView.principalItem(title: "친구 추가")
         }
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
         .toastView(
             toast: viewStore.binding(
                 get: \.toast,
