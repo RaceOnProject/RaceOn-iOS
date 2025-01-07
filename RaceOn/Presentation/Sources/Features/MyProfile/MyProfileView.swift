@@ -140,7 +140,14 @@ struct MyProfileView: View {
                 
                 Spacer()
             }
+            
+            if viewStore.state.isLoading {
+                ProgressView()
+                    .tint(ColorConstants.gray3)
+                    .allowsHitTesting(false)
+            }
         }
+        .disabled(viewStore.state.isLoading)
         .onAppear {
             viewStore.send(.onAppear)
         }

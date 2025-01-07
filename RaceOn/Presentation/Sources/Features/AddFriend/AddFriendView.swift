@@ -104,7 +104,14 @@ struct AddFriendView: View {
                 Spacer()
                     .frame(height: 18)
             }
+            
+            if viewStore.state.isLoading {
+                ProgressView()
+                    .tint(ColorConstants.gray3)
+                    .allowsHitTesting(false)
+            }
         }
+        .disabled(viewStore.state.isLoading)
         .onAppear {
             focusedField = .first
             viewStore.send(.onAppear)

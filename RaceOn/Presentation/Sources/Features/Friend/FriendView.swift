@@ -66,7 +66,14 @@ public struct FriendView: View {
                         .foregroundColor(PresentationAsset.gray4.swiftUIColor)
                 }
             }
+            
+            if viewStore.state.isLoading {
+                ProgressView()
+                    .tint(ColorConstants.gray3)
+                    .allowsHitTesting(false)
+            }
         }
+        .disabled(viewStore.state.isLoading)
         .navigationDestination(for: Screen.self) { type in
             router.screenView(type: type)
         }
