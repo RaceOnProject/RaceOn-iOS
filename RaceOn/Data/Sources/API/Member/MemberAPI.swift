@@ -46,8 +46,7 @@ extension MemberAPI: TargetType {
     
     public var headers: [String: String]? {
         return [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer \(UserDefaultsManager.shared.get(forKey: .accessToken) ?? "")"
+            "Content-Type": "application/json"
         ]
     }
 }
