@@ -9,5 +9,5 @@ import Combine
 
 public protocol MemberRepositoryProtocol {
     func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error>
-    func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, any Error>
+    func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse, any Error>
 }

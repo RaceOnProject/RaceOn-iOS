@@ -43,13 +43,13 @@ public final class MemberRepositoryImpl: MemberRepositoryProtocol {
         .eraseToAnyPublisher()
     }
     
-    public func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, any Error> {
+    public func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse, any Error> {
         Future { promise in
             self.provider.request(.deleteAccount(memberId: memberId)) { result in
                 switch result {
                 case .success(let response):
                     do {
-                        let response = try JSONDecoder().decode(CommonResponse.self, from: response.data)
+                        let response = try JSONDecoder().decode(BaseResponse.self, from: response.data)
                         promise(.success(response))
                     } catch {
                         promise(.failure(error))

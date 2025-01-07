@@ -46,7 +46,7 @@ public struct SettingFeature {
         
         case setCompetitionInvites(Bool)
         
-        case deleteAccountResponse(response: CommonResponse)
+        case deleteAccountResponse(response: BaseResponse)
         case setErrorMessage(errorMessage: String)
         
         case noAction
