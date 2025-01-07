@@ -16,7 +16,7 @@ public final class MemberRepositoryImpl: MemberRepositoryProtocol {
     private let provider: MoyaProvider<MemberAPI>
     
     public init(provider: MoyaProvider<MemberAPI> = MoyaProvider<MemberAPI>(
-        session: Session(interceptor: APIRequestRetrier()),  // 세션과 인터셉터를 명확하게 설정
+        session: Session(interceptor: APIRequestRetrier.shared),  // 세션과 인터셉터를 명확하게 설정
         plugins: [
             NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))  // 여기에 플러그인도 추가 가능
         ]

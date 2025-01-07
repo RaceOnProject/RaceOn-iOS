@@ -16,11 +16,11 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
     private let provider: MoyaProvider<FriendAPI>
     
     public init(provider: MoyaProvider<FriendAPI> = MoyaProvider<FriendAPI>(
-            session: Session(interceptor: APIRequestRetrier()), // AuthInterceptor를 Session에 추가
-            plugins: [
-                NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
-            ]
-        )) {
+        session: Session(interceptor: APIRequestRetrier.shared), // AuthInterceptor를 Session에 추가
+        plugins: [
+            NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
+        ]
+    )) {
         self.provider = provider
     }
     
