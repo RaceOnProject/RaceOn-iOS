@@ -108,6 +108,7 @@ struct MyProfileView: View {
                         Text(memberInfo.data.nickname)
                             .font(.semiBold(20))
                             .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
                             .frame(height: 28)
                     }
                 } else {
@@ -116,22 +117,23 @@ struct MyProfileView: View {
                 
                 Spacer().frame(height: 12)
                 
-                
                 if let memberInfo = viewStore.state.memberInfo {
-                    Button(action: {
-                        viewStore.send(.copyButtonTapped)
-                    }, label: {
-                        HStack(spacing: 4) {
-                            Text(memberInfo.data.memberCode)
-                                .font(.semiBold(15))
-                                .foregroundColor(.white)
-                            
-                            ImageConstants.copyIcon
-                        }
-                    })
-                    .padding(14)
-                    .background(ColorConstants.gray5)
-                    .cornerRadius(30)
+                    if !viewStore.state.isEditing {
+                        Button(action: {
+                            viewStore.send(.copyButtonTapped)
+                        }, label: {
+                            HStack(spacing: 4) {
+                                Text(memberInfo.data.memberCode)
+                                    .font(.semiBold(15))
+                                    .foregroundColor(.white)
+                                
+                                ImageConstants.copyIcon
+                            }
+                        })
+                        .padding(14)
+                        .background(ColorConstants.gray5)
+                        .cornerRadius(30)
+                    }
                 } else {
                     // TODO: 서버에서 memberInfo를 받아올수 없음, 기획에 문의
                 }
