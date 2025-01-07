@@ -146,6 +146,9 @@ public struct SettingView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             viewStore.send(.willEnterForeground)
         }
+        .onChange(of: viewStore.state.hasCompletedLogoutOrDeletion) {
+            $0 ? router.pop() : nil
+        }
         .alert(item: viewStore.binding(
             get: \.alertInfo,
             send: .noAction

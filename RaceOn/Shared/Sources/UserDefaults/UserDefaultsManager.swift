@@ -61,6 +61,11 @@ public final class UserDefaultsManager {
 extension UserDefaultsKey: CaseIterable {
     // UserDefaultsKey 열거형의 모든 값을 가져오는 메서드 추가
     public static var allCases: [UserDefaultsKey] {
-        return [.FCMToken]
+        return [
+            .FCMToken,
+            .accessToken,
+            .refreshToken,
+            .memberId
+        ]
     }
 }
