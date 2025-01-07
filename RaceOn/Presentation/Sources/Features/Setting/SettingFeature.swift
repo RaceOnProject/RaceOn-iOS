@@ -31,6 +31,8 @@ public struct SettingFeature {
         var alertInfo: AlertInfo?
         var competitionInvites: Bool = true
         
+        var hasCompletedLogoutOrDeletion: Bool = false
+        
         var errorMessage: String?
         
         public init() {}
@@ -83,10 +85,15 @@ public struct SettingFeature {
             switch alertType {
             case .logout:
                 print("로그아웃 확인")
+                
+                UserDefaultsManager.shared.clearAll()
+                
+                state.hasCompletedLogoutOrDeletion = true
             case .deleteAccount:
                 print("회원탈퇴 확인")
                 guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
                 
+                // TODO: 에러 처리
                 return Effect.publisher {
                     memberUseCase.deleteAccount(memberId: memberId)
                         .map { Action.deleteAccountResponse(response: $0) }
@@ -98,6 +105,7 @@ public struct SettingFeature {
             
         case .deleteAccountResponse(let response):
             dump(response)
+            state.hasCompletedLogoutOrDeletion = true
             return .none
         case .setErrorMessage(let error):
             state.errorMessage = error
