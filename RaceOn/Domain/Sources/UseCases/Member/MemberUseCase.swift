@@ -10,7 +10,7 @@ import Combine
 
 public protocol MemberUseCaseProtocol {
     func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error>
-    func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, Error>
+    func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse, Error>
 }
 
 public final class MemberUseCase: MemberUseCaseProtocol {
@@ -24,7 +24,7 @@ public final class MemberUseCase: MemberUseCaseProtocol {
         repository.fetchMemberInfo(memberId: memberId)
     }
     
-    public func deleteAccount(memberId: Int) -> AnyPublisher<CommonResponse, any Error> {
+    public func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse, any Error> {
         repository.deleteAccount(memberId: memberId)
     }
 }

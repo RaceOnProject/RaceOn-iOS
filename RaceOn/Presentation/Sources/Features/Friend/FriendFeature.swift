@@ -48,8 +48,8 @@ public struct FriendFeature {
         // Toast
         case dismissToast
         
-        case resultReportFriend(response: CommonResponse)
-        case resultUnFriend(response: CommonResponse)
+        case resultReportFriend(response: BaseResponse)
+        case resultUnFriend(response: BaseResponse)
         
         case setFriendList(friendList: [Friend])
         case setError(error: String)
