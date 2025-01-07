@@ -24,6 +24,8 @@ struct MyProfileFeature {
         var selectedImage: UIImage?
         var isCroppingPresented = false
         
+        var isLoading: Bool = false
+        
         var toast: Toast?
     }
     
@@ -48,8 +50,9 @@ struct MyProfileFeature {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
+            state.isLoading = true
 //            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
-            // TODO: TEST 용(임시 로그인)
+            // TODO: TEST용 (임시 로그인)
             let memberId: Int = 1
             
             return Effect.publisher {
@@ -86,9 +89,11 @@ struct MyProfileFeature {
             
         case .setMemberInfo(let memberInfo):
             dump(memberInfo)
+            state.isLoading = false
             state.memberInfo = memberInfo
             return .none
         case .setError(let errorMessage):
+            state.isLoading = false
             // TODO: 에러 처리
 //            state.friendCode = errorMessage // 오류 메시지를 상태에 반영 (예시)
             return .none

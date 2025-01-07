@@ -25,6 +25,8 @@ struct AddFriendFeature {
         var totalLetter = ""
         var isButtonEnabled = false
         
+        var isLoading: Bool = false
+        
         enum Field: String, Hashable {
             case first, second, third, fourth, fifth, sixth
             
@@ -89,8 +91,7 @@ struct AddFriendFeature {
             state.isButtonEnabled = state.totalLetter.count >= 6 ? true : false
             return .none
         case .addFriendButtonTapped:
-            print("\(state.totalLetter)")
-//            return .send(.showToast(content: "친구 추가하기 완료(테스트, API 연동 안됨)"))
+            state.isLoading = true
             return Effect.publisher {
                 friendUseCase.sendFriendCode(state.totalLetter)
                     .receive(on: DispatchQueue.main)
@@ -109,9 +110,11 @@ struct AddFriendFeature {
             state.toast = nil
             return .none
         case .setAddFriendResponse(let response):
+            state.isLoading = false
             return .none
         case .setError(let error):
             print(error)
+            state.isLoading = false
             return .none
         case .noAction:
             return .none

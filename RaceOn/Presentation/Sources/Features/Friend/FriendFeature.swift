@@ -30,6 +30,7 @@ public struct FriendFeature {
         
         var selectFriend: Friend?
         
+        var isLoading: Bool = false
         var errorMessage: String?
     }
     
@@ -60,6 +61,8 @@ public struct FriendFeature {
         switch action {
         case .onAppear:
             // onAppear 시 fetchFriendList를 시작하고, 타이머를 시작(30초 마다 API 호출, Polling 방식)
+            state.isLoading = true
+            
             return .merge(
                 .send(.fetchFriendList),
                 .run { send in
@@ -90,6 +93,8 @@ public struct FriendFeature {
             return .none
             
         case .reportFriend(let friend):
+            state.isLoading = true
+            
             return Effect.publisher {
                 friendUsecase.reportFriend(memberId: friend.friendId)
                     .receive(on: DispatchQueue.main)
@@ -98,6 +103,8 @@ public struct FriendFeature {
                     .eraseToAnyPublisher()
             }
         case .unfriend(let friend):
+            state.isLoading = true
+            
             return Effect.publisher {
                 friendUsecase.unFriend(memberId: friend.friendId)
                     .receive(on: DispatchQueue.main)
@@ -113,15 +120,19 @@ public struct FriendFeature {
             state.toast = nil
             return .none
         case .resultReportFriend(let response):
+            state.isLoading = false
             state.toast = Toast(content: "신고 완료")
             return .send(.fetchFriendList)
         case .resultUnFriend(let response):
+            state.isLoading = false
             state.toast = Toast(content: "친구 끊기 완료")
             return .send(.fetchFriendList)
         case .setFriendList(let friendList):
+            state.isLoading = false
             state.friendList = friendList
             return .none
         case .setError(let errorMessage):
+            state.isLoading = false
             state.errorMessage = errorMessage
             return .none
         }
