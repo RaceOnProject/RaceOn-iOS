@@ -7,24 +7,22 @@
 
 import SwiftUI
 import CoreLocation
+import AuthenticationServices
 
 import Shared
 
 import ComposableArchitecture
 
-public enum SocialLogin {
-    case kakao
-    case apple
-}
-
 public struct LoginView: View {
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStoreOf<LoginFeature>
     let store: StoreOf<LoginFeature>
+    let appleLoginCoordinator: SignInWithAppleCoordinator
     
     public init(store: StoreOf<LoginFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
+        self.appleLoginCoordinator = SignInWithAppleCoordinator(viewStore: self._viewStore)
     }
     
     public var body: some View {
@@ -64,11 +62,12 @@ public struct LoginView: View {
                         .resizable()
                         .frame(width: 350, height: 54)
                         .onTapGesture {
-                            if hasLocationAccess() {
-                                router.changeToRoot(screen: .main)
-                            } else {
-                                router.push(screen: .allowAccess)
-                            }
+                            startSignInWithAppleFlow()
+//                            if hasLocationAccess() {
+//                                router.changeToRoot(screen: .main)
+//                            } else {
+//                                router.push(screen: .allowAccess)
+//                            }
                         }
                         
                     Spacer().frame(height: 34)
@@ -83,7 +82,17 @@ public struct LoginView: View {
 }
 
 public extension LoginView {
-    func hasLocationAccess() -> Bool {
+    private func startSignInWithAppleFlow() {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        request.requestedScopes = [.fullName, .email]
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = appleLoginCoordinator
+        controller.presentationContextProvider = appleLoginCoordinator
+        controller.performRequests()
+    }
+    
+    private func hasLocationAccess() -> Bool {
         let locationManager = CLLocationManager()
         let authorizationStatus = locationManager.authorizationStatus
         
