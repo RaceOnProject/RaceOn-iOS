@@ -26,6 +26,8 @@ struct MyProfileFeature {
         
         var isLoading: Bool = false
         
+        var errorMessage: String?
+        
         var toast: Toast?
     }
     
@@ -102,7 +104,7 @@ struct MyProfileFeature {
             return .none
         case .setErrorMessage(let errorMessage):
             state.isLoading = false
-            state.setErrorMessage = errorMessage
+            state.errorMessage = errorMessage
             return .none
         case .noAction:
             return .none
