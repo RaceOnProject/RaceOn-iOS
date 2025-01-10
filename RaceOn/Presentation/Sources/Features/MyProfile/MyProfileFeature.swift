@@ -39,8 +39,8 @@ struct MyProfileFeature {
         case setSelectedImage(image: UIImage)
         case setIsCroppingPresented(isPresented: Bool)
         
-        case setMemberInfo(MemberInfo)  // nickname을 업데이트하는 액션
-        case setError(String)  // 오류 메시지를 설정하는 액션
+        case setMemberInfo(MemberInfo)
+        case setErrorMessage(String)
         
         case noAction
     }
@@ -52,23 +52,31 @@ struct MyProfileFeature {
         case .onAppear:
             state.isLoading = true
 //            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
-            // TODO: TEST용 (임시 로그인)
+            // FIXME: TEST용 (임시 로그인)
             let memberId: Int = 1
             
             return Effect.publisher {
                 memberUseCase.fetchMemberInfo(memberId: memberId)
                     .receive(on: DispatchQueue.main)
                     .map {
-                        Action.setMemberInfo($0)
+                        // response에서 data를 추출하여 Action으로 전달
+                        if let memberInfo = $0.data {
+                            return Action.setMemberInfo(memberInfo)
+                        } else {
+                            // data가 없는 경우 에러로 처리
+                            return Action.setErrorMessage("멤버 정보를 찾을 수 없습니다.")
+                        }
                     }
-                    .catch { error in
-                        Just(Action.setError(error.localizedDescription))
+                    .catch { error -> Just<Action> in
+                        // 에러를 처리하여 Action.setError로 반환
+                        let errorMessage = error.message
+                        return Just(Action.setErrorMessage(errorMessage))
                     }
                     .eraseToAnyPublisher()
             }
         case .copyButtonTapped:
             guard let memberInfo = state.memberInfo else { return .none }
-            UIPasteboard.general.string = memberInfo.data.memberCode
+            UIPasteboard.general.string = memberInfo.memberCode
             state.toast = Toast(content: "내 코드가 복사되었어요")
             return .none
         case .enterEditMode(let isEditing):
@@ -92,12 +100,10 @@ struct MyProfileFeature {
             state.isLoading = false
             state.memberInfo = memberInfo
             return .none
-        case .setError(let errorMessage):
+        case .setErrorMessage(let errorMessage):
             state.isLoading = false
-            // TODO: 에러 처리
-//            state.friendCode = errorMessage // 오류 메시지를 상태에 반영 (예시)
+            state.setErrorMessage = errorMessage
             return .none
-            
         case .noAction:
             return .none
         }

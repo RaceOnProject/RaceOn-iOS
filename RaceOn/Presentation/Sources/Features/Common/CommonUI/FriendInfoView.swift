@@ -23,14 +23,18 @@ struct FriendInfoView: View {
                     .frame(width: 20)
                 
                 ZStack(alignment: .bottomTrailing) { // ZStack을 우하단 정렬로 설정
-                    KFImage.url(URL(string: friend.profileImageUrl)!)
-                        .placeholder { progress in
-                            ProgressView(progress)
-                        }
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 48, height: 48)
-                        .clipShape(Circle()) // 이미지를 동그랗게 클리핑
+                    if let url = URL(string: friend.profileImageUrl) {
+                        KFImage.url(url)
+                            .placeholder { progress in
+                                ProgressView(progress)
+                            }
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 48, height: 48)
+                            .clipShape(Circle()) // 이미지를 동그랗게 클리핑
+                    } else {
+                        
+                    }
                     
                     if friend.playing {
                         Circle()

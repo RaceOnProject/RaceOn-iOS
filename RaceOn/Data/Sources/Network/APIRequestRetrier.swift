@@ -47,20 +47,22 @@ public final class APIRequestRetrier: RequestInterceptor {
             return
         }
         
-        let provider = MoyaProvider<AuthAPI>()
+        let provider = MoyaProvider<AuthAPI>(plugins: [
+            NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
+        ])
         
         provider.request(.refreshAccessToken(refreshToken: refreshToken)) { [weak self] result in
             switch result {
             case .success(let response):
                 do {
-                    let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: response.data)
+                    let response = try JSONDecoder().decode(BaseResponse<TokenResponse>.self, from: response.data)
                     self?.tokenManager.saveTokens(
-                        accessToken: tokenResponse.data.accessToken,
-                        refreshToken: tokenResponse.data.refreshToken
+                        accessToken: response.data?.accessToken ?? "",
+                        refreshToken: response.data?.refreshToken ?? ""
                     )
                     
                     if request.retryCount < Constants.retryLimit {
-                        completion(.retryWithDelay(Constants.retryDelay))
+                        completion(.retry)
                     } else {
                         completion(.doNotRetryWithError(error))
                     }

@@ -34,7 +34,7 @@ public struct FriendFeature {
         var errorMessage: String?
     }
     
-    public enum Action: Equatable {
+    public enum Action {
         case onAppear
         case onDisappear
         case fetchFriendList
@@ -49,11 +49,11 @@ public struct FriendFeature {
         // Toast
         case dismissToast
         
-        case resultReportFriend(response: BaseResponse)
-        case resultUnFriend(response: BaseResponse)
+        case resultReportFriend(response: BaseResponse<VoidResponse>)
+        case resultUnFriend(response: BaseResponse<VoidResponse>)
         
         case setFriendList(friendList: [Friend])
-        case setError(error: String)
+        case setErrorMessage(String)
         
     }
     
@@ -79,8 +79,18 @@ public struct FriendFeature {
             return Effect.publisher {
                 friendUsecase.fetchFriendList()
                     .receive(on: DispatchQueue.main)
-                    .map { Action.setFriendList(friendList: $0.data.friends) }
-                    .catch { Just(Action.setError(error: $0.localizedDescription)) }
+                    .map {
+                        if let data = $0.data {
+                            return Action.setFriendList(friendList: data.friends)
+                        } else {
+                            return Action.setErrorMessage("친구 목록을 찾을 수 없습니다.")
+                        }
+                    }
+                    .catch { error -> Just<Action> in
+                        // 에러를 처리하여 Action.setError로 반환
+                        let errorMessage = error.message
+                        return Just(Action.setErrorMessage(errorMessage))
+                    }
                     .eraseToAnyPublisher()
             }
         case .kebabButtonTapped(let friend):
@@ -98,8 +108,14 @@ public struct FriendFeature {
             return Effect.publisher {
                 friendUsecase.reportFriend(memberId: friend.friendId)
                     .receive(on: DispatchQueue.main)
-                    .map { Action.resultReportFriend(response: $0) }
-                    .catch { Just(Action.setError(error: $0.localizedDescription)) }
+                    .map {
+                        Action.resultReportFriend(response: $0)
+                    }
+                    .catch { error -> Just<Action> in
+                        // 에러를 처리하여 Action.setError로 반환
+                        let errorMessage = error.message
+                        return Just(Action.setErrorMessage(errorMessage))
+                    }
                     .eraseToAnyPublisher()
             }
         case .unfriend(let friend):
@@ -108,8 +124,14 @@ public struct FriendFeature {
             return Effect.publisher {
                 friendUsecase.unFriend(memberId: friend.friendId)
                     .receive(on: DispatchQueue.main)
-                    .map { Action.resultUnFriend(response: $0) }
-                    .catch { Just(Action.setError(error: $0.localizedDescription)) }
+                    .map {
+                        Action.resultUnFriend(response: $0)
+                    }
+                    .catch { error -> Just<Action> in
+                        // 에러를 처리하여 Action.setError로 반환
+                        let errorMessage = error.message
+                        return Just(Action.setErrorMessage(errorMessage))
+                    }
                     .eraseToAnyPublisher()
             }
         case .cancelButtonTapped:
@@ -131,7 +153,7 @@ public struct FriendFeature {
             state.isLoading = false
             state.friendList = friendList
             return .none
-        case .setError(let errorMessage):
+        case .setErrorMessage(let errorMessage):
             state.isLoading = false
             state.errorMessage = errorMessage
             return .none

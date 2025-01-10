@@ -9,10 +9,10 @@ import ComposableArchitecture
 import Combine
 
 public protocol FriendUseCaseProtocol {
-    func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse, Error>
-    func fetchFriendList() -> AnyPublisher<FriendResponse, Error>
-    func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse, Error>
-    func unFriend(memberId: Int) -> AnyPublisher<BaseResponse, Error>
+    func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func fetchFriendList() -> AnyPublisher<BaseResponse<FriendResponse>, NetworkError>
+    func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func unFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }
 
 public final class FriendUseCase: FriendUseCaseProtocol {
@@ -22,19 +22,19 @@ public final class FriendUseCase: FriendUseCaseProtocol {
         self.repository = repository
     }
     
-    public func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse, Error> {
-        repository.sendFriendCode(code)
+    public func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return repository.sendFriendCode(code)
     }
     
-    public func fetchFriendList() -> AnyPublisher<FriendResponse, any Error> {
-        repository.fetchFriendList()
+    public func fetchFriendList() -> AnyPublisher<BaseResponse<FriendResponse>, NetworkError> {
+        return repository.fetchFriendList()
     }
     
-    public func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse, Error> {
-        repository.reportFriend(memberId: memberId)
+    public func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return repository.reportFriend(memberId: memberId)
     }
     
-    public func unFriend(memberId: Int) -> AnyPublisher<BaseResponse, any Error> {
-        repository.unFriend(memberId: memberId)
+    public func unFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return repository.unFriend(memberId: memberId)
     }
 }
