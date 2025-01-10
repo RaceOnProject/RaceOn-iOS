@@ -61,7 +61,7 @@ struct MyProfileView: View {
                                 .clipShape(.circle)
                         } else {
                             if let memberInfo = viewStore.state.memberInfo { // 서버 통신 후 memberInfo가 nil이 아니면
-                                if let url = URL(string: memberInfo.data.profileImageUrl) {
+                                if let url = URL(string: memberInfo.profileImageUrl) {
                                     KFImage(url)
                                         .placeholder { progress in
                                             ProgressView(progress)
@@ -93,10 +93,10 @@ struct MyProfileView: View {
                         TextField(
                             "",
                             text: viewStore.binding(
-                                get: { _ in viewStore.state.memberInfo?.data.nickname ?? "" },
+                                get: { _ in memberInfo.nickname },
                                 send: .noAction
                             ),
-                            prompt: Text(memberInfo.data.nickname)
+                            prompt: Text(memberInfo.nickname)
                                 .font(.semiBold(20))
                                 .foregroundColor(ColorConstants.gray4)
                         )
@@ -105,7 +105,7 @@ struct MyProfileView: View {
                         .multilineTextAlignment(.center)
                         .frame(height: 28)
                     } else {
-                        Text(memberInfo.data.nickname)
+                        Text(memberInfo.nickname)
                             .font(.semiBold(20))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -123,7 +123,7 @@ struct MyProfileView: View {
                             viewStore.send(.copyButtonTapped)
                         }, label: {
                             HStack(spacing: 4) {
-                                Text(memberInfo.data.memberCode)
+                                Text(memberInfo.memberCode)
                                     .font(.semiBold(15))
                                     .foregroundColor(.white)
                                 

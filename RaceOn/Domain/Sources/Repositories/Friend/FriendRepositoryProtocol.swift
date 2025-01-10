@@ -8,8 +8,8 @@
 import Combine
 
 public protocol FriendRepositoryProtocol {
-    func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse, Error>
-    func fetchFriendList() -> AnyPublisher<FriendResponse, Error>
-    func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse, Error>
-    func unFriend(memberId: Int) -> AnyPublisher<BaseResponse, Error>
+    func sendFriendCode(_ code: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func fetchFriendList() -> AnyPublisher<BaseResponse<FriendResponse>, NetworkError>
+    func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func unFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }

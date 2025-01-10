@@ -19,13 +19,14 @@ struct AddFriendFeature {
     
     struct State: Equatable {
         var toast: Toast?
+        var isLoading: Bool = false
         
         var letters: [String] = Array(repeating: "", count: 6)
         
         var totalLetter = ""
         var isButtonEnabled = false
         
-        var isLoading: Bool = false
+        var errorMessage: String?
         
         enum Field: String, Hashable {
             case first, second, third, fourth, fifth, sixth
@@ -44,7 +45,7 @@ struct AddFriendFeature {
         }
     }
     
-    enum Action: Equatable {
+    enum Action {
         case onAppear
         case willEnterForeground
         case processCopiedText
@@ -55,8 +56,8 @@ struct AddFriendFeature {
         case showToast(content: String)
         case dismissToast
         
-        case setAddFriendResponse(BaseResponse)
-        case setError(String)
+        case setAddFriendResponse(BaseResponse<VoidResponse>)
+        case setErrorMessage(String)
         
         case noAction
     }
@@ -99,7 +100,8 @@ struct AddFriendFeature {
                         Action.setAddFriendResponse($0)
                     }
                     .catch { error in
-                        Just(Action.setError(error.localizedDescription))
+                        let errorMessage = error.message
+                        return Just(Action.setErrorMessage(errorMessage))
                     }
                     .eraseToAnyPublisher()
             }
@@ -112,9 +114,9 @@ struct AddFriendFeature {
         case .setAddFriendResponse(let response):
             state.isLoading = false
             return .none
-        case .setError(let error):
-            print(error)
+        case .setErrorMessage(let errorMessage):
             state.isLoading = false
+            state.errorMessage = errorMessage
             return .none
         case .noAction:
             return .none

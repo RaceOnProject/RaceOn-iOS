@@ -48,8 +48,8 @@ public struct SettingFeature {
         
         case setCompetitionInvites(Bool)
         
-        case deleteAccountResponse(response: BaseResponse)
-        case setErrorMessage(errorMessage: String)
+        case deleteAccountResponse(response: BaseResponse<VoidResponse>)
+        case setErrorMessage(String)
         
         case noAction
     }
@@ -96,8 +96,13 @@ public struct SettingFeature {
                 // TODO: 에러 처리
                 return Effect.publisher {
                     memberUseCase.deleteAccount(memberId: memberId)
-                        .map { Action.deleteAccountResponse(response: $0) }
-                        .catch { Just(Action.setErrorMessage(errorMessage: $0.localizedDescription)) }
+                        .map {
+                            Action.deleteAccountResponse(response: $0)
+                        }
+                        .catch { error in
+                            let errorMessage = error.message
+                            return Just(Action.setErrorMessage(errorMessage))
+                        }
                         .eraseToAnyPublisher()
                 }
             }
@@ -107,8 +112,8 @@ public struct SettingFeature {
             dump(response)
             state.hasCompletedLogoutOrDeletion = true
             return .none
-        case .setErrorMessage(let error):
-            state.errorMessage = error
+        case .setErrorMessage(let errorMessage):
+            state.errorMessage = errorMessage
             return .none
         case .noAction:
             return .none

@@ -8,6 +8,6 @@
 import Combine
 
 public protocol MemberRepositoryProtocol {
-    func fetchMemberInfo(memberId: Int) -> AnyPublisher<MemberInfo, Error>
-    func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse, any Error>
+    func fetchMemberInfo(memberId: Int) -> AnyPublisher<BaseResponse<MemberInfo>, NetworkError>
+    func deleteAccount(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }
