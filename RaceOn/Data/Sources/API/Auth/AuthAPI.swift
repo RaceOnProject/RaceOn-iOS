@@ -5,13 +5,6 @@
 //  Created by ukseung.dev on 1/2/25.
 //
 
-//
-//  AuthAPI.swift
-//  Data
-//
-//  Created by ukseung.dev on 1/2/25.
-//
-
 import Moya
 import Foundation
 
