@@ -24,7 +24,7 @@ struct FriendInfoView: View {
                 
                 ZStack(alignment: .bottomTrailing) { // ZStack을 우하단 정렬로 설정
                     if let url = URL(string: friend.profileImageUrl) {
-                        KFImage.url(url)
+                        KFImage(url)
                             .placeholder { progress in
                                 ProgressView(progress)
                             }
@@ -33,7 +33,11 @@ struct FriendInfoView: View {
                             .frame(width: 48, height: 48)
                             .clipShape(Circle()) // 이미지를 동그랗게 클리핑
                     } else {
-                        
+                        ImageConstants.profileDefault
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 48, height: 48)
+                            .clipShape(Circle())
                     }
                     
                     if friend.playing {
