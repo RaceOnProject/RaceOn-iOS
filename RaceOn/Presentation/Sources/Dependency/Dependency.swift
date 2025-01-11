@@ -10,6 +10,16 @@ import Data
 import Dependencies
 
 extension DependencyValues {
+    
+    // Auth
+    var authUseCase: AuthUseCaseProtocol {
+        get { self[AuthUseCaseKey.self] }
+        set { self[AuthUseCaseKey.self] = newValue }
+    }
+    private enum AuthUseCaseKey: DependencyKey {
+        static let liveValue: AuthUseCaseProtocol = AuthUseCase(repository: AuthRepositoryImpl())
+    }
+    
     // Friend
     var friendUseCase: FriendUseCaseProtocol {
         get { self[FriendUseCaseKey.self] }
