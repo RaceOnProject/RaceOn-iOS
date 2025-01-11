@@ -18,6 +18,8 @@ import Foundation
 public enum AuthAPI {
     case guestLogin(memberId: String)
     case refreshAccessToken(refreshToken: String)
+    case socialLogin(idToken: String, socialProvider: String)
+    case joinMembers(idToken: String, socialProvider: String, profileImageUrl: String?)
 }
 
 extension AuthAPI: TargetType {
@@ -29,6 +31,8 @@ extension AuthAPI: TargetType {
         switch self {
         case .guestLogin: return "/auth/login"
         case .refreshAccessToken: return "/auth/reissue"
+        case .socialLogin: return "/auth/login"
+        case .joinMembers: return "/members"
         }
     }
     
@@ -45,6 +49,22 @@ extension AuthAPI: TargetType {
                 ],
                 encoding: URLEncoding.queryString
             )
+        case .socialLogin(let idToken, let socialProvider):
+            return .requestParameters(
+                parameters: [
+                    "idToken": idToken,
+                    "socialProvider": socialProvider
+                ],
+                encoding: JSONEncoding.default
+            )
+        case .joinMembers(let idToken, let socialProvider, let profileImageUrl):
+            return .requestParameters(
+                parameters: [
+                    "idToken": idToken,
+                    "socialProvider": socialProvider,
+                    "profileImageUrl": profileImageUrl
+                ],
+                encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -52,7 +72,7 @@ extension AuthAPI: TargetType {
     
     public var headers: [String: String]? {
         switch self {
-        case .guestLogin:
+        case .guestLogin, .socialLogin, .joinMembers:
             return [
                 "Content-Type": "application/json"
             ]

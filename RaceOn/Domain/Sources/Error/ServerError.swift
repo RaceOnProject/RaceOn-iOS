@@ -17,6 +17,9 @@ public enum ServerError: String, Error {
     case dataAccessException = "COES01"
     case commonUnresolvedException = "COET01"
     
+    // Login
+    case userNotRegistered = "AUAU01"
+    
     // Friend
     case alreadyAddedFriend = "FRBR01" // 이미 친구 추가된 경우
     case invalidFriendCode = "MEBR01" // 유효하지 않은 코드
@@ -33,6 +36,9 @@ public enum ServerError: String, Error {
         case .internalServerError: return "서버 내부 오류입니다."
         case .dataAccessException: return "데이터베이스와 통신하는 과정에서 오류가 발생했습니다."
         case .commonUnresolvedException: return "정의되지 않은 공통 오류입니다."
+            
+        // Login 오류 메시지
+        case .userNotRegistered: return "회원가입이 필요합니다."
         
         // Friend 오류 메시지
         case .alreadyAddedFriend: return "이미 추가된 친구입니다."
