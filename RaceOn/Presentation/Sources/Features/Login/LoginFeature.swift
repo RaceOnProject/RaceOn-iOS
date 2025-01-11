@@ -91,7 +91,7 @@ public extension LoginFeature {
                             return
                         }
                         
-//                        getKakaoProfileImage()
+                        getKakaoProfileImage()
                         send(.requestLogin(idToken, .kakao))
                         continuation.resume()
                     }
@@ -113,7 +113,7 @@ public extension LoginFeature {
                             return
                         }
                         
-//                        getKakaoProfileImage()
+                        getKakaoProfileImage()
                         send(.requestLogin(idToken, .kakao))
                         continuation.resume()
                     }
@@ -122,20 +122,20 @@ public extension LoginFeature {
         }
     }
     
-//    private func getKakaoProfileImage() {
-//        UserApi.shared.me() {(user, error) in
-//            if let error = error {
-//                print(error)
-//            }
-//            else {
-//                print("me() success.")
-//                print("카캌오 프로필 \(user?.kakaoAccount?.profile?.profileImageUrl)")
-//                user?.kakaoAccount?.profile?.profileImageUrl
-//                // 성공 시 동작 구현
-//                _ = user
-//            }
-//        }
-//    }
+    private func getKakaoProfileImage() {
+        UserApi.shared.me() {(user, error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                print("me() success.")
+                print("카캌오 프로필 \(user?.kakaoAccount?.profile?.profileImageUrl)")
+                user?.kakaoAccount?.profile?.profileImageUrl
+                // 성공 시 동작 구현
+                _ = user
+            }
+        }
+    }
 }
 
 // MARK: - LOGIN API
