@@ -10,6 +10,6 @@ import Combine
 public protocol AuthRepositoryProtocol {
     func socialLogin(idToken: String, socialProvider: String) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
     
-    func joinMembers(idToken: String, socialProvider: String, profileImageUrl: String?)
-    -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func joinMembers(idToken: String, socialProvider: String, nickname: String?, profileImageUrl: String?)
+    -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
 }

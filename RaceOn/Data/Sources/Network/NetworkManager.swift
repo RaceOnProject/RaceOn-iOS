@@ -34,7 +34,7 @@ final class NetworkManager {
                         let decodedResponse = try JSONDecoder().decode(BaseResponse<T>.self, from: response.data)
                         
                         if let serverError = decodedResponse.toError() {
-                            promise(.failure(.serverDefinedError(serverError.message)))
+                            promise(.failure(.serverDefinedError(serverError)))
                         } else {
                             promise(.success(decodedResponse))
                         }
@@ -47,7 +47,7 @@ final class NetworkManager {
                             let decodedResponse = try JSONDecoder().decode(BaseResponse<T>.self, from: response.data)
                             
                             if let serverError = decodedResponse.toError() {
-                                promise(.failure(.serverDefinedError(serverError.message)))
+                                promise(.failure(.serverDefinedError(serverError)))
                             } else {
                                 promise(.success(decodedResponse))
                             }
