@@ -74,7 +74,7 @@ public struct LoginView: View {
             }
             .onChange(of: viewStore.successLogin) { isSuccess in
                 if isSuccess {
-                    if !hasLocationAccess() {
+                    if hasLocationAccess() {
                         router.changeToRoot(screen: .main)
                     } else {
                         router.push(screen: .allowAccess)
