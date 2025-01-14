@@ -37,6 +37,9 @@ public final class AuthUseCase: AuthUseCaseProtocol {
         nickname: String?,
         profileImageUrl: String?
     ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
-        return repository.joinMembers(idToken: idToken, socialProvider: socialProvider, nickname: nickname, profileImageUrl: profileImageUrl)
+        return repository.joinMembers(idToken: idToken,
+                                      socialProvider: socialProvider,
+                                      nickname: nickname,
+                                      profileImageUrl: profileImageUrl)
     }
 }
