@@ -171,7 +171,7 @@ public extension LoginFeature {
     private func getKakaoProfile() -> Effect<Action> {
         return .run { @MainActor send in
             await withCheckedContinuation { continuation in
-                UserApi.shared.me() {(user, error) in
+                UserApi.shared.me {(user, error) in
                     if let error = error {
                         print("카카오톡 프로필 가져오기 실패: \(error.localizedDescription)")
                         continuation.resume()
