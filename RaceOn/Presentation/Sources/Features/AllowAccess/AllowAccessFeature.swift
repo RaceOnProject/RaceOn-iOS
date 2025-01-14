@@ -17,17 +17,15 @@ public struct AllowAccessFeature {
     
     public struct State: Equatable {
         public init () {}
-        var isRequested: Bool = false
     }
     
     public enum Action: Equatable {
-        case confirmButtonTapped
+        case requestAuthorization
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .confirmButtonTapped:
-            state.isRequested = true
+        case .requestAuthorization:
             return requestAuthorization()
         }
     }

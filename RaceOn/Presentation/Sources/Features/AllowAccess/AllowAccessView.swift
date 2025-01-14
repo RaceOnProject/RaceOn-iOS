@@ -74,6 +74,9 @@ public struct AllowAccessView: View {
             }
             .padding(.horizontal, 20)
         }
+        .onAppear(perform: {
+            viewStore.send(.requestAuthorization)
+        })
         .navigationBarBackButtonHidden(true)
     }
     
@@ -146,11 +149,7 @@ public struct AllowAccessView: View {
     @ViewBuilder
     var confirmButton: some View {
         Button {
-            if viewStore.state.isRequested {
-                router.changeToRoot(screen: .main)
-            } else {
-                viewStore.send(.confirmButtonTapped)
-            }
+            router.changeToRoot(screen: .main)
         } label: {
             Text("확인")
                 .font(.semiBold(17))
