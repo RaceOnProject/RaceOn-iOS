@@ -63,11 +63,6 @@ public struct LoginView: View {
                         .frame(width: 350, height: 54)
                         .onTapGesture {
                             startSignInWithAppleFlow()
-//                            if hasLocationAccess() {
-//                                router.changeToRoot(screen: .main)
-//                            } else {
-//                                router.push(screen: .allowAccess)
-//                            }
                         }
                         
                     Spacer().frame(height: 34)
@@ -76,6 +71,15 @@ public struct LoginView: View {
             .navigationBarBackButtonHidden(true)
             .navigationDestination(for: Screen.self) { type in
                 router.screenView(type: type)
+            }
+            .onChange(of: viewStore.successLogin) { isSuccess in
+                if isSuccess {
+                    if !hasLocationAccess() {
+                        router.changeToRoot(screen: .main)
+                    } else {
+                        router.push(screen: .allowAccess)
+                    }
+                }
             }
         }
     }

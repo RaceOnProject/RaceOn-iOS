@@ -12,12 +12,13 @@ import AuthenticationServices
 import Combine
 
 import Domain
+import Shared
 
 import ComposableArchitecture
 import KakaoSDKUser
 import KakaoSDKAuth
 
-public enum SocialLoginType: String {
+public enum SocialLoginType: String, Equatable {
     case kakao = "KAKAO"
     case apple = "APPLE"
 }
@@ -31,17 +32,28 @@ public struct LoginFeature {
     
     public struct State: Equatable {
         public init () {}
+        
+        var idToken: String = ""
+        var socialLoginType: SocialLoginType?
+        var nickName: String?
+        var profileImageUrl: String?
+        
+        var successLogin: Bool = false
     }
     
-    public enum Action: Equatable {
+    public enum Action {
         case kakaoLoginButtonTapped
         case requestLogin(String, SocialLoginType)
-        case responseLogin(TokenResponse)
+//        case responseLogin(TokenResponse)
         
-        case joinMembers(String, SocialLoginType, String)
-        case responseJoinMembers
+        case setKakaoProfile(String, String)
         
-        case setErrorMessage(String)
+        case joinMembers(String, SocialLoginType)
+//        case responseJoinMembers
+        
+        case setError(NetworkError)
+        
+        case successLogin(TokenResponse)
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -56,28 +68,62 @@ public struct LoginFeature {
                 return kakaoLoginWithAccount()
             }
         case .requestLogin(let idToken, let socialLoginType):
+            state.idToken = idToken
+            state.socialLoginType = socialLoginType
             return requestLogin(idToken: idToken, socialLoginType: socialLoginType)
             
-        case .responseLogin(let tokenResponse):
-            print("accessToken >> \(tokenResponse.accessToken)")
-            print("refreshToken >> \(tokenResponse.refreshToken)")
+        case .setKakaoProfile(let nickName, let profileImageUrl):
+            state.nickName = nickName
+            state.profileImageUrl = profileImageUrl
             return .none
             
-        case .joinMembers(let idToken, let socialLoginType, let profileImageUrl):
-            return joinMembers(idToken: idToken, socialLoginType: socialLoginType, profileImageUrl: profileImageUrl)
+        case .joinMembers(let idToken, let socialLoginType):
             
-        case .responseJoinMembers:
+            return joinMembers(idToken: idToken,
+                               socialLoginType: socialLoginType,
+                               nickname: state.nickName,
+                               profileImageUrl: state.profileImageUrl)
+            
+        case .setError(let error):
+            if case .serverDefinedError(let serverError) = error {
+                switch serverError {
+                case .userNotRegistered:
+                    
+                    guard let socialLoginType = state.socialLoginType else { return .none }
+                    
+                    if socialLoginType == .kakao {
+                        return .concatenate([
+                            getKakaoProfile(),
+                            .send(.joinMembers(state.idToken, socialLoginType))
+                        ])
+                    } else {
+                        return .send(.joinMembers(state.idToken, socialLoginType))
+                    }
+                    
+                default:
+                    state.idToken = ""
+                    state.socialLoginType = nil
+                    state.nickName = nil
+                    state.profileImageUrl = nil
+                    return .none
+                }
+            }
             return .none
             
-        case .setErrorMessage(let message):
-            print("error >> \(message)")
+        case .successLogin(let tokenResponse):
+            print("로그인 성공 accessToken >> \(tokenResponse.accessToken)")
+            print("로그인 성공 refreshToken >> \(tokenResponse.refreshToken)")
+            UserDefaultsManager.shared.set(tokenResponse.accessToken, forKey: .accessToken)
+            UserDefaultsManager.shared.set(tokenResponse.refreshToken, forKey: .refreshToken)
+            
+            state.successLogin = true
             return .none
         }
     }
 }
 // MARK: - KAKAO LOGIN
 public extension LoginFeature {
-    
+    /// 카카오 앱으로 로그인
     private func kakaoLoginWithApp() -> Effect<Action> {
         return .run { @MainActor send in
             await withCheckedContinuation { continuation in
@@ -91,7 +137,6 @@ public extension LoginFeature {
                             return
                         }
                         
-                        getKakaoProfileImage()
                         send(.requestLogin(idToken, .kakao))
                         continuation.resume()
                     }
@@ -100,6 +145,7 @@ public extension LoginFeature {
         }
     }
     
+    /// 카카오 계정으로 로그인
     private func kakaoLoginWithAccount() -> Effect<Action> {
         return .run { @MainActor send in
             await withCheckedContinuation { continuation in
@@ -113,7 +159,6 @@ public extension LoginFeature {
                             return
                         }
                         
-                        getKakaoProfileImage()
                         send(.requestLogin(idToken, .kakao))
                         continuation.resume()
                     }
@@ -122,17 +167,25 @@ public extension LoginFeature {
         }
     }
     
-    private func getKakaoProfileImage() {
-        UserApi.shared.me() {(user, error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                print("me() success.")
-                print("카캌오 프로필 \(user?.kakaoAccount?.profile?.profileImageUrl)")
-                user?.kakaoAccount?.profile?.profileImageUrl
-                // 성공 시 동작 구현
-                _ = user
+    /// 카카오 프로필 가져오기(닉네임, 프로필사진)
+    private func getKakaoProfile() -> Effect<Action> {
+        return .run { @MainActor send in
+            await withCheckedContinuation { continuation in
+                UserApi.shared.me() {(user, error) in
+                    if let error = error {
+                        print("카카오톡 프로필 가져오기 실패: \(error.localizedDescription)")
+                        continuation.resume()
+                    } else {
+                        guard let nickname = user?.kakaoAccount?.profile?.nickname,
+                              let profileImageUrl = user?.kakaoAccount?.profile?.profileImageUrl else {
+                            continuation.resume()
+                            return
+                        }
+                        
+                        send(.setKakaoProfile(nickname, profileImageUrl.absoluteString))
+                        continuation.resume()
+                    }
+                }
             }
         }
     }
@@ -140,48 +193,53 @@ public extension LoginFeature {
 
 // MARK: - LOGIN API
 public extension LoginFeature {
-    private func requestLogin(idToken: String, socialLoginType: SocialLoginType) -> Effect<Action> {
-        print("idTokens: \(idToken), socialType: \(socialLoginType)")
+    /// 로그인 요청
+    private func requestLogin(
+        idToken: String,
+        socialLoginType: SocialLoginType
+    ) -> Effect<Action> {
         
         return Effect.publisher {
-            authUseCase.socialLogin(idToken: idToken, socialProvider: socialLoginType.rawValue)
+            authUseCase.socialLogin(idToken: idToken,
+                                    socialProvider: socialLoginType.rawValue)
                 .receive(on: DispatchQueue.main)
                 .map {
                     if let tokenResponse = $0.data {
-                        return Action.responseLogin(tokenResponse)
+                        return Action.successLogin(tokenResponse)
                     } else {
-                        return Action.setErrorMessage("로그인에 실패했습니다.")
+                        return Action.setError(.unknownError)
                     }
                 }
                 .catch { error -> Just<Action> in
-                    let errorMessage = error.message
-                    return Just(Action.setErrorMessage(errorMessage))
+                    return Just(Action.setError(error))
                 }
                 .eraseToAnyPublisher()
         }
     }
     
+    /// 회원가입 요청
     private func joinMembers(
         idToken: String,
         socialLoginType: SocialLoginType,
+        nickname: String?,
         profileImageUrl: String?
     ) -> Effect<Action> {
-        print("idTokens: \(idToken), socialType: \(socialLoginType), profileImageUrl: \(String(describing: profileImageUrl))")
         
         return Effect.publisher {
-            authUseCase.joinMembers(idToken: idToken, socialProvider: socialLoginType.rawValue, profileImageUrl: profileImageUrl)
+            authUseCase.joinMembers(idToken: idToken,
+                                    socialProvider: socialLoginType.rawValue,
+                                    nickname: nickname,
+                                    profileImageUrl: profileImageUrl)
                 .receive(on: DispatchQueue.main)
                 .map {
                     if let tokenResponse = $0.data {
-                        return Action.responseJoinMembers
-                        // 회원가입 성공
+                        return Action.successLogin(tokenResponse)
                     } else {
-                        return Action.setErrorMessage("회원가입에 실패했습니다.")
+                        return Action.setError(.unknownError)
                     }
                 }
                 .catch { error -> Just<Action> in
-                    let errorMessage = error.message
-                    return Just(Action.setErrorMessage(errorMessage))
+                    return Just(Action.setError(error))
                 }
                 .eraseToAnyPublisher()
         }

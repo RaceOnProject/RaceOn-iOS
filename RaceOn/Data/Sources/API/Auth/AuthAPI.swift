@@ -19,7 +19,7 @@ public enum AuthAPI {
     case guestLogin(memberId: String)
     case refreshAccessToken(refreshToken: String)
     case socialLogin(idToken: String, socialProvider: String)
-    case joinMembers(idToken: String, socialProvider: String, profileImageUrl: String?)
+    case joinMembers(idToken: String, socialProvider: String, nickname: String?, profileImageUrl: String?)
 }
 
 extension AuthAPI: TargetType {
@@ -57,11 +57,12 @@ extension AuthAPI: TargetType {
                 ],
                 encoding: JSONEncoding.default
             )
-        case .joinMembers(let idToken, let socialProvider, let profileImageUrl):
+        case .joinMembers(let idToken, let socialProvider, let nickname, let profileImageUrl):
             return .requestParameters(
                 parameters: [
                     "idToken": idToken,
                     "socialProvider": socialProvider,
+                    "nickname": nickname,
                     "profileImageUrl": profileImageUrl
                 ],
                 encoding: JSONEncoding.default)

@@ -11,7 +11,10 @@ import Combine
 public protocol AuthUseCaseProtocol {
     func socialLogin(idToken: String, socialProvider: String) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
     
-    func joinMembers(idToken: String, socialProvider: String, profileImageUrl: String?) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func joinMembers(idToken: String,
+                     socialProvider: String,
+                     nickname: String?,
+                     profileImageUrl: String?) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
 }
 
 public final class AuthUseCase: AuthUseCaseProtocol {
@@ -31,8 +34,9 @@ public final class AuthUseCase: AuthUseCaseProtocol {
     public func joinMembers(
         idToken: String,
         socialProvider: String,
+        nickname: String?,
         profileImageUrl: String?
-    ) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
-        return repository.joinMembers(idToken: idToken, socialProvider: socialProvider, profileImageUrl: profileImageUrl)
+    ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
+        return repository.joinMembers(idToken: idToken, socialProvider: socialProvider, nickname: nickname, profileImageUrl: profileImageUrl)
     }
 }

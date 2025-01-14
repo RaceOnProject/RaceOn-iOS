@@ -34,13 +34,15 @@ public final class AuthRepositoryImpl: AuthRepositoryProtocol {
     public func joinMembers(
         idToken: String,
         socialProvider: String,
+        nickname: String?,
         profileImageUrl: String?
-    ) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+    ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
         return networkManager.request(
             target: AuthAPI.joinMembers(idToken: idToken,
                                         socialProvider: socialProvider,
+                                        nickname: nickname,
                                         profileImageUrl: profileImageUrl),
-            type: VoidResponse.self
+            type: TokenResponse.self
         )
     }
 }
