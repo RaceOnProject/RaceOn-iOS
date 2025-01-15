@@ -115,6 +115,7 @@ public struct LoginFeature {
             print("로그인 성공 refreshToken >> \(tokenResponse.refreshToken)")
             UserDefaultsManager.shared.set(tokenResponse.accessToken, forKey: .accessToken)
             UserDefaultsManager.shared.set(tokenResponse.refreshToken, forKey: .refreshToken)
+            UserDefaultsManager.shared.set(tokenResponse.memberId, forKey: .memberId)
             
             state.successLogin = true
             return .none
