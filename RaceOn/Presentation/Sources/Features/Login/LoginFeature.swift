@@ -33,6 +33,8 @@ public struct LoginFeature {
     public struct State: Equatable {
         public init () {}
         
+        var toast: Toast?
+        
         var idToken: String = ""
         var socialLoginType: SocialLoginType?
         var nickName: String?
@@ -52,6 +54,8 @@ public struct LoginFeature {
 //        case responseJoinMembers
         
         case setError(NetworkError)
+        case showToast(String)
+        case dismissToast
         
         case successLogin(TokenResponse)
     }
@@ -105,9 +109,16 @@ public struct LoginFeature {
                     state.socialLoginType = nil
                     state.nickName = nil
                     state.profileImageUrl = nil
-                    return .none
+                    return .send(.showToast("다시 시도해주세요."))
                 }
             }
+            return .none
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
+            
+        case .dismissToast:
+            state.toast = nil
             return .none
             
         case .successLogin(let tokenResponse):
@@ -130,7 +141,7 @@ public extension LoginFeature {
             await withCheckedContinuation { continuation in
                 UserApi.shared.loginWithKakaoTalk { (oauthToken, error) in
                     if let error = error {
-                        print("카카오톡 앱 로그인 실패: \(error.localizedDescription)")
+                        send(.showToast("카카오 로그인에 실패했어요. 다시 시도해주세요."))
                         continuation.resume()
                     } else if let oauthToken = oauthToken {
                         guard let idToken = oauthToken.idToken else {
@@ -152,7 +163,7 @@ public extension LoginFeature {
             await withCheckedContinuation { continuation in
                 UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
                     if let error = error {
-                        print("카카오톡 계정 로그인 실패: \(error.localizedDescription)")
+                        send(.showToast("카카오 로그인에 실패했어요. 다시 시도해주세요."))
                         continuation.resume()
                     } else {
                         guard let idToken = oauthToken?.idToken else {

@@ -68,6 +68,12 @@ public struct LoginView: View {
                     Spacer().frame(height: 34)
                 }
             }
+            .toastView(
+                toast: viewStore.binding(
+                    get: \.toast,
+                    send: .dismissToast
+                )
+            )
             .navigationBarBackButtonHidden(true)
             .navigationDestination(for: Screen.self) { type in
                 router.screenView(type: type)
