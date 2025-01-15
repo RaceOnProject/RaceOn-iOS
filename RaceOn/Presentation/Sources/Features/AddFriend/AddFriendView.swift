@@ -80,8 +80,6 @@ struct AddFriendView: View {
                             .onChange(of: viewStore.state.letters[index]) { newValue in
                                 if newValue.count > 0 {
                                     focusedField = AddFriendFeature.State.Field(index + 1)
-                                } else if newValue.count == 0, index > 0 {
-                                    focusedField = AddFriendFeature.State.Field(index - 1)
                                 }
                             }
                      }
