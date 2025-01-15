@@ -11,13 +11,15 @@ import Domain
 import Data
 import Combine
 import Shared
+import Moya
 
 @Reducer
 struct MyProfileFeature {
     struct State: Equatable {
-        var memberInfo: MemberInfo?
-        
-        var friendCode: String?
+        var profileImageUrl: String?
+        var originalNickname: String?
+        var nickname: String?
+        var memberCode: String?
         var isEditing: Bool = false
         
         var showImagePicker = false
@@ -25,16 +27,20 @@ struct MyProfileFeature {
         var isCroppingPresented = false
         
         var isLoading: Bool = false
-        
         var errorMessage: String?
-        
         var toast: Toast?
     }
     
     enum Action {
         case onAppear
         case copyButtonTapped
-        case enterEditMode(isEditing: Bool)
+        
+        case editButtonTapped
+        case saveButtonTapped
+        case uploadImageS3(BaseResponse<ProfileImageResponse>)
+        
+        case editProfile
+        
         case dismissToast
         
         case setImagePickerPresented(isPresented: Bool)
@@ -42,9 +48,10 @@ struct MyProfileFeature {
         case setIsCroppingPresented(isPresented: Bool)
         
         case setMemberInfo(MemberInfo)
+        case editProfileResponse
         case setErrorMessage(String)
         
-        case noAction
+        case editNickname(String)
     }
     
     @Dependency(\.memberUseCase) var memberUseCase
@@ -61,29 +68,110 @@ struct MyProfileFeature {
                 memberUseCase.fetchMemberInfo(memberId: memberId)
                     .receive(on: DispatchQueue.main)
                     .map {
-                        // response에서 data를 추출하여 Action으로 전달
                         if let memberInfo = $0.data {
                             return Action.setMemberInfo(memberInfo)
                         } else {
-                            // data가 없는 경우 에러로 처리
                             return Action.setErrorMessage("멤버 정보를 찾을 수 없습니다.")
                         }
                     }
                     .catch { error -> Just<Action> in
-                        // 에러를 처리하여 Action.setError로 반환
                         let errorMessage = error.message
                         return Just(Action.setErrorMessage(errorMessage))
                     }
                     .eraseToAnyPublisher()
             }
         case .copyButtonTapped:
-            guard let memberInfo = state.memberInfo else { return .none }
-            UIPasteboard.general.string = memberInfo.memberCode
+            guard let memberCode = state.memberCode else { return .none }
+            UIPasteboard.general.string = memberCode
             state.toast = Toast(content: "내 코드가 복사되었어요")
             return .none
-        case .enterEditMode(let isEditing):
-            state.isEditing = isEditing
+        case .editButtonTapped:
+            state.isEditing = true
             return .none
+        case .saveButtonTapped:
+            state.isLoading = true
+            
+            // FIXME: TEST용 (임시 로그인)
+            let memberId: Int = 1
+            return Effect.publisher {
+                memberUseCase.requestImageEditPermission(memberId: memberId)
+                    .receive(on: DispatchQueue.main)
+                    .map {
+                        Action.uploadImageS3($0)
+                    }
+                    .catch { error in
+                        return Just(Action.setErrorMessage(error.message))
+                    }
+            }
+        case .uploadImageS3(let response):
+            if let selectedImage = state.selectedImage,
+               let contentUrl = response.data?.contentUrl,
+               let imageData = resizeImage(
+                image: selectedImage,
+                targetSize: CGSize(width: 128, height: 128)
+               ).pngData() {
+                state.profileImageUrl = contentUrl
+                
+                return Effect.publisher {
+                    memberUseCase.uploadImageS3(
+                        url: response.data?.preSignedUrl ?? .init(),
+                        pngData: imageData
+                    )
+                    .receive(on: DispatchQueue.main)
+                        .map { _ in
+                            Action.editProfile
+                        }
+                        .catch { error in
+                            Just(Action.setErrorMessage(error.message))
+                        }
+                }
+            } else {
+                guard let nickname = state.nickname,
+                      let contentUrl = state.profileImageUrl else {
+                    return .none
+                }
+                
+                // FIXME: TEST용 (임시 로그인)
+                let memberId: Int = 1
+                
+                return Effect.publisher {
+                    memberUseCase.updateProfile(
+                        memberId: memberId,
+                        contentUrl: contentUrl,
+                        nickname: nickname
+                    )
+                        .receive(on: DispatchQueue.main)
+                        .map { _ in
+                            Action.editProfileResponse
+                        }
+                        .catch { error in
+                            Just(Action.setErrorMessage(error.message))
+                        }
+                }
+            }
+        case .editProfile:
+            guard let nickname = state.nickname,
+                  let contentUrl = state.profileImageUrl else {
+                return .none
+            }
+            
+            // FIXME: TEST용 (임시 로그인)
+            let memberId: Int = 1
+            
+            return Effect.publisher {
+                memberUseCase.updateProfile(
+                    memberId: memberId,
+                    contentUrl: contentUrl,
+                    nickname: nickname
+                )
+                    .receive(on: DispatchQueue.main)
+                    .map { _ in
+                        Action.editProfileResponse
+                    }
+                    .catch { error in
+                        Just(Action.setErrorMessage(error.message))
+                    }
+            }
         case .dismissToast:
             state.toast = nil
             return .none
@@ -96,18 +184,49 @@ struct MyProfileFeature {
         case .setIsCroppingPresented(let isPresented):
             state.isCroppingPresented = isPresented
             return .none
-            
         case .setMemberInfo(let memberInfo):
-            dump(memberInfo)
+            state.profileImageUrl = memberInfo.profileImageUrl
+            state.originalNickname = memberInfo.nickname
+            state.nickname = memberInfo.nickname
+            state.memberCode = memberInfo.memberCode
             state.isLoading = false
-            state.memberInfo = memberInfo
+            return .none
+        case .editProfileResponse:
+            state.isLoading = false
+            state.isEditing = false
             return .none
         case .setErrorMessage(let errorMessage):
-            state.isLoading = false
             state.errorMessage = errorMessage
+            state.isLoading = false
             return .none
-        case .noAction:
+        case .editNickname(let nickname):
+            state.nickname = nickname
             return .none
         }
     }
 }
+
+/// UIImage를 지정된 크기로 리사이징하는 함수
+func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
+    let size = image.size
+    let widthRatio  = targetSize.width  / size.width
+    let heightRatio = targetSize.height / size.height
+    
+    // 크기를 유지하면서 리사이징 비율을 계산합니다
+    let newSize: CGSize
+    if widthRatio > heightRatio {
+        newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+    } else {
+        newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+    }
+    
+    // 리사이징 후 새 이미지를 생성합니다
+    let rect = CGRect(origin: .zero, size: newSize)
+    UIGraphicsBeginImageContextWithOptions(newSize, false, image.scale)
+    image.draw(in: rect)
+    let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    
+    return resizedImage ?? image
+}
+

@@ -63,4 +63,17 @@ final class NetworkManager {
         .eraseToAnyPublisher()
     }
 
+    func uploadImageToS3(target: TargetType) -> AnyPublisher<Void, NetworkError> {
+        Future { promise in
+            self.provider.request(MultiTarget(target)) { result in
+                switch result {
+                case .success(let response):
+                    promise(.success(()))
+                case .failure(let error):
+                    promise(.failure(.networkFailure(error)))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
