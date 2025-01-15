@@ -17,7 +17,7 @@ class TokenManager {
         if let refreshToken: String = UserDefaultsManager.shared.get(forKey: .refreshToken) {
             self.refreshToken = refreshToken
         } else {
-            self.refreshToken = "eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IlJFRlJFU0hfVE9LRU4iLCJzdWIiOiIxIiwiZXhwIjoxNzM3NjgzMDEyfQ.FbMX0RB-4s3H8RNabH1beebFnQNAMyS_20th09y0FYkapW-bg5Na7Acw-cjCU0OYXe0BfXOFyAWbQUOBit10BA"
+            self.refreshToken = "eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdHkiOiJOT1JNQUxfVVNFUiIsInRva2VuVHlwZSI6IlJFRlJFU0hfVE9LRU4iLCJzdWIiOiIxIiwiZXhwIjoxNzM3ODU5ODEwfQ.o1sDRZaWyQotQuhpIIMe95BGvIBgkVfanX0EI0tdwCXF1I72LQdO_0jg1c8BXSRKOdDCr9IIeaiUAOYTxL_enA"
         }
         
         // 앱 실행 시 저장된 토큰을 불러옴

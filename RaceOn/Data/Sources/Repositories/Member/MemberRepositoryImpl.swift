@@ -29,4 +29,24 @@ public final class MemberRepositoryImpl: MemberRepositoryProtocol {
             type: VoidResponse.self
         )
     }
+    
+    public func requestImageEditPermission(memberId: Int) -> AnyPublisher<BaseResponse<ProfileImageResponse>, NetworkError> {
+        return networkManager.request(
+            target: MemberAPI.requestImageEditPermission(memberId: memberId),
+            type: ProfileImageResponse.self
+        )
+    }
+    
+    public func uploadImageS3(url: String, pngData: Data) -> AnyPublisher<Void, NetworkError> {
+        return networkManager.uploadImageToS3(
+            target: MemberAPI.uploadImageS3(url: url, pngData: pngData)
+        )
+    }
+    
+    public func updateProfile(memberId: Int, contentUrl: String, nickname: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return networkManager.request(
+            target: MemberAPI.updateProfile(memberId: memberId, contentUrl: contentUrl, nickname: nickname),
+            type: VoidResponse.self
+        )
+    }
 }

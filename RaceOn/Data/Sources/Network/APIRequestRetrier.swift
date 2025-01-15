@@ -12,6 +12,8 @@ import Domain
 import Shared
 
 public final class APIRequestRetrier: RequestInterceptor {
+    
+    
     public static let shared = APIRequestRetrier()
     private let tokenManager = TokenManager.shared
     public init() {}
@@ -27,12 +29,16 @@ public final class APIRequestRetrier: RequestInterceptor {
     enum Constants {
         static let retryLimit = 1
         static let retryDelay: TimeInterval = 1
+        static let urlString: String = "https://s3.ap-northeast-2.amazonaws.com/race-on/profileimage"
     }
     
-    // URLRequest를 adapt하는 부분
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        guard let absoluteString = urlRequest.url?.absoluteString else {
+            return
+        }
+        
         var urlRequest = urlRequest
-        urlRequest.headers.add(.authorization(bearerToken: accessToken))
+        absoluteString.contains(Constants.urlString) ? nil : urlRequest.headers.add(.authorization(bearerToken: accessToken)) // S3에 업로드할때는 토큰 제거
         completion(.success(urlRequest))
     }
     

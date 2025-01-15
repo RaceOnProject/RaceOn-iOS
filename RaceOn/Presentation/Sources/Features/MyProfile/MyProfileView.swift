@@ -29,8 +29,7 @@ enum MyProfileTrailing {
 }
 
 struct MyProfileView: View {
-    
-    @State private var nickname: String = ""
+    @State private var isFirstAppear = true // 플래그 변수
     
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<MyProfileFeature.State, MyProfileFeature.Action>
@@ -50,7 +49,7 @@ struct MyProfileView: View {
                 Spacer().frame(height: 30)
                 
                 Button(action: {
-                    viewStore.send(.enterEditMode(isEditing: true))
+                    viewStore.send(.editButtonTapped)
                     viewStore.send(.setImagePickerPresented(isPresented: true))
                 }, label: {
                     ZStack(alignment: .bottomTrailing) {
@@ -60,8 +59,8 @@ struct MyProfileView: View {
                                 .frame(width: 128, height: 128)
                                 .clipShape(.circle)
                         } else {
-                            if let memberInfo = viewStore.state.memberInfo { // 서버 통신 후 memberInfo가 nil이 아니면
-                                if let url = URL(string: memberInfo.profileImageUrl) {
+                            if let profileImageUrl = viewStore.state.profileImageUrl { // 서버 통신 후 memberInfo가 nil이 아니면
+                                if let url = URL(string: profileImageUrl) {
                                     KFImage(url)
                                         .placeholder { progress in
                                             ProgressView(progress)
@@ -88,15 +87,15 @@ struct MyProfileView: View {
                 
                 Spacer().frame(height: 20)
                 
-                if let memberInfo = viewStore.state.memberInfo {
+                if let nickname = viewStore.state.nickname {
                     if viewStore.state.isEditing {
                         TextField(
                             "",
                             text: viewStore.binding(
-                                get: { _ in memberInfo.nickname },
-                                send: .noAction
+                                get: { _ in nickname },
+                                send: { .editNickname($0) }
                             ),
-                            prompt: Text(memberInfo.nickname)
+                            prompt: Text(viewStore.state.originalNickname ?? .init())
                                 .font(.semiBold(20))
                                 .foregroundColor(ColorConstants.gray4)
                         )
@@ -105,7 +104,7 @@ struct MyProfileView: View {
                         .multilineTextAlignment(.center)
                         .frame(height: 28)
                     } else {
-                        Text(memberInfo.nickname)
+                        Text(nickname)
                             .font(.semiBold(20))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -117,13 +116,13 @@ struct MyProfileView: View {
                 
                 Spacer().frame(height: 12)
                 
-                if let memberInfo = viewStore.state.memberInfo {
+                if let memberCode = viewStore.state.memberCode {
                     if !viewStore.state.isEditing {
                         Button(action: {
                             viewStore.send(.copyButtonTapped)
                         }, label: {
                             HStack(spacing: 4) {
-                                Text(memberInfo.memberCode)
+                                Text(memberCode)
                                     .font(.semiBold(15))
                                     .foregroundColor(.white)
                                 
@@ -150,6 +149,7 @@ struct MyProfileView: View {
         .disabled(viewStore.state.isLoading)
         .onAppear {
             viewStore.send(.onAppear)
+            isFirstAppear = false // 이후에는 호출되지 않도록 플래그 업데이트
         }
         .onTapGesture {
             self.endTextEditing()
@@ -214,11 +214,11 @@ struct MyProfileView: View {
             
             if viewStore.state.isEditing { // 편집중
                 ToolbarView.trailingItems(MyProfileTrailing.save.items) {
-                    viewStore.send(.enterEditMode(isEditing: false))
+                    viewStore.send(.saveButtonTapped)
                 }
             } else {
                 ToolbarView.trailingItems(MyProfileTrailing.edit.items) {
-                    viewStore.send(.enterEditMode(isEditing: true))
+                    viewStore.send(.editButtonTapped)
                 }
             }
         }
