@@ -63,7 +63,12 @@ public final class Router: ObservableObject {
     public func screenView(type: Screen) -> some View {
         switch type {
         case .main:
-            MainView()
+            MainView(
+                store: Store(
+                    initialState: MainFeature.State(),
+                    reducer: { MainFeature()._printChanges() }
+                )
+            )
         case .login:
             LoginView(
                 store: Store(

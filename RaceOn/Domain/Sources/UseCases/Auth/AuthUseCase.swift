@@ -19,6 +19,7 @@ public protocol AuthUseCaseProtocol {
                      socialProvider: String,
                      nickname: String?,
                      profileImageUrl: String?) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
+    func registerFCMToken(memberId: Int, fcmToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }
 
 public final class AuthUseCase: AuthUseCaseProtocol {
@@ -51,5 +52,9 @@ public final class AuthUseCase: AuthUseCaseProtocol {
                                       socialProvider: socialProvider,
                                       nickname: nickname,
                                       profileImageUrl: profileImageUrl)
+    }
+    
+    public func registerFCMToken(memberId: Int, fcmToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return repository.registerFCMToken(memberId: memberId, fcmToken: fcmToken)
     }
 }

@@ -78,7 +78,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
             .environmentObject(Router())
         case .main:
-            MainView().environmentObject(Router())
+            MainView(
+                store: Store(
+                    initialState: MainFeature.State(),
+                    reducer: { MainFeature()._printChanges() }
+                )
+            ).environmentObject(Router())
         }
     }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import Shared
+import ComposableArchitecture
 
 public enum MatchingDistance {
     case three
@@ -18,11 +19,16 @@ public enum MatchingDistance {
 public struct MainView: View {
 
     @EnvironmentObject var router: Router
+    let store: StoreOf<MainFeature>
+    @ObservedObject var viewStore: ViewStoreOf<MainFeature>
     //TODO: Feature로 이동 예정
     @State var selectedMatchingDistance: MatchingDistance = .three
     @State private var isThrottling = false
     
-    public init() {}
+    public init(store: StoreOf<MainFeature>) {
+        self.store = store
+        self.viewStore = ViewStore(store, observe: { $0 })
+    }
     
     public var body: some View {
         NavigationStack(path: $router.route) {
@@ -46,6 +52,9 @@ public struct MainView: View {
             .navigationBarBackButtonHidden(true)
             .navigationDestination(for: Screen.self) { type in
                 router.screenView(type: type)
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
             }
         }
     }

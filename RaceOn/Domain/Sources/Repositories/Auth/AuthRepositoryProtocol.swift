@@ -14,4 +14,5 @@ public protocol AuthRepositoryProtocol {
     
     func joinMembers(idToken: String, socialProvider: String, nickname: String?, profileImageUrl: String?)
     -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
+    func registerFCMToken(memberId: Int, fcmToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }
