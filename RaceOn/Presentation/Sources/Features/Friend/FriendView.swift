@@ -56,14 +56,20 @@ public struct FriendView: View {
                     .background(ColorConstants.gray6)
                 }
             } else {
-                VStack {
-                    ImageConstants.graphicNothing
-                        .resizable()
-                        .frame(width: 143.97, height: 180)
-                        .padding(.bottom, 16)
-                    Text(Constants.friendlessDescription)
-                        .font(.semiBold(16))
-                        .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                if viewStore.state.isLoading {
+                    ProgressView()
+                        .tint(ColorConstants.gray3)
+                        .allowsHitTesting(false)
+                } else {
+                    VStack {
+                        ImageConstants.graphicNothing
+                            .resizable()
+                            .frame(width: 143.97, height: 180)
+                            .padding(.bottom, 16)
+                        Text(Constants.friendlessDescription)
+                            .font(.semiBold(16))
+                            .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                    }
                 }
             }
             
