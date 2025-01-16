@@ -13,6 +13,7 @@ public enum AuthAPI {
     case refreshAccessToken(refreshToken: String)
     case socialLogin(idToken: String, socialProvider: String)
     case joinMembers(idToken: String, socialProvider: String, nickname: String?, profileImageUrl: String?)
+    case registerFCMToken(memberId: Int, fcmToken: String)
 }
 
 extension AuthAPI: TargetType {
@@ -26,6 +27,7 @@ extension AuthAPI: TargetType {
         case .refreshAccessToken: return "/auth/reissue"
         case .socialLogin: return "/auth/login"
         case .joinMembers: return "/members"
+        case .registerFCMToken(let memberId, _): return "/tokens/\(memberId)"
         }
     }
     
@@ -64,12 +66,19 @@ extension AuthAPI: TargetType {
                     "profileImageUrl": profileImageUrl
                 ],
                 encoding: JSONEncoding.default)
+        case .registerFCMToken(_, let fcmToken):
+            return .requestParameters(
+                parameters: [
+                    "token": fcmToken
+                ],
+                encoding: JSONEncoding.default
+            )
         }
     }
     
     public var headers: [String: String]? {
         switch self {
-        case .guestLogin, .socialLogin, .joinMembers:
+        case .guestLogin, .socialLogin, .joinMembers, .registerFCMToken:
             return [
                 "Content-Type": "application/json"
             ]

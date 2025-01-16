@@ -53,4 +53,14 @@ public final class AuthRepositoryImpl: AuthRepositoryProtocol {
             type: TokenResponse.self
         )
     }
+    
+    public func registerFCMToken(memberId: Int, fcmToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return networkManager.request(
+            target: AuthAPI.registerFCMToken(
+                memberId: memberId,
+                fcmToken: fcmToken
+            ),
+            type: VoidResponse.self
+        )
+    }
 }
