@@ -18,6 +18,8 @@ public struct MainFeature {
     
     public struct State: Equatable {
         public init() {}
+        var isReadyForNextScreen: Bool = false
+        var selectedMatchingDistance: MatchingDistance = .three
         var selectedCompetitionFreind: Friend?
         
         var errorMessage: String?
@@ -26,9 +28,11 @@ public struct MainFeature {
     
     public enum Action {
         case onAppear
+        case onDisappear
         case startButtonTapped
         case dismissSheet
         case selectedCompetitionFreind(Friend?)
+        case matchingDistanceSelected(MatchingDistance)
         
         case registerFCMTokenResponse
         
@@ -43,6 +47,9 @@ public struct MainFeature {
                 return .none
             }
             return registerFCMToken(memberId: memberId, fcmToken: fcmToken)
+        case .onDisappear:
+            state.isReadyForNextScreen = false
+            return .none
         case .startButtonTapped:
             state.isShowSheet = true
             return .none
@@ -51,6 +58,10 @@ public struct MainFeature {
             return .none
         case .selectedCompetitionFreind(let friend):
             state.selectedCompetitionFreind = friend
+            state.isReadyForNextScreen = true
+            return .none
+        case .matchingDistanceSelected(let distance):
+            state.selectedMatchingDistance = distance
             return .none
         case .registerFCMTokenResponse:
             print("토큰 적재 성공")

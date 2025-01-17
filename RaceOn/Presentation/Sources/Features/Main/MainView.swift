@@ -14,6 +14,22 @@ public enum MatchingDistance {
     case three
     case five
     case ten
+    
+    var distance: Double {
+        switch self {
+        case .three: return 3.0
+        case .five: return 5.0
+        case .ten: return 10.0
+        }
+    }
+    
+    var timeLimit: Int {
+        switch self {
+        case .three: return 20
+        case .five: return 30
+        case .ten: return 50
+        }
+    }
 }
 
 public struct MainView: View {
@@ -21,8 +37,6 @@ public struct MainView: View {
     @EnvironmentObject var router: Router
     let store: StoreOf<MainFeature>
     @ObservedObject var viewStore: ViewStoreOf<MainFeature>
-    //TODO: Feature로 이동 예정
-    @State var selectedMatchingDistance: MatchingDistance = .three
     @State private var isThrottling = false
     
     public init(store: StoreOf<MainFeature>) {
@@ -56,6 +70,12 @@ public struct MainView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .onDisappear {
+                viewStore.send(.onDisappear)
+            }
+            .onChange(of: viewStore.state.isReadyForNextScreen) {
+                $0 ? router.push(screen: .matchingProcess) : nil
+            }
             .sheet(
                 isPresented: viewStore.binding(
                     get: \.isShowSheet,
@@ -83,7 +103,7 @@ public struct MainView: View {
     @ViewBuilder
     var gradation: some View {
         GeometryReader { proxy in
-            switch selectedMatchingDistance {
+            switch viewStore.state.selectedMatchingDistance {
             case .three:
                 RadialGradient(
                     stops: [.init(color: Color(red: 223, green: 84, blue: 56), location: 0.0),
@@ -166,7 +186,10 @@ public struct MainView: View {
     var distanceTabView: some View {
         
         ZStack {
-            TabView(selection: $selectedMatchingDistance) {
+            TabView(selection: viewStore.binding(
+                get: \.selectedMatchingDistance,
+                send: { .matchingDistanceSelected($0) }
+            )) {
                 ImageConstants.card3km
                     .resizable()
                     .cornerRadius(24)
@@ -191,7 +214,7 @@ public struct MainView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             
             HStack {
-                if selectedMatchingDistance != .three {
+                if viewStore.state.selectedMatchingDistance != .three {
                     ImageConstants.iconChevronLeft
                         .resizable()
                         .frame(width: 30, height: 30)
@@ -209,7 +232,7 @@ public struct MainView: View {
                 
                 Spacer()
                 
-                if selectedMatchingDistance != .ten {
+                if viewStore.state.selectedMatchingDistance != .ten {
                     ImageConstants.iconChevronRight
                         .resizable()
                         .frame(width: 30, height: 30)
@@ -248,17 +271,16 @@ public struct MainView: View {
     }
 }
 
+// FIXME: 애니메이션 작동 x
 private extension MainView {
     /// 탭뷰 왼쪽 버튼 탭
     private func leftTabButtonTapped() {
         withAnimation(.easeOut(duration: 0.2)) {
-            switch selectedMatchingDistance {
+            switch viewStore.state.selectedMatchingDistance {
             case .five:
-                selectedMatchingDistance = .three
-                print("3")
+                viewStore.send(.matchingDistanceSelected(.three))
             case .ten:
-                selectedMatchingDistance = .five
-                print("5")
+                viewStore.send(.matchingDistanceSelected(.five))
             default:
                 return
             }
@@ -268,13 +290,11 @@ private extension MainView {
     /// 탭뷰 오른쪽 버튼 탭
     private func rightTabButtonTapped() {
         withAnimation(.easeOut(duration: 0.2)) {
-            switch selectedMatchingDistance {
+            switch viewStore.state.selectedMatchingDistance {
             case .three:
-                selectedMatchingDistance = .five
-                print("5")
+                viewStore.send(.matchingDistanceSelected(.five))
             case .five:
-                selectedMatchingDistance = .ten
-                print("10")
+                viewStore.send(.matchingDistanceSelected(.ten))
             default:
                 return
             }
