@@ -13,7 +13,7 @@ public struct FriendResponse: Decodable {
 }
 
 // MARK: - Friend 모델
-public struct Friend: Decodable, Equatable, Identifiable {
+public struct Friend: Decodable, Equatable, Identifiable, Hashable {
     public let id = UUID()
     public var selected: Bool
     public let friendId: Int

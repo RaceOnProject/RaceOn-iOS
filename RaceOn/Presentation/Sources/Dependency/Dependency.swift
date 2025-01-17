@@ -29,6 +29,15 @@ extension DependencyValues {
         static let liveValue: FriendUseCaseProtocol = FriendUseCase(repository: FriendRepositoryImpl())
     }
     
+    // Game
+    var gameUseCase: GameUseCaseProtocol {
+        get { self[GameUseCaseKey.self] }
+        set { self[GameUseCaseKey.self] = newValue }
+    }
+    private enum GameUseCaseKey: DependencyKey {
+        static let liveValue: GameUseCaseProtocol = GameUseCase(repository: GameRepositoryImpl())
+    }
+    
     // Profile
     var memberUseCase: MemberUseCaseProtocol {
         get { self[ProfileUseCaseKey.self] }

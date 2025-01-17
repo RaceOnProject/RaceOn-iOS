@@ -9,6 +9,7 @@
 
 import ComposableArchitecture
 import SwiftUI
+import Domain
 
 public enum Screen: Hashable {
     case main
@@ -19,7 +20,7 @@ public enum Screen: Hashable {
     case setting
     case myProfile
     case legalNotice(type: SettingCategory)
-    case matchingProcess
+    case matchingProcess(MatchingDistance, Friend)
 }
 
 public final class Router: ObservableObject {
@@ -126,9 +127,12 @@ public final class Router: ObservableObject {
                 .environmentObject(self)
             default: Text("화면 이동 오류")
             }
-        case .matchingProcess:
+        case .matchingProcess(let distance, let friend):
             MatchingProcessView(
-                process: .waiting
+                store: Store(
+                    initialState: MatchingProcessFeature.State(distance: distance, friend: friend),
+                    reducer: { MatchingProcessFeature()._printChanges() }
+                )
             )
             .environmentObject(self)
         }
