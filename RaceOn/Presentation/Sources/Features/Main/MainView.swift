@@ -56,6 +56,27 @@ public struct MainView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .sheet(
+                isPresented: viewStore.binding(
+                    get: \.isShowSheet,
+                    send: .dismissSheet
+                )
+            ) {
+                ModalFriendView(
+                    store: Store(
+                        initialState: ModalFriendFeature.State(),
+                        reducer: { ModalFriendFeature()._printChanges() }
+                    ),
+                    selectedFriend: viewStore.binding(
+                        get: \.selectedCompetitionFreind,
+                        send: { .selectedCompetitionFreind($0) }
+                    )
+                )
+                    .presentationDetents([
+                        .medium
+                    ])
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
     
@@ -212,7 +233,7 @@ public struct MainView: View {
     @ViewBuilder
     var startButton: some View {
         Button {
-            router.push(screen: .friend)
+            viewStore.send(.startButtonTapped)
         } label: {
             Text("경쟁할 친구 선택하기")
                 .font(.semiBold(17))

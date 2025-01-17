@@ -42,8 +42,9 @@ public struct FriendView: View {
                     List {
                         ForEach(friendList) { friend in
                             FriendInfoView(
+                                viewType: .normalType,
                                 friend: friend,
-                                onKebabTapped: { friend in
+                                onButtonTapped: { friend in
                                     viewStore.send(.kebabButtonTapped(friend: friend)) // Composable Architecture 액션 예시
                                 })
                             .listRowSeparator(.hidden)

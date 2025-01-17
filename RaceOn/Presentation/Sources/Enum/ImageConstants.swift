@@ -26,6 +26,8 @@ enum ImageConstants {
     // Friend
     static let graphicNothing = PresentationAsset.graphicNothing.swiftUIImage
     static let kebab = PresentationAsset.kebab.swiftUIImage
+    static let circleCheckFill = PresentationAsset.circleCheckFill.swiftUIImage
+    static let circleCheck = PresentationAsset.circleCheck.swiftUIImage
     
     // Mockup Image(삭제 예정)
     static let profile0 = PresentationAsset.profile0.swiftUIImage

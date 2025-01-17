@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Combine
 import Shared
+import Domain
 
 @Reducer
 public struct MainFeature {
@@ -17,12 +18,20 @@ public struct MainFeature {
     
     public struct State: Equatable {
         public init() {}
+        var selectedCompetitionFreind: Friend?
+        
         var errorMessage: String?
+        var isShowSheet: Bool = false
     }
     
     public enum Action {
         case onAppear
+        case startButtonTapped
+        case dismissSheet
+        case selectedCompetitionFreind(Friend?)
+        
         case registerFCMTokenResponse
+        
         case setErrorMessage(String)
     }
     
@@ -34,6 +43,15 @@ public struct MainFeature {
                 return .none
             }
             return registerFCMToken(memberId: memberId, fcmToken: fcmToken)
+        case .startButtonTapped:
+            state.isShowSheet = true
+            return .none
+        case .dismissSheet:
+            state.isShowSheet = false
+            return .none
+        case .selectedCompetitionFreind(let friend):
+            state.selectedCompetitionFreind = friend
+            return .none
         case .registerFCMTokenResponse:
             print("토큰 적재 성공")
             return .none
