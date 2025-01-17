@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
+import Domain
 
 public enum MatchingProcess {
     case waiting
@@ -40,11 +42,12 @@ public enum MatchingProcess {
 public struct MatchingProcessView: View {
     
     @EnvironmentObject var router: Router
+    @ObservedObject var viewStore: ViewStoreOf<MatchingProcessFeature>
+    let store: StoreOf<MatchingProcessFeature>
     
-    @State private var process: MatchingProcess
-    
-    public init(process: MatchingProcess) {
-        self.process = process
+    public init(store: StoreOf<MatchingProcessFeature>) {
+        self.store = store
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
     
     public var body: some View {
@@ -63,18 +66,21 @@ public struct MatchingProcessView: View {
             }
             .padding(.horizontal, 20)
             .overlay(alignment: .bottom) {
-                if process == .failed {
+                if viewStore.state.process == .failed {
                     backButton
                 }
             }
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
     }
     
     @ViewBuilder
     var topBar: some View {
         HStack {
-            if process != .failed {
+            if viewStore.state.process != .failed {
                 Button {
                     print("취소 탭")
                     router.pop()
@@ -94,11 +100,11 @@ public struct MatchingProcessView: View {
     var title: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(process.title)
+                Text(viewStore.state.process.title)
                     .font(.bold(24))
                     .foregroundStyle(.white)
                 
-                Text(process.subTitle)
+                Text(viewStore.state.process.subTitle)
                     .font(.regular(16))
                     .foregroundStyle(ColorConstants.gray3)
             }
@@ -110,7 +116,7 @@ public struct MatchingProcessView: View {
     
     @ViewBuilder
     var image: some View {
-        process.image
+        viewStore.state.process.image
             .resizable()
             .aspectRatio(1, contentMode: .fit)
             .padding(.horizontal, 15)
@@ -134,8 +140,4 @@ public struct MatchingProcessView: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 18)
     }
-}
-
-#Preview {
-    MatchingProcessView(process: .successed)
 }

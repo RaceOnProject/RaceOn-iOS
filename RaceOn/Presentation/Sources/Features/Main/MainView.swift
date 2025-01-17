@@ -74,7 +74,12 @@ public struct MainView: View {
                 viewStore.send(.onDisappear)
             }
             .onChange(of: viewStore.state.isReadyForNextScreen) {
-                $0 ? router.push(screen: .matchingProcess) : nil
+                guard let friend = viewStore.state.selectedCompetitionFreind else {
+                    return
+                }
+                let distance = viewStore.state.selectedMatchingDistance
+                
+                $0 ? router.push(screen: .matchingProcess(distance, friend)) : nil
             }
             .sheet(
                 isPresented: viewStore.binding(
