@@ -84,7 +84,7 @@ public struct MainView: View {
             .sheet(
                 isPresented: viewStore.binding(
                     get: \.isShowSheet,
-                    send: .dismissSheet
+                    send: { .isPresentedSheet($0) }
                 )
             ) {
                 ModalFriendView(
