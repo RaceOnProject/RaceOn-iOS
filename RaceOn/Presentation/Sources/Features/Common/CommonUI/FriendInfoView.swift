@@ -10,13 +10,29 @@ import Domain
 import Shared
 import Kingfisher
 
+enum FriendViewType {
+    case modalType
+    case normalType
+    
+    var backgroundColor: SwiftUI.Color {
+        switch self {
+        case .modalType:
+            return ColorConstants.gray5
+        case .normalType:
+            return ColorConstants.gray6
+        }
+    }
+}
+
 struct FriendInfoView: View {
+    
+    var viewType: FriendViewType
     var friend: Friend
-    var onKebabTapped: (Friend) -> Void // 버튼이 눌렸을 때 실행될 클로저
+    var onButtonTapped: (Friend) -> Void // 버튼이 눌렸을 때 실행될 클로저
 
     var body: some View {
         ZStack {
-            ColorConstants.gray6
+            viewType.backgroundColor.ignoresSafeArea()
             
             HStack {
                 Spacer()
@@ -62,15 +78,35 @@ struct FriendInfoView: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    onKebabTapped(friend)
-                }, label: {
-                    ImageConstants.kebab
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 2.87, height: 17)
-                })
-                .padding(20) // 이미지 주변에 패딩 추가
+                switch viewType {
+                case .modalType:
+                    Button(action: {
+                        onButtonTapped(friend)
+                    }, label: {
+                        if friend.selected {
+                            ImageConstants.circleCheckFill
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 24, height: 24)
+                        } else {
+                            ImageConstants.circleCheck
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 24, height: 24)
+                        }
+                    })
+                    .padding(20) // 이미지 주변에 패딩 추가
+                case .normalType:
+                    Button(action: {
+                        onButtonTapped(friend)
+                    }, label: {
+                        ImageConstants.kebab
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 2.87, height: 17)
+                    })
+                    .padding(20) // 이미지 주변에 패딩 추가
+                }
             }
         }
     }

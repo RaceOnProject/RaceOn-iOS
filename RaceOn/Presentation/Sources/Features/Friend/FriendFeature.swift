@@ -12,7 +12,6 @@ import Domain
 import Combine
 
 // 타이머 ID 정의 (타이머 취소 시 사용)
-struct TimerID: Hashable {}
 
 @Reducer
 public struct FriendFeature {
@@ -20,6 +19,8 @@ public struct FriendFeature {
     @Dependency(\.continuousClock) var clock
     
     public init() {}
+    
+    struct TimerID: Hashable {}
     
     public struct State: Equatable {
         public init() {}
