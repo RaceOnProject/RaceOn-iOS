@@ -21,6 +21,7 @@ struct AddFriendButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
         }
+        .disabled(!isButtonEnabled)
         .frame(height: 54) // 버튼의 높이 설정
         .background(isButtonEnabled ? ColorConstants.primaryNormal : ColorConstants.gray4)
         .cornerRadius(30) // 버튼의 모서리 둥글게 설정
