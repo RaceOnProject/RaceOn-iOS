@@ -81,7 +81,7 @@ public struct LoginView: View {
             .onChange(of: viewStore.successLogin) { isSuccess in
                 if isSuccess {
                     if hasLocationAccess() {
-                        router.changeToRoot(screen: .main)
+                        moveToMainView()
                     } else {
                         router.push(screen: .allowAccess)
                     }
@@ -92,6 +92,22 @@ public struct LoginView: View {
 }
 
 public extension LoginView {
+    /// window의 rootViewController MainView로 교체
+    func moveToMainView() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("Failed to find the key window.")
+            return
+        }
+        
+        let mainView = MainView().environmentObject(Router())
+        let mainVC = UIHostingController(rootView: mainView)
+        window.rootViewController = mainVC
+        
+        // 애니메이션 추가 (선택사항)
+        UIView.transition(with: window, duration: 0.5, options: [.transitionCrossDissolve], animations: nil)
+    }
+    
     private func startSignInWithAppleFlow() {
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]

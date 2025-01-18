@@ -149,7 +149,7 @@ public struct AllowAccessView: View {
     @ViewBuilder
     var confirmButton: some View {
         Button {
-            router.changeToRoot(screen: .main)
+            moveToMainView()
         } label: {
             Text("확인")
                 .font(.semiBold(17))
@@ -161,6 +161,22 @@ public struct AllowAccessView: View {
         .cornerRadius(30)
         .padding(.vertical, 18)
         .padding(.horizontal, 20)
+    }
+    
+    /// window의 rootViewController MainView로 교체
+    func moveToMainView() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("Failed to find the key window.")
+            return
+        }
+        
+        let mainView = MainView().environmentObject(Router())
+        let mainVC = UIHostingController(rootView: mainView)
+        window.rootViewController = mainVC
+        
+        // 애니메이션 추가 (선택사항)
+        UIView.transition(with: window, duration: 0.5, options: [.transitionCrossDissolve], animations: nil)
     }
 }
 

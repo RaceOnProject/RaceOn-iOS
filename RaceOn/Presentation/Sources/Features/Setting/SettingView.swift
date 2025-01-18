@@ -147,7 +147,7 @@ public struct SettingView: View {
             viewStore.send(.willEnterForeground)
         }
         .onChange(of: viewStore.state.hasCompletedLogoutOrDeletion) {
-            $0 ? router.pop() : nil
+            $0 ? moveToLoginView() : nil
         }
         .alert(item: viewStore.binding(
             get: \.alertInfo,
@@ -171,6 +171,27 @@ public struct SettingView: View {
         .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    /// window의 rootViewController LoginView로 교체
+    func moveToLoginView() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("Failed to find the key window.")
+            return
+        }
+        
+        let loginView = LoginView(
+            store: Store(
+                initialState: LoginFeature.State(),
+                reducer: { LoginFeature()._printChanges() }
+            )
+        ).environmentObject(Router())
+        let loginVC = UIHostingController(rootView: loginView)
+        window.rootViewController = loginVC
+        
+        // 애니메이션 추가 (선택사항)
+        UIView.transition(with: window, duration: 0.5, options: [.transitionCrossDissolve], animations: nil)
     }
 }
 
