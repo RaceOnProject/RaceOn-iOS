@@ -117,6 +117,9 @@ struct AddFriendView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             viewStore.send(.willEnterForeground)
         }
+        .onChange(of: viewStore.state.isFriendAdded) {
+            $0 ? router.pop() : nil
+        }
         .toolbar {
             ToolbarView.leadingItems {
                 router.pop()

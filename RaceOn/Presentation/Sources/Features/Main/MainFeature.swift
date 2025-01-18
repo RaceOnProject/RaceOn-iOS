@@ -23,7 +23,8 @@ public struct MainFeature {
         var selectedMatchingDistance: MatchingDistance = .three
         var selectedCompetitionFreind: Friend?
         
-        var errorMessage: String?
+        var toast: Toast?
+        
         var isShowSheet: Bool = false
     }
     
@@ -41,6 +42,9 @@ public struct MainFeature {
         case registerFCMTokenResponse
         
         case setErrorMessage(String)
+        
+        case showToast(content: String)
+        case dismissToast
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -78,7 +82,12 @@ public struct MainFeature {
             return .none
         case .setErrorMessage(let errorMessage):
             print("토큰 적재 실패")
-            state.errorMessage = errorMessage
+            return .send(.showToast(content: errorMessage))
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
+        case .dismissToast:
+            state.toast = nil
             return .none
         }
     }

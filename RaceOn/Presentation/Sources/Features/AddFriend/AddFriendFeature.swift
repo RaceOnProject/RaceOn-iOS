@@ -26,7 +26,7 @@ struct AddFriendFeature {
         var totalLetter = ""
         var isButtonEnabled = false
         
-        var errorMessage: String?
+        var isFriendAdded: Bool = false  // 친구 추가 완료 여부
         
         enum Field: String, Hashable {
             case first, second, third, fourth, fifth, sixth
@@ -113,11 +113,11 @@ struct AddFriendFeature {
             return .none
         case .setAddFriendResponse(let response):
             state.isLoading = false
+            state.isFriendAdded = true
             return .none
         case .setErrorMessage(let errorMessage):
             state.isLoading = false
-            state.errorMessage = errorMessage
-            return .none
+            return .send(.showToast(content: errorMessage))
         case .noAction:
             return .none
         }

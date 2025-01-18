@@ -52,6 +52,12 @@ struct ModalFriendView: View {
         .onDisappear {
             viewStore.send(.onDisAppear)
         }
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
     }
     
     @ViewBuilder

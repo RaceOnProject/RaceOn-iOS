@@ -81,6 +81,12 @@ public struct MainView: View {
                 
                 $0 ? router.push(screen: .matchingProcess(distance, friend)) : nil
             }
+            .toastView(
+                toast: viewStore.binding(
+                    get: \.toast,
+                    send: .dismissToast
+                )
+            )
             .sheet(
                 isPresented: viewStore.binding(
                     get: \.isShowSheet,

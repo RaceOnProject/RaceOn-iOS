@@ -41,6 +41,7 @@ struct MyProfileFeature {
         
         case editProfile
         
+        case showToast(content: String)
         case dismissToast
         
         case setImagePickerPresented(isPresented: Bool)
@@ -87,6 +88,9 @@ struct MyProfileFeature {
                 return .send(.logout)
             }
             return updateProfile(memberId: memberId, state: &state)
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
         case .dismissToast:
             state.toast = nil
             return .none
@@ -111,9 +115,8 @@ struct MyProfileFeature {
             state.isEditing = false
             return .none
         case .setErrorMessage(let errorMessage):
-            state.errorMessage = errorMessage
             state.isLoading = false
-            return .none
+            return .send(.showToast(content: errorMessage))
         case .editNickname(let nickname):
             state.nickname = nickname
             return .none
