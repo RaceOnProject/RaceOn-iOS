@@ -26,7 +26,7 @@ public struct ModalFriendFeature {
         var competitionButtonEnabled: Bool = false
         
         var isLoading: Bool = false
-        var errorMessage: String?
+        var toast: Toast?
     }
     
     public enum Action {
@@ -39,6 +39,9 @@ public struct ModalFriendFeature {
         case selectedCompetitionFriend(Friend)
     
         case setErrorMesssage(String)
+        
+        case showToast(content: String)
+        case dismissToast
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -61,7 +64,12 @@ public struct ModalFriendFeature {
             updateFriendListSelection(&state, selectedFriend: selectedFriend)
             return .none
         case .setErrorMesssage(let errorMessage):
-            state.errorMessage = errorMessage
+            return .send(.showToast(content: errorMessage))
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
+        case .dismissToast:
+            state.toast = nil
             return .none
         }
     }

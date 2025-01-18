@@ -31,7 +31,6 @@ public struct FriendFeature {
         var selectFriend: Friend?
         
         var isLoading: Bool = false
-        var errorMessage: String?
     }
     
     public enum Action {
@@ -47,6 +46,7 @@ public struct FriendFeature {
         case cancelButtonTapped // 취소하기
         
         // Toast
+        case showToast(content: String)
         case dismissToast
         
         case resultReportFriend(response: BaseResponse<VoidResponse>)
@@ -164,20 +164,22 @@ public struct FriendFeature {
             state.isActionSheetPresented = false
             return .none
         
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
         case .dismissToast:
             state.toast = nil
             return .none
         
         case .resultReportFriend(let response):
             state.isLoading = false
-            state.toast = Toast(content: "신고 완료")
-            return .send(.fetchFriendList)
-        
+            return .send(.showToast(content: "신고 완료"))
         case .resultUnFriend(let response):
             state.isLoading = false
-            state.toast = Toast(content: "친구 끊기 완료")
-            return .send(.fetchFriendList)
-        
+            return .concatenate(
+                .send(.showToast(content: "친구 끊기 완료")),
+                .send(.fetchFriendList)
+            )
         case .setFriendList(let friendList):
             state.isLoading = false
             state.friendList = friendList
@@ -185,8 +187,7 @@ public struct FriendFeature {
         
         case .setErrorMessage(let errorMessage):
             state.isLoading = false
-            state.errorMessage = errorMessage
-            return .none
+            return .send(.showToast(content: errorMessage))
         }
     }
 }

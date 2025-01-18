@@ -33,7 +33,7 @@ public struct SettingFeature {
         
         var hasCompletedLogoutOrDeletion: Bool = false
         
-        var errorMessage: String?
+        var toast: Toast?
         
         public init() {}
     }
@@ -45,6 +45,9 @@ public struct SettingFeature {
         case logoutButtonTapped
         case deleteAccountButtonTapped
         case alertConfirmed(AlertType)
+        
+        case showToast(content: String)
+        case dismissToast
         
         case setCompetitionInvites(Bool)
         
@@ -109,13 +112,18 @@ public struct SettingFeature {
             }
             return .none
             
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
+        case .dismissToast:
+            state.toast = nil
+            return .none
         case .deleteAccountResponse(let response):
             dump(response)
             state.hasCompletedLogoutOrDeletion = true
             return .none
         case .setErrorMessage(let errorMessage):
-            state.errorMessage = errorMessage
-            return .none
+            return .send(.showToast(content: errorMessage))
         case .noAction:
             return .none
         }

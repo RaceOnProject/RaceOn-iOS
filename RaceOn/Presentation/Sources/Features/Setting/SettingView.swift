@@ -149,6 +149,12 @@ public struct SettingView: View {
         .onChange(of: viewStore.state.hasCompletedLogoutOrDeletion) {
             $0 ? moveToLoginView() : nil
         }
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
         .alert(item: viewStore.binding(
             get: \.alertInfo,
             send: .noAction

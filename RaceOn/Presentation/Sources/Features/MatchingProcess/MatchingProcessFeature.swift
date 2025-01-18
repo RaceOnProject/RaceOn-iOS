@@ -21,7 +21,7 @@ public struct MatchingProcessFeature {
         
         var process: MatchingProcess = .waiting
         
-        var errorMessage: String?
+        var toast: Toast?
         
         public init(distance: MatchingDistance, friend: Friend) {
             self.distance = distance
@@ -33,6 +33,8 @@ public struct MatchingProcessFeature {
         case onAppear
         case inviteGameResponse(BaseResponse<GameInviteResponse>)
         case setErrorMessage(String)
+        case showToast(content: String)
+        case dismissToast
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -47,7 +49,12 @@ public struct MatchingProcessFeature {
             print(response)
             return .none
         case .setErrorMessage(let errorMessage):
-            state.errorMessage = errorMessage
+            return .send(.showToast(content: errorMessage))
+        case .showToast(let content):
+            state.toast = Toast(content: content)
+            return .none
+        case .dismissToast:
+            state.toast = nil
             return .none
         }
     }
