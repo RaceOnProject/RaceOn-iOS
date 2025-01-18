@@ -133,12 +133,11 @@ struct ModalFriendView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
         }
+        .disabled(!viewStore.state.competitionButtonEnabled)
         .frame(height: 54)
-        .background(ColorConstants.primaryNormal)
+        .background(viewStore.state.competitionButtonEnabled ? ColorConstants.primaryNormal : ColorConstants.gray4)
         .cornerRadius(30)
         .padding(.top, 30)
         .padding(.horizontal, 55)
-        .disabled(!viewStore.state.competitionButtonEnabled)
-        .opacity(viewStore.state.competitionButtonEnabled ? 1.0 : 0.5)
     }
 }
