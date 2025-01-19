@@ -21,6 +21,7 @@ public enum Screen: Hashable {
     case myProfile
     case legalNotice(type: SettingCategory)
     case matchingProcess(MatchingDistance, Friend)
+    case game
 }
 
 public final class Router: ObservableObject {
@@ -135,6 +136,8 @@ public final class Router: ObservableObject {
                 )
             )
             .environmentObject(self)
+        case .game:
+            GameView().environmentObject(self)
         }
     }
 }

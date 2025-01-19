@@ -19,7 +19,8 @@ let project = Project.framework(
         .composableArchitecture,
         .swiftyCrop,
         .kakaoSDK,
-        .firebaseMessaging
+        .firebaseMessaging,
+        .nMapsMap
     ],
     resources: Project.Environment.resourceFile
 )

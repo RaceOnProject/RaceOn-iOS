@@ -9,6 +9,7 @@ import UIKit
 import Firebase
 import FirebaseMessaging
 import Shared
+import NMapsMap
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         requestNotificationAuthorization(application: application)
         
         Messaging.messaging().delegate = self
+        
+        NMFAuthManager.shared().clientId = "bkmg4kxsbs"
         
         return true
     }
