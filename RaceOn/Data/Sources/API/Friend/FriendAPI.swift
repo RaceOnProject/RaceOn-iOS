@@ -14,6 +14,7 @@ public enum FriendAPI {
     case fetchFriendList
     case reportFriend(memberId: Int)
     case unFriend(memberId: Int)
+    case updateConnectionStatus
 }
 
 extension FriendAPI: TargetType {
@@ -25,6 +26,7 @@ extension FriendAPI: TargetType {
         switch self {
         case .sendFriendCode, .fetchFriendList, .unFriend: return "/friends"
         case .reportFriend: return "/report/members"
+        case .updateConnectionStatus: return "/connection-status"
         }
     }
     
@@ -34,6 +36,7 @@ extension FriendAPI: TargetType {
         case .fetchFriendList: return .get
         case .reportFriend: return .post
         case .unFriend: return .delete
+        case .updateConnectionStatus: return .put
         }
     }
     
@@ -62,6 +65,8 @@ extension FriendAPI: TargetType {
                 ],
                 encoding: JSONEncoding.default
             )
+        case .updateConnectionStatus:
+            return .requestPlain
         }
     }
     

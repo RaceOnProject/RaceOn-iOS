@@ -47,4 +47,12 @@ public final class FriendRepositoryImpl: FriendRepositoryProtocol {
             type: VoidResponse.self
         )
     }
+    
+    public func updateConnectionStatus() -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        let target = FriendAPI.updateConnectionStatus
+        return networkManager.request(
+            target: target,
+            type: VoidResponse.self
+        )
+    }
 }
