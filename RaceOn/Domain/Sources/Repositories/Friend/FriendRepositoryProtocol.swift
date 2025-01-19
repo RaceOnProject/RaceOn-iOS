@@ -12,4 +12,5 @@ public protocol FriendRepositoryProtocol {
     func fetchFriendList() -> AnyPublisher<BaseResponse<FriendResponse>, NetworkError>
     func reportFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
     func unFriend(memberId: Int) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
+    func updateConnectionStatus() -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
 }
