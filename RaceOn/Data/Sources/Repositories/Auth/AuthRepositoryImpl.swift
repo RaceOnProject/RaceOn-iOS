@@ -20,6 +20,14 @@ public final class AuthRepositoryImpl: AuthRepositoryProtocol {
     
     let networkManager: NetworkManager = NetworkManager.shared
     
+    public func refreshAccessToken(
+        refreshToken: String
+    ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
+        return networkManager.request(
+            target: AuthAPI.refreshAccessToken(refreshToken: refreshToken),
+            type: TokenResponse.self)
+    }
+    
     public func socialLogin(
         idToken: String,
         socialProvider: String

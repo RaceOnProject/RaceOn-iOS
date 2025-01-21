@@ -86,6 +86,7 @@ public struct SettingFeature {
             case .logout:
                 print("로그아웃 확인")
                 
+                UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
                 UserDefaultsManager.shared.clearAll()
                 
                 state.hasCompletedLogoutOrDeletion = true
