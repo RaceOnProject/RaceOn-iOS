@@ -42,6 +42,10 @@ extension AuthAPI: TargetType {
                 ],
                 encoding: URLEncoding.queryString
             )
+            
+        case .refreshAccessToken:
+            return .requestPlain
+            
         case .socialLogin(let idToken, let socialProvider):
             return .requestParameters(
                 parameters: [
@@ -50,6 +54,7 @@ extension AuthAPI: TargetType {
                 ],
                 encoding: JSONEncoding.default
             )
+            
         case .joinMembers(let idToken, let socialProvider, let nickname, let profileImageUrl):
             return .requestParameters(
                 parameters: [
@@ -59,8 +64,6 @@ extension AuthAPI: TargetType {
                     "profileImageUrl": profileImageUrl
                 ],
                 encoding: JSONEncoding.default)
-        default:
-            return .requestPlain
         }
     }
     

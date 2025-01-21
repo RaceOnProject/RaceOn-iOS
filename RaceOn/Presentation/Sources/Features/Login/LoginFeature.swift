@@ -35,6 +35,9 @@ public struct LoginFeature {
         
         var toast: Toast?
         
+        /// 자동 로그인이 가능한지
+        var isLoginRequired = false
+        
         var idToken: String = ""
         var socialLoginType: SocialLoginType?
         var nickName: String?
@@ -44,24 +47,36 @@ public struct LoginFeature {
     }
     
     public enum Action {
-        case kakaoLoginButtonTapped
-        case requestLogin(String, SocialLoginType)
-//        case responseLogin(TokenResponse)
+        case onAppear
         
+        case kakaoLoginButtonTapped
         case setKakaoProfile(String, String)
+        case requestLogin(String, SocialLoginType)
         
         case joinMembers(String, SocialLoginType)
-//        case responseJoinMembers
         
         case setError(NetworkError)
         case showToast(String)
         case dismissToast
         
-        case successLogin(TokenResponse)
+        case successGetToken(TokenResponse)
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
+        case .onAppear:
+            if let refreshToken: String = UserDefaultsManager.shared.get(forKey: .refreshToken),
+               let isAutoLogin: Bool = UserDefaultsManager.shared.get(forKey: .isAutoLogin),
+               isAutoLogin {
+                return refreshAccessToken(refreshToken: refreshToken)
+            } else {
+                UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
+                withAnimation {
+                    state.isLoginRequired = true
+                }
+                return .none
+            }
+            
         case .kakaoLoginButtonTapped:
             if UserApi.isKakaoTalkLoginAvailable() {
                 // 카카오톡 앱으로 로그인
@@ -111,6 +126,12 @@ public struct LoginFeature {
                     state.profileImageUrl = nil
                     return .send(.showToast("다시 시도해주세요."))
                 }
+            } else {
+                // 토큰 재발급 불가능
+                UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
+                withAnimation {
+                    state.isLoginRequired = true
+                }
             }
             return .none
         case .showToast(let content):
@@ -121,13 +142,13 @@ public struct LoginFeature {
             state.toast = nil
             return .none
             
-        case .successLogin(let tokenResponse):
+        case .successGetToken(let tokenResponse):
             print("로그인 성공 accessToken >> \(tokenResponse.accessToken)")
             print("로그인 성공 refreshToken >> \(tokenResponse.refreshToken)")
             UserDefaultsManager.shared.set(tokenResponse.accessToken, forKey: .accessToken)
             UserDefaultsManager.shared.set(tokenResponse.refreshToken, forKey: .refreshToken)
             UserDefaultsManager.shared.set(tokenResponse.memberId, forKey: .memberId)
-            
+            UserDefaultsManager.shared.set(true, forKey: .isAutoLogin)
             state.successLogin = true
             return .none
         }
@@ -205,6 +226,25 @@ public extension LoginFeature {
 
 // MARK: - LOGIN API
 public extension LoginFeature {
+    /// accessToken 재발급
+    private func refreshAccessToken(refreshToken: String) -> Effect<Action> {
+        return Effect.publisher {
+            authUseCase.refreshAccessToken(refreshToken: refreshToken)
+                .receive(on: DispatchQueue.main)
+                .map {
+                    if let tokenResponse = $0.data {
+                        return Action.successGetToken(tokenResponse)
+                    } else {
+                        return Action.setError(.unknownError)
+                    }
+                }
+                .catch { error -> Just<Action> in
+                    return Just(Action.setError(error))
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
     /// 로그인 요청
     private func requestLogin(
         idToken: String,
@@ -217,7 +257,7 @@ public extension LoginFeature {
                 .receive(on: DispatchQueue.main)
                 .map {
                     if let tokenResponse = $0.data {
-                        return Action.successLogin(tokenResponse)
+                        return Action.successGetToken(tokenResponse)
                     } else {
                         return Action.setError(.unknownError)
                     }
@@ -245,7 +285,7 @@ public extension LoginFeature {
                 .receive(on: DispatchQueue.main)
                 .map {
                     if let tokenResponse = $0.data {
-                        return Action.successLogin(tokenResponse)
+                        return Action.successGetToken(tokenResponse)
                     } else {
                         return Action.setError(.unknownError)
                     }

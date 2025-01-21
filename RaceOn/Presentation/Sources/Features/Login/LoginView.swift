@@ -31,42 +31,47 @@ public struct LoginView: View {
                 ColorConstants.gray6
                     .ignoresSafeArea()
                 
-                VStack {
-                    
-                    Spacer()
-                    
-                    ImageConstants.loginLogo
-                        .resizable()
-                        .aspectRatio(220/85, contentMode: .fit)
-                        .padding(.horizontal, 85)
-                    
-                    Spacer()
-                    
-                    ImageConstants.loginCenter
-                        .resizable()
-                        .aspectRatio(300/224, contentMode: .fit)
-                        .padding(.horizontal, 45)
-                    
-                    Spacer().frame(height: 90)
-                    
-                    ImageConstants.kakaoLogin
-                        .resizable()
-                        .frame(width: 350, height: 54)
-                        .onTapGesture {
-                            viewStore.send(.kakaoLoginButtonTapped)
-                        }
-                    
-                    Spacer().frame(height: 12)
-                    
-                    ImageConstants.appleLogin
-                        .resizable()
-                        .frame(width: 350, height: 54)
-                        .onTapGesture {
-                            startSignInWithAppleFlow()
-                        }
+                if viewStore.state.isLoginRequired {
+                    VStack {
                         
-                    Spacer().frame(height: 34)
+                        Spacer()
+                        
+                        ImageConstants.loginLogo
+                            .resizable()
+                            .aspectRatio(220/85, contentMode: .fit)
+                            .padding(.horizontal, 85)
+                        
+                        Spacer()
+                        
+                        ImageConstants.loginCenter
+                            .resizable()
+                            .aspectRatio(300/224, contentMode: .fit)
+                            .padding(.horizontal, 45)
+                        
+                        Spacer().frame(height: 90)
+                        
+                        ImageConstants.kakaoLogin
+                            .resizable()
+                            .frame(width: 350, height: 54)
+                            .onTapGesture {
+                                viewStore.send(.kakaoLoginButtonTapped)
+                            }
+                        
+                        Spacer().frame(height: 12)
+                        
+                        ImageConstants.appleLogin
+                            .resizable()
+                            .frame(width: 350, height: 54)
+                            .onTapGesture {
+                                startSignInWithAppleFlow()
+                            }
+                            
+                        Spacer().frame(height: 34)
+                    }
                 }
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
             }
             .toastView(
                 toast: viewStore.binding(

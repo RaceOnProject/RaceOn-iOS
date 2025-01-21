@@ -9,6 +9,10 @@ import ComposableArchitecture
 import Combine
 
 public protocol AuthUseCaseProtocol {
+    func refreshAccessToken(
+        refreshToken: String
+    ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
+    
     func socialLogin(idToken: String, socialProvider: String) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
     
     func joinMembers(idToken: String,
@@ -22,6 +26,12 @@ public final class AuthUseCase: AuthUseCaseProtocol {
     
     public init(repository: AuthRepositoryProtocol) {
         self.repository = repository
+    }
+    
+    public func refreshAccessToken(
+        refreshToken: String
+    ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
+        return repository.refreshAccessToken(refreshToken: refreshToken)
     }
     
     public func socialLogin(
