@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NMFClientId</key>
-	<string>bkmg4kxsbs</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>사용자의 프로필 사진을 수정하기 위해 앨범이 사용됩니다.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -33,18 +29,24 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NMFClientId</key>
+	<string>bkmg4kxsbs</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>‘RACE ON’에서 사용자의 위치를 사용하도록 허용하겠습니까?</string>
 	<key>NSLocationUsageDescription</key>
 	<string>‘RACE ON’에서 사용자의 위치를 사용하도록 허용하겠습니까?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>‘RACE ON’에서 사용자의 위치를 사용하도록 허용하겠습니까?</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사용자의 프로필 사진을 수정하기 위해 앨범이 사용됩니다.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -67,6 +69,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>

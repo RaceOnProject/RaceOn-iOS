@@ -8,13 +8,21 @@
 import Foundation
 import SwiftUI
 import NMapsMap
+import NMapsGeometry
+import ComposableArchitecture
 
 public struct GameView: View {
     @EnvironmentObject var router: Router
-//    @State private var region = MKCoordinateRegion(
-//            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // 샌프란시스코 좌표
-//            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-//        )
+    @ObservedObject var viewStore: ViewStore<GameFeature.State, GameFeature.Action>
+    let store: StoreOf<GameFeature>
+    
+    // Coordinator 클래스
+//    @StateObject var coordinator: Coordinator = Coordinator.shared
+    
+    public init(store: StoreOf<GameFeature>) {
+        self.store = store
+        self.viewStore = ViewStore(store, observe: { $0 })
+    }
     
     public var body: some View {
         ZStack {
@@ -37,18 +45,33 @@ public struct GameView: View {
                     .frame(height: 18)
             }
         }
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
+        .onDisappear {
+            viewStore.send(.onDisappear)
+        }
     }
     
     @ViewBuilder
     var mapView: some View {
         VStack {
-            Text("asd")
+            if let currentLocation = viewStore.currentLocation {
+                NaverMap(
+                    userLocation: currentLocation
+                )
+            } else {
+                ProgressView()
+                    .tint(ColorConstants.gray3)
+                    .allowsHitTesting(false)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
     }
     
     @ViewBuilder
     var gameDescriptionView: some View {
-        HStack(spacing: 30) {
+        HStack(spacing: 20) {
             // 남은 거리
             VStack {
                 Text("남은 거리")
@@ -56,9 +79,10 @@ public struct GameView: View {
                     .foregroundColor(.white)
                     .padding(.bottom, 5)
                 
-                Text("0.00 km")
+                Text(String(format: "%.2f", viewStore.state.remainingDistance) + "km")
                     .font(.bold(24))
                     .foregroundColor(.white)
+                    .frame(width: 110)
             }
             
             // 평균 페이스
@@ -68,9 +92,10 @@ public struct GameView: View {
                     .foregroundColor(.white)
                     .padding(.bottom, 5)
                 
-                Text("16′12″")
+                Text(viewStore.state.averagePace)
                     .font(.bold(24))
                     .foregroundColor(.white)
+                    .frame(width: 110)
             }
             
             // 진행 시간
@@ -80,9 +105,10 @@ public struct GameView: View {
                     .foregroundColor(.white)
                     .padding(.bottom, 5)
                 
-                Text("00:00:00")
+                Text(viewStore.state.runningTime)
                     .font(.bold(24))
                     .foregroundColor(.white)
+                    .frame(width: 110)
             }
         }
     }
@@ -110,6 +136,11 @@ public struct GameView: View {
 }
 
 #Preview {
-    GameView()
+    GameView(
+        store: Store(
+            initialState: GameFeature.State(),
+            reducer: { GameFeature() }
+        )
+    )
         .environmentObject(Router())
 }

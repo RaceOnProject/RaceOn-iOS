@@ -40,10 +40,3 @@ struct TimerService: DependencyKey {
         )
     }
 }
-
-extension DependencyValues {
-    var timerService: TimerService {
-        get { self[TimerService.self] }
-        set { self[TimerService.self] = newValue }
-    }
-}

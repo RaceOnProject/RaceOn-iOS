@@ -12,7 +12,7 @@ import ComposableArchitecture
 @main
 struct MyApp: App {
     @StateObject private var router = Router()
-
+    
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $router.route) {

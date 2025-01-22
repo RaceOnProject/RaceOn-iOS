@@ -52,7 +52,25 @@ extension DependencyValues {
         get { self[NotificationUseCaseKey.self] }
         set { self[NotificationUseCaseKey.self] = newValue }
     }
+    
     private enum NotificationUseCaseKey: DependencyKey {
         static let liveValue: CheckPushStatusUseCaseProtocol = CheckPushStatusUseCase(notificationRepository: NotificationRepositoryImpl())
+    }
+    
+    // Timer
+    var timerService: TimerService {
+        get { self[TimerService.self] }
+        set { self[TimerService.self] = newValue }
+    }
+    
+    // Location
+    var locationService: LocationService {
+        get { self[LocationServiceKey.self] }
+        set { self[LocationServiceKey.self] = newValue }
+    }
+    
+    private enum LocationServiceKey: DependencyKey {
+        static let liveValue = LocationService()
+        static let previewValue = LocationService()
     }
 }
