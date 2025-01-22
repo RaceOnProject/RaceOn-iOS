@@ -13,7 +13,6 @@ import Shared
 
 public final class APIRequestRetrier: RequestInterceptor {
     
-    
     public static let shared = APIRequestRetrier()
     private let tokenManager = TokenManager.shared
     public init() {}
@@ -29,20 +28,34 @@ public final class APIRequestRetrier: RequestInterceptor {
     enum Constants {
         static let retryLimit = 1
         static let retryDelay: TimeInterval = 1
-        static let urlString: String = "https://s3.ap-northeast-2.amazonaws.com/race-on/profileimage"
+        static let s3UrlString: String = "https://s3.ap-northeast-2.amazonaws.com/race-on/profileimage"
+        static let reissueUrlString: String = "https://api.runner-dev.shop/auth/reissue"
     }
     
-    public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+    public func adapt(
+        _ urlRequest: URLRequest,
+        for session: Session,
+        completion: @escaping (Result<URLRequest, Error>
+        ) -> Void) {
         guard let absoluteString = urlRequest.url?.absoluteString else {
             return
         }
         
         var urlRequest = urlRequest
-        absoluteString.contains(Constants.urlString) ? nil : urlRequest.headers.add(.authorization(bearerToken: accessToken)) // S3에 업로드할때는 토큰 제거
+        // S3에 업로드할 때, 토큰 재발급 받을 때는 헤더에 액세스토큰 넣지 않음
+        if !(absoluteString.contains(Constants.s3UrlString) || absoluteString.contains(Constants.reissueUrlString)) {
+            urlRequest.headers.add(.authorization(bearerToken: accessToken))
+        }
+        
         completion(.success(urlRequest))
     }
     
-    public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+    public func retry(
+        _ request: Request,
+        for session: Session,
+        dueTo error: Error,
+        completion: @escaping (RetryResult) -> Void
+    ) {
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             completion(.doNotRetry)
             return
