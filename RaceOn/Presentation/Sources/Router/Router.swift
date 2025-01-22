@@ -137,7 +137,12 @@ public final class Router: ObservableObject {
             )
             .environmentObject(self)
         case .game:
-            GameView().environmentObject(self)
+            GameView(
+                store: Store(
+                    initialState: GameFeature.State(),
+                    reducer: { GameFeature() }
+                )
+            ).environmentObject(self)
         }
     }
 }

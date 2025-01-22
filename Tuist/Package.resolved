@@ -154,6 +154,15 @@
       }
     },
     {
+      "identity" : "naver-map-ios-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/slr-09/Naver-Map-iOS-SPM.git",
+      "state" : {
+        "revision" : "4c3f93d6cd44633d7d79466c78dc7b2bce527b80",
+        "version" : "0.1.0"
+      }
+    },
+    {
       "identity" : "promises",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
@@ -178,24 +187,6 @@
       "state" : {
         "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930",
         "version" : "6.8.0"
-      }
-    },
-    {
-      "identity" : "spm-nmapsgeometry",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/navermaps/SPM-NMapsGeometry.git",
-      "state" : {
-        "revision" : "436d5e2e684f557faf5ef5862fd6633a42d7af11",
-        "version" : "1.0.2"
-      }
-    },
-    {
-      "identity" : "spm-nmapsmap",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/navermaps/SPM-NMapsMap",
-      "state" : {
-        "revision" : "606cb2df9bcffcf6df62ba00d0322965a4c730e9",
-        "version" : "3.20.0"
       }
     },
     {
