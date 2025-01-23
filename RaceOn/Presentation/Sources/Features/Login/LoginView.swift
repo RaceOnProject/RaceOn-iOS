@@ -105,7 +105,12 @@ public extension LoginView {
             return
         }
         
-        let mainView = MainView().environmentObject(Router())
+        let mainView = MainView(
+            store: Store(
+                initialState: MainFeature.State(),
+                reducer: { MainFeature()._printChanges() }
+            )
+        ).environmentObject(Router())
         let mainVC = UIHostingController(rootView: mainView)
         window.rootViewController = mainVC
         
