@@ -30,9 +30,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                options connectionOptions: UIScene.ConnectionOptions) {
         
         #if DEBUG
-            Thread.sleep(forTimeInterval: 0.5)
+            Thread.sleep(forTimeInterval: 0.1)
         #else
-            Thread.sleep(forTimeInterval: 2)
+            Thread.sleep(forTimeInterval: 1)
         #endif
         
         guard let scene = (scene as? UIWindowScene) else { return }
