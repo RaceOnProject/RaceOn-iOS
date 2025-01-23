@@ -16,9 +16,6 @@ public struct GameView: View {
     @ObservedObject var viewStore: ViewStore<GameFeature.State, GameFeature.Action>
     let store: StoreOf<GameFeature>
     
-    // Coordinator 클래스
-//    @StateObject var coordinator: Coordinator = Coordinator.shared
-    
     public init(store: StoreOf<GameFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
@@ -56,16 +53,10 @@ public struct GameView: View {
     @ViewBuilder
     var mapView: some View {
         VStack {
-            if let currentLocation = viewStore.currentLocation {
-                NaverMap(
-                    userLocation: currentLocation
-                )
-            } else {
-                ProgressView()
-                    .tint(ColorConstants.gray3)
-                    .allowsHitTesting(false)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
+            NaverMap(
+                currentLocation: viewStore.state.userLoaction ?? NMGLatLng(lat: 0.0, lng: 0.0),
+                userLocationArray: viewStore.state.userLocationArray
+            )
         }
     }
     

@@ -11,9 +11,17 @@ import Combine
 
 public final class LocationService: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
+    private var previousLocation: CLLocation?
+    private var totalDistance: Double = 0 // 움직인 거리 저장
     
     // 현재 위치를 저장하는 프로퍼티
     public var currentLocation = PassthroughSubject<(Double, Double), Never>()
+    
+    // 평균 페이스
+    public var averagePace = PassthroughSubject<String, Never>()
+    
+    // 뛴 거리
+    public var distanceMoved = PassthroughSubject<Double, Never>()
     
     public override init() {
         super.init()
@@ -28,6 +36,7 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
+            locationManager.requestLocation()
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         default:
@@ -36,8 +45,19 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        print("🤖 \(location.coordinate.latitude)")
+        guard let currentLocation = locations.last else { return }
+        self.currentLocation.send((currentLocation.coordinate.latitude, currentLocation.coordinate.longitude))
+        
+        if let previousLocation = previousLocation {
+            // 두 좌표 간 거리 계산 (미터 단위)
+            let distance = currentLocation.distance(from: previousLocation)
+            print("이동 거리: \(Double(distance) / 1000) km")
+            
+            distanceMoved.send(Double(distance) / 1000)
+        }
+        
+        // 현재 위치를 저장
+        previousLocation = currentLocation
     }
     
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -53,5 +73,13 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     
     public func currentLocationPublisher() -> AnyPublisher<(Double, Double), Never> {
         return currentLocation.eraseToAnyPublisher()
+    }
+    
+    public func averagePacePublisher() -> AnyPublisher<String, Never> {
+        return averagePace.eraseToAnyPublisher()
+    }
+    
+    public func distanceMovedPublisher() -> AnyPublisher<Double, Never> {
+        return distanceMoved.eraseToAnyPublisher()
     }
 }
