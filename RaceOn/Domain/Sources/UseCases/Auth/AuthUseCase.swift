@@ -14,6 +14,7 @@ public protocol AuthUseCaseProtocol {
     ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
     
     func socialLogin(idToken: String, socialProvider: String) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError>
+    func logout(accessToken: String, refreshToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError>
     
     func joinMembers(idToken: String,
                      socialProvider: String,
@@ -40,6 +41,13 @@ public final class AuthUseCase: AuthUseCaseProtocol {
         socialProvider: String
     ) -> AnyPublisher<BaseResponse<TokenResponse>, NetworkError> {
         return repository.socialLogin(idToken: idToken, socialProvider: socialProvider)
+    }
+    
+    public func logout(
+        accessToken: String
+        , refreshToken: String
+    ) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return repository.logout(accessToken: accessToken, refreshToken: refreshToken)
     }
     
     public func joinMembers(
