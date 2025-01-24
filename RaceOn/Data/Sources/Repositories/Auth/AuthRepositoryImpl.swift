@@ -39,6 +39,16 @@ public final class AuthRepositoryImpl: AuthRepositoryProtocol {
         )
     }
     
+    public func logout(accessToken: String, refreshToken: String) -> AnyPublisher<BaseResponse<VoidResponse>, NetworkError> {
+        return networkManager.request(
+            target: AuthAPI.logout(
+                accessToken: accessToken,
+                refreshToken: refreshToken
+            ),
+            type: VoidResponse.self
+        )
+    }
+    
     public func joinMembers(
         idToken: String,
         socialProvider: String,

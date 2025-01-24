@@ -23,6 +23,7 @@ public struct SettingFeature {
     
     @Dependency(\.notificationUseCase) var notificationUseCase
     @Dependency(\.memberUseCase) var memberUseCase
+    @Dependency(\.authUseCase) var authUseCase
     
     public init() {}
     
@@ -51,7 +52,7 @@ public struct SettingFeature {
         
         case setCompetitionInvites(Bool)
         
-        case deleteAccountResponse(response: BaseResponse<VoidResponse>)
+        case logout(response: BaseResponse<VoidResponse>)
         case setErrorMessage(String)
         
         case noAction
@@ -87,45 +88,63 @@ public struct SettingFeature {
         case .alertConfirmed(let alertType):
             switch alertType {
             case .logout:
-                print("로그아웃 확인")
-                
-                UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
-                UserDefaultsManager.shared.clearAll()
-                
-                state.hasCompletedLogoutOrDeletion = true
+                return logout()
             case .deleteAccount:
-                print("회원탈퇴 확인")
-                guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
-                
-                // TODO: 에러 처리
-                return Effect.publisher {
-                    memberUseCase.deleteAccount(memberId: memberId)
-                        .map {
-                            Action.deleteAccountResponse(response: $0)
-                        }
-                        .catch { error in
-                            let errorMessage = error.message
-                            return Just(Action.setErrorMessage(errorMessage))
-                        }
-                        .eraseToAnyPublisher()
-                }
+                return deleteAccount()
             }
-            return .none
-            
         case .showToast(let content):
             state.toast = Toast(content: content)
             return .none
         case .dismissToast:
             state.toast = nil
             return .none
-        case .deleteAccountResponse(let response):
-            dump(response)
+        case .logout(let response):
+            print(response)
+            UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
+            UserDefaultsManager.shared.clearAll()
+            
             state.hasCompletedLogoutOrDeletion = true
             return .none
         case .setErrorMessage(let errorMessage):
             return .send(.showToast(content: errorMessage))
         case .noAction:
             return .none
+        }
+    }
+    
+    private func logout() -> Effect<Action> {
+        guard let accessToken: String = UserDefaultsManager.shared.get(forKey: .accessToken),
+              let refreshToken: String = UserDefaultsManager.shared.get(forKey: .refreshToken) else {
+            return .send(.setErrorMessage("서버 오류입니다. 잠시후 다시 시도해주세요"))
+        }
+        
+        return Effect.publisher {
+            authUseCase.logout(accessToken: accessToken, refreshToken: refreshToken)
+                .map {
+                    Action.logout(response: $0)
+                }
+                .catch { error in
+                    return Just(Action.setErrorMessage(error.message))
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    private func deleteAccount() -> Effect<Action> {
+        guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else {
+            return .send(.setErrorMessage("서버 오류입니다. 잠시후 다시 시도해주세요"))
+        }
+        
+        // TODO: 에러 처리
+        return Effect.publisher {
+            memberUseCase.deleteAccount(memberId: memberId)
+                .map {
+                    Action.logout(response: $0)
+                }
+                .catch { error in
+                    return Just(Action.setErrorMessage(error.message))
+                }
+                .eraseToAnyPublisher()
         }
     }
 }
