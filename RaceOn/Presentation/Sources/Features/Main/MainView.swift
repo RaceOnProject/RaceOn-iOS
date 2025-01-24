@@ -25,9 +25,9 @@ public enum MatchingDistance {
     
     var timeLimit: Int {
         switch self {
-        case .three: return 20
-        case .five: return 30
-        case .ten: return 50
+        case .three: return 30
+        case .five: return 60
+        case .ten: return 90
         }
     }
 }
