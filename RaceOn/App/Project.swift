@@ -21,7 +21,7 @@ let project = Project.app(
     entitlements: .dictionary(
         [
             "aps-environment" : .string("development"),
-            "com.apple.developer.applesignin" : .string("default")
+            "com.apple.developer.applesignin" : .array([.string("Default")])
         ]
     )
 )
