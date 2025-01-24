@@ -27,57 +27,88 @@ public struct FriendView: View {
             ColorConstants.gray6
                 .ignoresSafeArea()
             
-            if let friendList = viewStore.friendList {
-                if friendList.isEmpty {
-                    VStack {
-                        ImageConstants.graphicNothing
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer().frame(width: 20)
+                    
+                    Button(action: {
+                        router.pop()
+                    }, label: {
+                        ImageConstants.navigationBack24
                             .resizable()
-                            .frame(width: 143.97, height: 180)
-                            .padding(.bottom, 16)
-                        Text(Constants.friendlessDescription)
-                            .font(.semiBold(16))
-                            .foregroundColor(PresentationAsset.gray4.swiftUIColor)
-                    }
-                } else {
-                    List {
-                        ForEach(friendList) { friend in
-                            FriendInfoView(
-                                viewType: .normalType,
-                                friend: friend,
-                                onButtonTapped: { friend in
-                                    viewStore.send(.kebabButtonTapped(friend: friend)) // Composable Architecture 액션 예시
-                                })
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
-                            .listRowBackground(ColorConstants.gray6)
+                            .frame(width: 24, height: 24)
+                    })
+                    
+                    Spacer()
+                    
+                    Text("친구 목록")
+                        .font(.regular(17))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        router.push(screen: .addFriend)
+                    }, label: {
+                        ImageConstants.addFriend
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    })
+                    
+                    Spacer().frame(width: 20)
+                }
+                .frame(height: 54)
+                
+                ZStack {
+                    if let friendList = viewStore.friendList {
+                        if friendList.isEmpty {
+                            VStack {
+                                ImageConstants.graphicNothing
+                                    .resizable()
+                                    .frame(width: 143.97, height: 180)
+                                    .padding(.bottom, 16)
+                                Text(Constants.friendlessDescription)
+                                    .font(.semiBold(16))
+                                    .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                            }
+                        } else {
+                            List {
+                                ForEach(friendList) { friend in
+                                    FriendInfoView(
+                                        viewType: .normalType,
+                                        friend: friend,
+                                        onButtonTapped: { friend in
+                                            // Composable Architecture 액션 예시
+                                            viewStore.send(.kebabButtonTapped(friend: friend))
+                                        })
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)) // 상하 여백 추가
+                                    .listRowBackground(ColorConstants.gray6)
+                                }
+                            }
+                            .listStyle(.plain)
+                            .scrollContentBackground(.hidden) // 기본 배경색 숨기기
+                            .background(ColorConstants.gray6)
+                        }
+                    } else {
+                        if viewStore.state.isLoading {
+                            ProgressView()
+                                .tint(ColorConstants.gray3)
+                                .allowsHitTesting(false)
+                        } else {
+                            VStack {
+                                ImageConstants.graphicNothing
+                                    .resizable()
+                                    .frame(width: 143.97, height: 180)
+                                    .padding(.bottom, 16)
+                                Text(Constants.friendlessDescription)
+                                    .font(.semiBold(16))
+                                    .foregroundColor(PresentationAsset.gray4.swiftUIColor)
+                            }
                         }
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden) // 기본 배경색 숨기기
-                    .background(ColorConstants.gray6)
                 }
-            } else {
-                if viewStore.state.isLoading {
-                    ProgressView()
-                        .tint(ColorConstants.gray3)
-                        .allowsHitTesting(false)
-                } else {
-                    VStack {
-                        ImageConstants.graphicNothing
-                            .resizable()
-                            .frame(width: 143.97, height: 180)
-                            .padding(.bottom, 16)
-                        Text(Constants.friendlessDescription)
-                            .font(.semiBold(16))
-                            .foregroundColor(PresentationAsset.gray4.swiftUIColor)
-                    }
-                }
-            }
-            
-            if viewStore.state.isLoading {
-                ProgressView()
-                    .tint(ColorConstants.gray3)
-                    .allowsHitTesting(false)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .disabled(viewStore.state.isLoading)
@@ -122,16 +153,6 @@ public struct FriendView: View {
                 send: .dismissToast
             )
         )
-        .toolbar {
-            ToolbarView.leadingItems {
-                router.pop()
-            }
-            ToolbarView.principalItem(title: "친구 목록")
-            ToolbarView.trailingItems(ImageConstants.addFriend) {
-                router.push(screen: .addFriend)
-            }
-        }
-        .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
     }

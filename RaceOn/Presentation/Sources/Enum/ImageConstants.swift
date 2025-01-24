@@ -44,6 +44,7 @@ enum ImageConstants {
     // Navigation
     // LeftItems
     static let navigationBack = PresentationAsset.navigationBack.swiftUIImage
+    static let navigationBack24 = PresentationAsset.navigationBack24.swiftUIImage
     
     // RightItems
     static let addFriend = PresentationAsset.addFriend.swiftUIImage
