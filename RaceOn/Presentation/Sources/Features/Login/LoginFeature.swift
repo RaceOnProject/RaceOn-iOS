@@ -17,6 +17,7 @@ import Shared
 import ComposableArchitecture
 import KakaoSDKUser
 import KakaoSDKAuth
+import Data
 
 public enum SocialLoginType: String, Equatable {
     case kakao = "KAKAO"
@@ -27,6 +28,7 @@ public enum SocialLoginType: String, Equatable {
 public struct LoginFeature {
     
     @Dependency(\.authUseCase) var authUseCase
+    private let tokenManager = TokenManager.shared
     
     public init () {}
     
@@ -143,10 +145,14 @@ public struct LoginFeature {
             return .none
             
         case .successGetToken(let tokenResponse):
-            print("로그인 성공 accessToken >> \(tokenResponse.accessToken)")
-            print("로그인 성공 refreshToken >> \(tokenResponse.refreshToken)")
-            UserDefaultsManager.shared.set(tokenResponse.accessToken, forKey: .accessToken)
-            UserDefaultsManager.shared.set(tokenResponse.refreshToken, forKey: .refreshToken)
+            print("로그인 성공 accessToken ⤵️\n\(tokenResponse.accessToken)")
+            print("로그인 성공 refreshToken ⤵️\n\(tokenResponse.refreshToken)")
+            
+            tokenManager.saveTokens(
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken
+            )
+            
             UserDefaultsManager.shared.set(tokenResponse.memberId, forKey: .memberId)
             UserDefaultsManager.shared.set(true, forKey: .isAutoLogin)
             state.successLogin = true
