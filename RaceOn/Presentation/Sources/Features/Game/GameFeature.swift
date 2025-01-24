@@ -53,6 +53,7 @@ public struct GameFeature {
             locationService.startUpdatingLocation()
             return subscribeToRunningUpdates()
         case .onDisappear:
+            locationService.stopUpdatingLocation()
             return stopTimer()
         case .updateLocation(let location):
             state.userLoaction = NMGLatLng(lat: location.0, lng: location.1)

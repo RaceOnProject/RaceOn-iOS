@@ -44,6 +44,10 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
         }
     }
     
+    public func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+    }
+    
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let currentLocation = locations.last else { return }
         self.currentLocation.send((currentLocation.coordinate.latitude, currentLocation.coordinate.longitude))
