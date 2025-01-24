@@ -223,6 +223,9 @@ public struct MainView: View {
                     .tag(MatchingDistance.ten)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+//            .animation(.easeOut(duration: 0.2), value: viewStore.state.selectedMatchingDistance)
+//            .transition(.slide)
+            .animation(.easeOut(duration: 0.2))
             
             HStack {
                 if viewStore.state.selectedMatchingDistance != .three {
@@ -282,33 +285,28 @@ public struct MainView: View {
     }
 }
 
-// FIXME: 애니메이션 작동 x
 private extension MainView {
     /// 탭뷰 왼쪽 버튼 탭
     private func leftTabButtonTapped() {
-        withAnimation(.easeOut(duration: 0.2)) {
-            switch viewStore.state.selectedMatchingDistance {
-            case .five:
-                viewStore.send(.matchingDistanceSelected(.three))
-            case .ten:
-                viewStore.send(.matchingDistanceSelected(.five))
-            default:
-                return
-            }
+        switch viewStore.state.selectedMatchingDistance {
+        case .five:
+            viewStore.send(.matchingDistanceSelected(.three))
+        case .ten:
+            viewStore.send(.matchingDistanceSelected(.five))
+        default:
+            return
         }
     }
     
     /// 탭뷰 오른쪽 버튼 탭
     private func rightTabButtonTapped() {
-        withAnimation(.easeOut(duration: 0.2)) {
-            switch viewStore.state.selectedMatchingDistance {
-            case .three:
-                viewStore.send(.matchingDistanceSelected(.five))
-            case .five:
-                viewStore.send(.matchingDistanceSelected(.ten))
-            default:
-                return
-            }
+        switch viewStore.state.selectedMatchingDistance {
+        case .three:
+            viewStore.send(.matchingDistanceSelected(.five))
+        case .five:
+            viewStore.send(.matchingDistanceSelected(.ten))
+        default:
+            return
         }
     }
 }
