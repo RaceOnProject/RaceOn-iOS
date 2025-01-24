@@ -39,5 +39,5 @@ public func timeAgo(from isoDateString: String) -> String {
         return "\(minute)분 전 접속"
     }
     
-    return "방금 전"
+    return "접속 중"
 }

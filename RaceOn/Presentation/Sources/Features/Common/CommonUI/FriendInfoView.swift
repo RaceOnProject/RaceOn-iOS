@@ -56,7 +56,7 @@ struct FriendInfoView: View {
                             .clipShape(Circle())
                     }
                     
-                    if friend.playing {
+                    if friend.playing || timeAgo(from: friend.lastActiveAt) == "접속 중" {
                         Circle()
                             .frame(width: 12, height: 12)
                             .foregroundColor(ColorConstants.primaryNormal)
