@@ -22,6 +22,7 @@ public enum Screen: Hashable {
     case legalNotice(type: SettingCategory)
     case matchingProcess(MatchingDistance, Friend)
     case game
+    case finishGame
 }
 
 public final class Router: ObservableObject {
@@ -143,6 +144,9 @@ public final class Router: ObservableObject {
                     reducer: { GameFeature() }
                 )
             ).environmentObject(self)
+        case .finishGame:
+            FinishGameView()
+                .environmentObject(self)
         }
     }
 }

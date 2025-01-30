@@ -16,6 +16,7 @@ import NMapsGeometry
 public struct GameFeature {
     @Dependency(\.timerService) var timerService
     @Dependency(\.locationService) var locationService
+    @Dependency(\.webSocketClient) var webSocketClient
     
     public init() {}
     
@@ -44,6 +45,8 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
+        case sendMessage(String)
+        case receivedMessage(String) // 메시지 수신 액션
         case noop
     }
     
@@ -54,6 +57,7 @@ public struct GameFeature {
             return subscribeToRunningUpdates()
         case .onDisappear:
             locationService.stopUpdatingLocation()
+            webSocketClient.disconnect()
             return stopTimer()
         case .updateLocation(let location):
             state.userLoaction = NMGLatLng(lat: location.0, lng: location.1)
@@ -81,6 +85,11 @@ public struct GameFeature {
             print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
             print("평균 페이스 \(state.averagePace)")
             
+            return .none
+        case .sendMessage(let message):
+            webSocketClient.sendMessage(message)
+            return .none
+        case .receivedMessage(let message):
             return .none
         case .noop:
             return .none
