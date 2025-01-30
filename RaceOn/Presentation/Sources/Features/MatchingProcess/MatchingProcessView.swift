@@ -75,6 +75,9 @@ public struct MatchingProcessView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
+        .onChange(of: viewStore.state.webSocketDisconnect) { handler in
+            handler ? router.pop() : nil
+        }
     }
     
     @ViewBuilder

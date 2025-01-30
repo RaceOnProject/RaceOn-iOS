@@ -26,7 +26,15 @@ public struct GameView: View {
             ColorConstants.gray6.ignoresSafeArea()
             
             VStack {
-                mapView
+                ZStack {
+                    mapView
+                    
+                    VStack {
+                        floatingView
+                            .padding(.top, 20) // 상단 여백 추가
+                        Spacer() // 아래로 다른 뷰를 밀어내기
+                    }
+                }
                 
                 Spacer()
                     .frame(height: 15)
@@ -58,6 +66,39 @@ public struct GameView: View {
                 userLocationArray: viewStore.state.userLocationArray
             )
         }
+    }
+    
+    @ViewBuilder
+    var floatingView: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("0.36km 앞서고 있어요!")
+                        .font(.bold(24))
+                        .foregroundColor(.white)
+                        .padding(.top, 18)
+                        .padding(.leading, 20)
+                    
+                    Spacer()
+                }
+                Spacer()
+                
+//                ProgressView()
+            }
+            .frame(maxWidth: .infinity, maxHeight: 152)
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        .init(red: 50, green: 61, blue: 22, alpha: 1),
+                        .init(red: 18, green: 18, blue: 18, alpha: 1)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .cornerRadius(10)
+        }
+        .padding(.horizontal, 20)
     }
     
     @ViewBuilder

@@ -6,15 +6,15 @@
 //
 
 public struct GameInviteResponse: Decodable {
-    let gameInfo: GameInfo
+    public let gameInfo: GameInfo
 }
 
 public struct GameInfo: Decodable {
-    let gameId: Int
-    let requestMemberId: Int
-    let requestNickname: String
-    let receivedMemberId: Int
-    let receivedNickname: String
-    let distance: Double
-    let timeLimit: Int
+    public let gameId: Int
+    public let requestMemberId: Int
+    public let requestNickname: String
+    public let receivedMemberId: Int
+    public let receivedNickname: String
+    public let distance: Double
+    public let timeLimit: Int
 }

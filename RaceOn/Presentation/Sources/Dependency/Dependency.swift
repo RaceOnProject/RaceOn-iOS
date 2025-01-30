@@ -73,4 +73,14 @@ extension DependencyValues {
         static let liveValue = LocationService()
         static let previewValue = LocationService()
     }
+    
+    // WebSocket
+    var webSocketClient: WebSocketManager {
+        get { self[WebSocketClientKey.self] }
+        set { self[WebSocketClientKey.self] = newValue }
+    }
+    
+    private enum WebSocketClientKey: DependencyKey {
+        static let liveValue = WebSocketManager()
+    }
 }

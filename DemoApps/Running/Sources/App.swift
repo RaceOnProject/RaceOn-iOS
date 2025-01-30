@@ -8,6 +8,7 @@
 import SwiftUI
 import Presentation
 import ComposableArchitecture
+import Domain
 
 @main
 struct MyApp: App {
@@ -16,15 +17,37 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $router.route) {
-                Text("Running Demo App Root View")
+                VStack {
+                    Button {
+//                        router.push(screen: .matchingProcess(.three, Friend()))
+                    } label: {
+                        Text("대기 화면으로")
+                            .foregroundColor(.white)
+                            .padding(100)
+                    }
+                    .background(.blue)
+                    
+                    Button {
+                        router.push(screen: .game)
+                    } label: {
+                        Text(("지도 화면으로"))
+                            .foregroundColor(.white)
+                            .padding(100)
+                    }
+                    .background(.blue)
+                    
+                    Button {
+                        router.push(screen: .finishGame)
+                    } label: {
+                        Text(("경쟁 완료 화면으로"))
+                            .foregroundColor(.white)
+                            .padding(100)
+                    }
+                    .background(.blue)
+                }
                     .navigationDestination(for: Screen.self) { type in
                         router.screenView(type: type)
                     }
-            }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    router.push(screen: .game)
-                }
             }
         }
     }
