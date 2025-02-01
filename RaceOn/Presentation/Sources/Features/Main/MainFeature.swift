@@ -15,6 +15,7 @@ public struct MainFeature {
     @Dependency(\.authUseCase) var authUseCase
     @Dependency(\.friendUseCase) var friendUseCase
     @Dependency(\.timerService) var timerService
+    @Dependency(\.webSocketClient) var webSocketClient
 
     public init() {}
     private enum TimerSubscriptionID: Hashable {}
