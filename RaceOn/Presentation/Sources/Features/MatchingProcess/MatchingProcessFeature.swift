@@ -21,7 +21,7 @@ public struct MatchingProcessFeature {
     
     public struct State: Equatable {
         var distance: MatchingDistance
-        var friend: Friend
+        var friendId: Int
         
         var process: MatchingProcess = .waiting
         
@@ -31,9 +31,9 @@ public struct MatchingProcessFeature {
         
         var webSocketDisconnect: Bool = false
         
-        public init(distance: MatchingDistance, friend: Friend) {
+        public init(distance: MatchingDistance, friendId: Int) {
             self.distance = distance
-            self.friend = friend
+            self.friendId = friendId
         }
     }
     
@@ -50,7 +50,7 @@ public struct MatchingProcessFeature {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            let friend = state.friend.friendId
+            let friend = state.friendId
             let distance = state.distance.distance
             let timeLimit = state.distance.timeLimit
             

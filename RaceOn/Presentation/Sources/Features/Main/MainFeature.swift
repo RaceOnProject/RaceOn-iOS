@@ -24,8 +24,13 @@ public struct MainFeature {
         var isReadyForNextScreen: Bool = false
         var selectedMatchingDistance: MatchingDistance = .three
         var selectedCompetitionFreind: Friend?
+        
+        var friendId: Int?
 
         var toast: Toast?
+        
+        var pushNotificationData: PushNotificationData?
+        var isPresentedCustomAlert: Bool = false
 
         var isShowSheet: Bool = false
         var isAppeard: Bool = false
@@ -48,6 +53,11 @@ public struct MainFeature {
 
         case showToast(content: String)
         case dismissToast
+        
+        case receivePushNotificationData(PushNotificationData)
+        
+        case presentCustomAlert
+        case dismissCustomAlert
 
         // 타이머 관련 액션 추가
         case startTimer
@@ -92,6 +102,7 @@ public struct MainFeature {
 
         case .selectedCompetitionFreind(let friend):
             state.selectedCompetitionFreind = friend
+            state.friendId = friend?.friendId
             state.isReadyForNextScreen = true
             return .none
 
@@ -111,6 +122,27 @@ public struct MainFeature {
             state.toast = nil
             return .none
 
+        case .receivePushNotificationData(let data):
+            state.isPresentedCustomAlert = true
+            state.pushNotificationData = data
+            return .none
+        case .presentCustomAlert:
+            state.isPresentedCustomAlert = false
+            let distance = state.pushNotificationData?.distance ?? "3.0"
+            
+            switch distance {
+            case "3.0": state.selectedMatchingDistance = .three
+            case "5.0": state.selectedMatchingDistance = .five
+            case "10.0": state.selectedMatchingDistance = .ten
+            default: break
+            }
+            
+            state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
+            state.isReadyForNextScreen = true
+            return .none
+        case .dismissCustomAlert:
+            state.isPresentedCustomAlert = false
+            return .none
         // 타이머 관련 액션 처리
         case .startTimer:
             return .merge(

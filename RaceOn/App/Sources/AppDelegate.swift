@@ -69,4 +69,32 @@ extension AppDelegate: MessagingDelegate {
         
         print("FCM 토큰: \(fcmToken)")
     }
+    
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        print("🔔 백그라운드 또는 종료 상태에서 푸시 수신: \(userInfo)")
+                
+        // PushNotificationData 모델로 변환 후 AppState에 저장
+        if let pushData = PushNotificationData(from: userInfo) {
+            AppState.shared.receivedPushData.send(pushData)
+        }
+        
+        completionHandler(.newData)
+    }
+    
+    // 앱이 포그라운드일 때 푸시 처리
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        let userInfo = notification.request.content.userInfo
+        print("🔔 앱이 포그라운드일 때 푸시 수신: \(userInfo)")
+        
+        // 푸시를 강제로 화면에 표시
+        completionHandler([.banner, .sound, .badge])
+    }
 }
