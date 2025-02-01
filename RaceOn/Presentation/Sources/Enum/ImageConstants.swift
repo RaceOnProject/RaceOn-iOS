@@ -56,7 +56,7 @@ enum ImageConstants {
     static let card3km = PresentationAsset.card3km.swiftUIImage
     static let card5km = PresentationAsset.card5km.swiftUIImage
     static let card10km = PresentationAsset.card10km.swiftUIImage
-    static let graphicInvitation = PresentationAsset.graphicInvitation.swiftUIImage
+    static let graphicInvite = PresentationAsset.graphicInvite.swiftUIImage
     static let graphicMatching = PresentationAsset.graphicMatching.swiftUIImage
     static let graphicRefuse = PresentationAsset.graphicRefuse.swiftUIImage
     static let graphicWaiting = PresentationAsset.graphicWaiting.swiftUIImage
@@ -65,5 +65,4 @@ enum ImageConstants {
     static let iconFriends = PresentationAsset.iconFriends.swiftUIImage
     static let iconChevronLeft = PresentationAsset.iconChevronLeft.swiftUIImage
     static let iconChevronRight = PresentationAsset.iconChevronRight.swiftUIImage
-    
 }

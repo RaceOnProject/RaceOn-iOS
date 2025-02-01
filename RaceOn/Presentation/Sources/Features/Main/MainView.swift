@@ -38,6 +38,7 @@ public struct MainView: View {
     let store: StoreOf<MainFeature>
     @ObservedObject var viewStore: ViewStoreOf<MainFeature>
     @State private var isThrottling = false
+    @ObservedObject var appState = AppState.shared
     
     public init(store: StoreOf<MainFeature>) {
         self.store = store
@@ -74,13 +75,29 @@ public struct MainView: View {
                 viewStore.send(.onDisappear)
             }
             .onChange(of: viewStore.state.isReadyForNextScreen) {
-                guard let friend = viewStore.state.selectedCompetitionFreind else {
+                guard let friendId = viewStore.state.friendId else {
                     return
                 }
                 let distance = viewStore.state.selectedMatchingDistance
                 
-                $0 ? router.push(screen: .matchingProcess(distance, friend)) : nil
+                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId)) : nil
             }
+            .onReceive(AppState.shared.receivedPushData) { newValue in
+                if let newValue = newValue {
+                    print("푸시 데이터 업데이트: \(newValue)")
+                    viewStore.send(.receivePushNotificationData(newValue))
+                }
+            }
+            .customAlert(
+                isPresented: viewStore.isPresentedCustomAlert,
+                title: "\(viewStore.pushNotificationData?.requestNickname ?? "") 님이\n경쟁에 초대했어요 🏃🏻‍♂️",
+                presentAction: {
+                    viewStore.send(.presentCustomAlert)
+                },
+                dismissAction: {
+                    viewStore.send(.dismissCustomAlert)
+                }
+            )
             .toastView(
                 toast: viewStore.binding(
                     get: \.toast,
