@@ -22,12 +22,11 @@ public struct MatchingProcessFeature {
     public struct State: Equatable {
         var distance: MatchingDistance
         var friendId: Int
+        var gameId: Int?
         
         var process: MatchingProcess = .waiting
         
         var toast: Toast?
-        
-        var receiveMessage: String?
         
         var webSocketDisconnect: Bool = false
         
@@ -63,22 +62,42 @@ public struct MatchingProcessFeature {
                   let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else {
                 return .none
             }
-            webSocketClient.connect(to: gameId, memberId: memberId)
+            
+            state.gameId = gameId
+            
+            webSocketClient.connect()
             return .none
         case .receiveMessage(let message):
-            print("receiveMessage \(message)")
-            // Swift 객체로 변환
-            if let parsedMessage = parseGameMessage(from: message) {
-                print("디코딩 성공: \(parsedMessage)")
+            print("🏆 receiveMessage \(message)")
+            
+            if message.starts(with: "CONNECTED") {
+                print("🟢 CONNECTED 메시지 수신")
+            } else if message.starts(with: "MESSAGE") {
+                print("🔴 MESSAGE 메시지 수신")
             } else {
-                print("디코딩 실패")
+                print("⚠️ 기타 메시지 수신")
             }
+            // Swift 객체로 변환
+//            if let parsedMessage = parseGameMessage(from: message) {
+//                print("디코딩 성공: \(parsedMessage)")
+//            } else {
+//                print("디코딩 실패")
+//            }
             return .none
         case .setWebSocketStatus(let status):
-            print("웹 소켓 Status \(status)")
+            print("🏆 웹 소켓 Status \(status)")
             switch status {
+            case .connect:
+                webSocketClient.sendConnect()
             case .disconnect:
                 state.webSocketDisconnect = true
+            case .subscribe:
+                guard let gameId = state.gameId else { break }
+                webSocketClient.sendSubscribe(to: gameId)
+            case .start:
+                guard let gameId = state.gameId,
+                      let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { break }
+                webSocketClient.sendStart(to: gameId, memberId: memberId)
             default:
                 break
             }
@@ -112,14 +131,15 @@ public struct MatchingProcessFeature {
             Effect.publisher {
                 webSocketClient.messagePublisher()
                     .map {
-                        print("MessagePublisher Action 생성: \($0)")
+                        print("🏆 type => \(type(of: $0))")
+                        print("🏆 MessagePublisher Action 생성: \($0)")
                         return Action.receiveMessage($0)
                     }
             },
             Effect.publisher {
                 webSocketClient.statusPublisher()
                     .map {
-                        print("StatusPublisher Action 생성: \($0)") // Action 생성 확인
+                        print("🏆 StatusPublisher Action 생성: \($0)") // Action 생성 확인
                         return Action.setWebSocketStatus($0)
                     }
             }

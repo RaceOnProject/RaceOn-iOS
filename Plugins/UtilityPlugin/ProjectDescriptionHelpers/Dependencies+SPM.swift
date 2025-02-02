@@ -19,6 +19,7 @@ public extension TargetDependency {
     static let kakaoSDK: TargetDependency = .external(externalDependency: .kakaoSDK)
     static let firebaseMessaging: TargetDependency = .external(externalDependency: .firebaseMessaging)
     static let naverMapSDK: TargetDependency = .external(externalDependency: .naverMapSDK)
+    static let starscream: TargetDependency = .external(externalDependency: .starscream)
 }
 
 
@@ -50,4 +51,5 @@ public enum ExternalDependency: String {
     case kakaoSDK = "KakaoSDK"
     case firebaseMessaging = "FirebaseMessaging"
     case naverMapSDK = "NaverMapSDK"
+    case starscream = "Starscream"
 }
