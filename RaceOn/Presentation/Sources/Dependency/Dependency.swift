@@ -81,6 +81,6 @@ extension DependencyValues {
     }
     
     private enum WebSocketClientKey: DependencyKey {
-        static let liveValue = WebSocketManager()
+        static let liveValue = WebSocketManager.shared
     }
 }

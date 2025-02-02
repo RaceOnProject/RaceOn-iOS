@@ -20,7 +20,8 @@ let project = Project.framework(
         .swiftyCrop,
         .kakaoSDK,
         .firebaseMessaging,
-        .naverMapSDK
+        .naverMapSDK,
+        .starscream
     ],
     resources: Project.Environment.resourceFile
 )

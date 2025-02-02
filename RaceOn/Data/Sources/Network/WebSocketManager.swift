@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import Starscream
 
 public enum WebSocketStatus {
     case connect
@@ -16,8 +17,10 @@ public enum WebSocketStatus {
     case process
 }
 
-public final class WebSocketManager: NSObject {
-    // WebSocket URL 설정
+public final class WebSocketManager: WebSocketDelegate {
+    
+    public static let shared = WebSocketManager()
+    
     enum Constants {
     #if DEBUG
         static let url: String = "wss://api.runner-dev.shop/ws" // 개발 서버
@@ -26,102 +29,62 @@ public final class WebSocketManager: NSObject {
     #endif
     }
     
-    private var retryCount = 0
-    private let maxRetryCount = 5
+    var socket: WebSocket?
+    let statusSubject = PassthroughSubject<WebSocketStatus, Never>()
+    let messageSubject = PassthroughSubject<String, Never>() // 메시지 전송 스트림
     
-    public static let shared = WebSocketManager()
-    
-    private var webSocketTask: URLSessionWebSocketTask?
-    private let session: URLSession
-    public var statusSubject = PassthroughSubject<WebSocketStatus, Never>()
-    public var messageSubject = PassthroughSubject<String, Never>() // 메시지 전송 스트림
-    
-    public override init() {
-        self.session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue())
-        super.init()
+    public init() {
+        var request = URLRequest(url: URL(string: Constants.url)!)
+        request.timeoutInterval = 5
+        socket = WebSocket(request: request)
+        socket?.delegate = self
     }
     
-    // WebSocket 연결
-    public func connect(to gameId: Int, memberId: Int) {
-        guard let url = URL(string: Constants.url) else {
-            print("Invalid URL")
-            return
-        }
-        webSocketTask = session.webSocketTask(with: url)
-        webSocketTask?.resume()
-        print("WebSocket connected to \(url)")
-        
-        statusSubject.send(.connect)
-        
-        listenForMessages()
-        connect()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.subscribe(to: gameId)
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.start(to: gameId, memberId: memberId)
-        }
-    }
-    
-    // WebSocket 연결 종료
-    public func disconnect() {
-        webSocketTask?.cancel(with: .goingAway, reason: nil)
-        print("WebSocket disconnected")
-        statusSubject.send(.disconnect)
-    }
-    
-    // 메시지 수신
-    private func listenForMessages() {
-        webSocketTask?.receive { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .failure(let error):
-                print("WebSocket error: \(error)")
-                
-                // 에러 처리 로직
-                self.retryCount += 1
-                if self.retryCount <= self.maxRetryCount {
-                    print("Retrying to connect (\(self.retryCount)/\(self.maxRetryCount))")
-                    self.listenForMessages()
-                } else {
-                    print("Max retry attempts reached. Disconnecting.")
-                    self.disconnect()
-                }
-                
-            case .success(let message):
-                self.retryCount = 0 // 성공하면 재시도 횟수 초기화
-                switch message {
-                case .string(let text):
-                    print("receiveMessage \(text)")
-                    self.messageSubject.send(text) // 메시지를 스트림에 추가
-                case .data(let data):
-                    print("Received binary data: \(data)")
-                @unknown default:
-                    print("Received unknown type")
-                }
-                
-                // 메시지 수신을 계속 시도
-                self.listenForMessages()
-            }
-        }
-    }
-
-    // 메시지 전송
-    public func sendMessage(_ message: String) {
-        webSocketTask?.send(.string(message)) { error in
-            if let error = error {
-                print("Failed to send message: \(error)")
-            } else {
-                print("Message sent: \(message)")
-            }
-        }
-    }
-    
-    // STOMP SUBSCRIBE 프레임 생성 및 전송
     public func connect() {
+        socket?.connect()
+    }
+    
+    public func disconnect() {
+        socket?.disconnect()
+    }
+    
+    public func sendMessage(_ message: String) {
+        socket?.write(string: message)
+        print("🏆 WebSocket 으로 보낸 메시지 \(message)")
+    }
+    
+    // MARK: - WebSocketDelegate Methods
+    public func didReceive(event: WebSocketEvent, client: WebSocketClient) {
+        switch event {
+        case .connected(let headers):
+            print("🏆 WebSocket 연결됨: \(headers)")
+            statusSubject.send(.connect)
+        case .disconnected(let reason, let code):
+            print("🏆 WebSocket 연결 해제됨: \(reason) (코드: \(code))")
+        case .text(let text):
+            messageSubject.send(text)
+            print("🏆 WebSocket 받은 메시지: \(text)")
+        case .binary(let data):
+            print("🏆 WebSocket 받은 바이너리 데이터: \(data)")
+        case .pong(_):
+            print("🏆 WebSocket Pong 수신")
+        case .ping:
+            print("🏆 WebSocket Ping 송신")
+        case .error(let error):
+            print("🏆 WebSocket 오류 발생: \(String(describing: error))")
+        case .cancelled:
+            print("🏆 WebSocket 연결 취소됨")
+        case .viabilityChanged(_), .reconnectSuggested(_):
+            break
+        case .peerClosed:
+            break
+        }
+    }
+}
+
+extension WebSocketManager {
+    // STOMP SUBSCRIBE 프레임 생성 및 전송
+    public func sendConnect() {
         let connectFrame = """
         CONNECT
         accept-version:1.1,1.0
@@ -131,10 +94,11 @@ public final class WebSocketManager: NSObject {
         """
         
         sendMessage(connectFrame)
+        statusSubject.send(.subscribe)
     }
     
     // STOMP SUBSCRIBE 프레임 생성 및 전송
-    public func subscribe(to gameId: Int) {
+    public func sendSubscribe(to gameId: Int) {
         let subscriptionId = "sub-" + UUID().uuidString
         let destination = "/topic/games/\(gameId)"
         
@@ -147,9 +111,10 @@ public final class WebSocketManager: NSObject {
         """
         
         sendMessage(subscribeFrame)
+        statusSubject.send(.start)
     }
     
-    public func start(to gameId: Int, memberId: Int) {
+    public func sendStart(to gameId: Int, memberId: Int) {
         let destination = "/app/games/\(gameId)/gamer/\(memberId)"
         let startFrame = """
         SEND
@@ -161,7 +126,9 @@ public final class WebSocketManager: NSObject {
         
         sendMessage(startFrame)
     }
-    
+}
+
+extension WebSocketManager {
     public func statusPublisher() -> AnyPublisher<WebSocketStatus, Never> {
         return statusSubject.eraseToAnyPublisher()
     }
