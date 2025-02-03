@@ -13,6 +13,8 @@ import ComposableArchitecture
 import KakaoSDKCommon
 import KakaoSDKAuth
 
+import Shared
+
 enum RootScreen {
     case login
     case main
@@ -46,6 +48,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = vc
         
         KakaoSDK.initSDK(appKey: "8d7586b19e44d18f82eb280b3e57bae1")
+        
+        // 🔔 푸시로 앱이 실행된 경우 !
+        guard let notificationResponse = connectionOptions.notificationResponse else { return }
+        let userInfo = notificationResponse.notification.request.content.userInfo
+        
+        // PushNotificationData 모델로 변환 후 AppState에 저장
+        if let pushData = PushNotificationData(from: userInfo) {
+            AppState.shared.receivedPushData.send(pushData)
+        }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
