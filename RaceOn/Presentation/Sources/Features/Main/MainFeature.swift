@@ -39,7 +39,7 @@ public struct MainFeature {
 
     public enum Action {
         case onAppear
-        case onDisappear
+        case setIsReadForNextScreen
         case startButtonTapped
 
         case checkFriendList(BaseResponse<FriendResponse>)
@@ -83,7 +83,7 @@ public struct MainFeature {
                 .send(.startTimer) // 타이머 시작
             )
 
-        case .onDisappear:
+        case .setIsReadForNextScreen:
             state.isReadyForNextScreen = false
             return .none
         case .startButtonTapped:
