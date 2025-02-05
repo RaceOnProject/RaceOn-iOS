@@ -26,6 +26,8 @@ public struct MainFeature {
         var selectedMatchingDistance: MatchingDistance = .three
         var selectedCompetitionFreind: Friend?
         
+        var isInvited: Bool = false
+        
         var friendId: Int?
 
         var toast: Toast?
@@ -129,6 +131,7 @@ public struct MainFeature {
             return .none
         case .presentCustomAlert:
             state.isPresentedCustomAlert = false
+            state.isInvited = true
             let distance = state.pushNotificationData?.distance ?? "3.0"
             
             switch distance {

@@ -23,6 +23,7 @@ public struct MatchingProcessFeature {
     public struct State: Equatable {
         var distance: MatchingDistance
         var friendId: Int
+        var isInvited: Bool
         var gameId: Int?
         
         var process: MatchingProcess = .waiting
@@ -33,9 +34,10 @@ public struct MatchingProcessFeature {
         
         var isReadyForNextScreen: Bool = false
         
-        public init(distance: MatchingDistance, friendId: Int) {
+        public init(distance: MatchingDistance, friendId: Int, isInvited: Bool) {
             self.distance = distance
             self.friendId = friendId
+            self.isInvited = isInvited
         }
     }
     
@@ -58,10 +60,19 @@ public struct MatchingProcessFeature {
             let distance = state.distance.distance
             let timeLimit = state.distance.timeLimit
             
-            return Effect.merge(
-                webSocketUpdatesPublisher(),
-                inviteGame(friendId: friend, distance: distance, timeLimit: timeLimit)
-            )
+            if state.isInvited {
+                return .merge(
+                    webSocketUpdatesPublisher(),
+                    Effect.run { _ in
+                        webSocketClient.connect()
+                    }
+                )
+            } else {
+                return Effect.merge(
+                    webSocketUpdatesPublisher(),
+                    inviteGame(friendId: friend, distance: distance, timeLimit: timeLimit)
+                )
+            }
         case .setMatcingProcess(let process):
             state.process = process
             process.isFailed ? webSocketClient.disconnect() : nil

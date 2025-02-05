@@ -60,7 +60,6 @@ public struct GameFeature {
             return subscribeToRunningUpdates()
         case .onDisappear:
             locationService.stopUpdatingLocation()
-            webSocketClient.disconnect()
             return stopTimer()
         case .updateLocation(let location):
             state.userLoaction = NMGLatLng(lat: location.0, lng: location.1)

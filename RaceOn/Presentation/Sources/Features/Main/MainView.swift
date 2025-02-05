@@ -79,17 +79,15 @@ public struct MainView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
-            .onDisappear {
-//                viewStore.send(.onDisappear)
-            }
             .onChange(of: viewStore.state.isReadyForNextScreen) {
                 guard let friendId = viewStore.state.friendId else {
                     return
                 }
                 let distance = viewStore.state.selectedMatchingDistance
+                let isInvited = viewStore.state.isInvited
                 
                 viewStore.send(.setIsReadForNextScreen)
-                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId)) : nil
+                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId, isInvited: isInvited)) : nil
             }
             .onReceive(AppState.shared.receivedPushData) { newValue in
                 if let newValue = newValue {
