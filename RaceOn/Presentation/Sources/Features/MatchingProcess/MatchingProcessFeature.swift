@@ -64,6 +64,8 @@ public struct MatchingProcessFeature {
             )
         case .setMatcingProcess(let process):
             state.process = process
+            process.isFailed ? webSocketClient.disconnect() : nil
+            
             return .none
         case .setReadyForNextScreen(let handler):
             state.isReadyForNextScreen = handler
