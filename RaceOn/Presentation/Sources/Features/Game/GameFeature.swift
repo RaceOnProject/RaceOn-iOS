@@ -21,10 +21,9 @@ public struct GameFeature {
     public init() {}
     
     public struct State: Equatable {
-        public init() {}
         
         // 남은 거리, 평균 페이스, 진행 시간
-        var remainingDistance: Double = 3.00
+        var remainingDistance: Double
         var averagePace: String = "00′00″"
         var runningTime: String = "00:00:00"
 
@@ -36,6 +35,10 @@ public struct GameFeature {
         
         var userLoaction: NMGLatLng?
         var userLocationArray: [NMGLatLng] = []
+        
+        public init(distance: MatchingDistance) {
+            self.remainingDistance = distance.distanceFormat
+        }
     }
     
     public enum Action {

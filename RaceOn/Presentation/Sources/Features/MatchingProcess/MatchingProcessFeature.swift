@@ -16,6 +16,7 @@ import Foundation
 public struct MatchingProcessFeature {
     @Dependency(\.gameUseCase) var gameUseCase
     @Dependency(\.webSocketClient) var webSocketClient
+    @Dependency(\.continuousClock) var clock
     
     public init() {}
     
@@ -30,6 +31,8 @@ public struct MatchingProcessFeature {
         
         var webSocketDisconnect: Bool = false
         
+        var isReadyForNextScreen: Bool = false
+        
         public init(distance: MatchingDistance, friendId: Int) {
             self.distance = distance
             self.friendId = friendId
@@ -38,6 +41,8 @@ public struct MatchingProcessFeature {
     
     public enum Action {
         case onAppear
+        case setMatcingProcess(MatchingProcess)
+        case setReadyForNextScreen(handler: Bool)
         case inviteGameResponse(BaseResponse<GameInviteResponse>)
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
@@ -57,15 +62,25 @@ public struct MatchingProcessFeature {
                 webSocketUpdatesPublisher(),
                 inviteGame(friendId: friend, distance: distance, timeLimit: timeLimit)
             )
+        case .setMatcingProcess(let process):
+            state.process = process
+            return .none
+        case .setReadyForNextScreen(let handler):
+            state.isReadyForNextScreen = handler
+            return .none
         case .inviteGameResponse(let response):
-            guard let gameId = response.data?.gameInfo.gameId,
-                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else {
-                return .none
+            guard let gameId = response.data?.gameInfo.gameId else {
+                return .send(.setMatcingProcess(.failed(reason: response.message)))
             }
             
             state.gameId = gameId
             
-            webSocketClient.connect()
+            if response.success {
+                webSocketClient.connect()
+            } else {
+                return .send(.setMatcingProcess(.failed(reason: response.message)))
+            }
+            
             return .none
         case .receiveMessage(let message):
             print("🏆 receiveMessage \(message)")
@@ -74,15 +89,26 @@ public struct MatchingProcessFeature {
                 print("🟢 CONNECTED 메시지 수신")
             } else if message.starts(with: "MESSAGE") {
                 print("🔴 MESSAGE 메시지 수신")
+                // Swift 객체로 변환
+                if let gameMessage = parseGameMessage(from: message) {
+                    if gameMessage.statusCode >= 200 || gameMessage.statusCode < 300 {
+                        return .run { send in
+                            for i in (0...3).reversed() {
+                                try await Task.sleep(nanoseconds: 1_000_000_000)
+                                await send(.setMatcingProcess(.successed(seconds: i)))
+                            }
+                            
+                            await send(.setReadyForNextScreen(handler: true))
+                        }
+                    } else {
+                        return .send(.setMatcingProcess(.failed(reason: gameMessage.message)))
+                    }
+                } else {
+                    return .send(.setMatcingProcess(.failed(reason: "Client Error(Decoding Failed)")))
+                }
             } else {
                 print("⚠️ 기타 메시지 수신")
             }
-            // Swift 객체로 변환
-//            if let parsedMessage = parseGameMessage(from: message) {
-//                print("디코딩 성공: \(parsedMessage)")
-//            } else {
-//                print("디코딩 실패")
-//            }
             return .none
         case .setWebSocketStatus(let status):
             print("🏆 웹 소켓 Status \(status)")

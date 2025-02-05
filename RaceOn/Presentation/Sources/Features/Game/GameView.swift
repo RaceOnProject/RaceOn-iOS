@@ -56,6 +56,7 @@ public struct GameView: View {
         .onDisappear {
             viewStore.send(.onDisappear)
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     @ViewBuilder
@@ -170,7 +171,7 @@ public struct GameView: View {
 #Preview {
     GameView(
         store: Store(
-            initialState: GameFeature.State(),
+            initialState: GameFeature.State(distance: .three),
             reducer: { GameFeature() }
         )
     )

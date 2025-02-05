@@ -23,6 +23,14 @@ public enum MatchingDistance {
         }
     }
     
+    var distanceFormat: Double {
+        switch self {
+        case .three: return 3.00
+        case .five: return 5.00
+        case .ten: return 10.00
+        }
+    }
+    
     var timeLimit: Int {
         switch self {
         case .three: return 30
@@ -72,7 +80,7 @@ public struct MainView: View {
                 viewStore.send(.onAppear)
             }
             .onDisappear {
-                viewStore.send(.onDisappear)
+//                viewStore.send(.onDisappear)
             }
             .onChange(of: viewStore.state.isReadyForNextScreen) {
                 guard let friendId = viewStore.state.friendId else {
@@ -80,6 +88,7 @@ public struct MainView: View {
                 }
                 let distance = viewStore.state.selectedMatchingDistance
                 
+                viewStore.send(.setIsReadForNextScreen)
                 $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId)) : nil
             }
             .onReceive(AppState.shared.receivedPushData) { newValue in

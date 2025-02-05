@@ -9,10 +9,17 @@ import SwiftUI
 import ComposableArchitecture
 import Domain
 
-public enum MatchingProcess {
+public enum MatchingProcess: Equatable {
     case waiting
-    case failed
-    case successed
+    case failed(reason: String)
+    case successed(seconds: Int)
+    
+    var isFailed: Bool {
+        if case .failed(_) = self {
+            return true
+        }
+        return false
+    }
     
     var title: String {
         switch self {
@@ -25,8 +32,8 @@ public enum MatchingProcess {
     var subTitle: String {
         switch self {
         case .waiting: return "조금만 기다려 주세요"
-        case .failed: return "친구의 거절로 매칭이 실패했어요"
-        case .successed: return "3초 뒤 게임이 시작됩니다"
+        case .failed(let reason): return reason
+        case .successed(let seconds): return "\(seconds)초 뒤 게임이 시작됩니다"
         }
     }
     
@@ -66,7 +73,7 @@ public struct MatchingProcessView: View {
             }
             .padding(.horizontal, 20)
             .overlay(alignment: .bottom) {
-                if viewStore.state.process == .failed {
+                if viewStore.state.process.isFailed {
                     backButton
                 }
             }
@@ -78,12 +85,17 @@ public struct MatchingProcessView: View {
         .onChange(of: viewStore.state.webSocketDisconnect) { handler in
             handler ? router.pop() : nil
         }
+        .onChange(of: viewStore.state.isReadyForNextScreen) { handler in
+            
+            let distance = viewStore.state.distance
+            handler ? router.push(screen: .game(distance)) : nil
+        }
     }
     
     @ViewBuilder
     var topBar: some View {
         HStack {
-            if viewStore.state.process != .failed {
+            if !viewStore.state.process.isFailed {
                 Button {
                     print("취소 탭")
                     router.pop()
