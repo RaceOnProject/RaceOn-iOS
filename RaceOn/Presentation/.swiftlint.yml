@@ -24,6 +24,10 @@ excluded:
 
 # 규칙 설정
 
+cyclomatic_complexity:
+  warning: 30
+  error: 40
+
 # 'force_cast' 규칙: 강제 형변환(`as!`) 사용을 경고합니다.
 # 이는 런타임 오류를 초래할 수 있기 때문에 가능한 피하는 것이 좋습니다.
 force_cast:
