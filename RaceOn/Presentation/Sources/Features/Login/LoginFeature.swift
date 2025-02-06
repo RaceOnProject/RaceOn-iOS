@@ -120,7 +120,13 @@ public struct LoginFeature {
                     } else {
                         return .send(.joinMembers(state.idToken, socialLoginType))
                     }
-                    
+                case .requiredLogin:
+                    UserDefaultsManager.shared.set(false, forKey: .isAutoLogin)
+                    withAnimation {
+                        state.isLoginRequired = true
+                    }
+                    return .none
+
                 default:
                     state.idToken = ""
                     state.socialLoginType = nil
