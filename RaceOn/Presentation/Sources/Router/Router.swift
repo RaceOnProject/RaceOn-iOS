@@ -20,7 +20,7 @@ public enum Screen: Hashable {
     case setting
     case myProfile
     case legalNotice(type: SettingCategory)
-    case matchingProcess(MatchingDistance, friendId: Int, isInvited: Bool)
+    case matchingProcess(MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?)
     case game(MatchingDistance)
     case finishGame
 }
@@ -129,10 +129,15 @@ public final class Router: ObservableObject {
                 .environmentObject(self)
             default: Text("화면 이동 오류")
             }
-        case .matchingProcess(let distance, let friendId, let isInvited):
+        case .matchingProcess(let distance, let friendId, let isInvited, let gameId):
             MatchingProcessView(
                 store: Store(
-                    initialState: MatchingProcessFeature.State(distance: distance, friendId: friendId, isInvited: isInvited),
+                    initialState: MatchingProcessFeature.State(
+                        distance: distance,
+                        friendId: friendId,
+                        isInvited: isInvited,
+                        gameId: gameId
+                    ),
                     reducer: { MatchingProcessFeature()._printChanges() }
                 )
             )

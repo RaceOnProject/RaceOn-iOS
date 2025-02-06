@@ -29,6 +29,7 @@ public struct MainFeature {
         var isInvited: Bool = false
         
         var friendId: Int?
+        var gameId: Int?
 
         var toast: Toast?
         
@@ -128,6 +129,8 @@ public struct MainFeature {
         case .receivePushNotificationData(let data):
             state.isPresentedCustomAlert = true
             state.pushNotificationData = data
+            state.gameId = Int(state.pushNotificationData?.gameId ?? "0")
+            state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
             return .none
         case .presentCustomAlert:
             state.isPresentedCustomAlert = false
@@ -141,7 +144,6 @@ public struct MainFeature {
             default: break
             }
             
-            state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
             state.isReadyForNextScreen = true
             return .none
         case .dismissCustomAlert:

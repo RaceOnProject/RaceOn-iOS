@@ -11,7 +11,7 @@ public struct GameMessage: Decodable {
     public let statusCode: Int
     public let code: String
     public let message: String
-    public let data: GameData
+    public let data: GameData?
     public let success: Bool
 }
 

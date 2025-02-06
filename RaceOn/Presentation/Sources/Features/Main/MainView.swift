@@ -85,9 +85,10 @@ public struct MainView: View {
                 }
                 let distance = viewStore.state.selectedMatchingDistance
                 let isInvited = viewStore.state.isInvited
+                let gameId = viewStore.state.gameId
                 
                 viewStore.send(.setIsReadForNextScreen)
-                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId, isInvited: isInvited)) : nil
+                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId, isInvited: isInvited, gameId: gameId)) : nil
             }
             .onReceive(AppState.shared.receivedPushData) { newValue in
                 if let newValue = newValue {
