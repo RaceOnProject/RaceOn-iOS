@@ -58,7 +58,7 @@ struct MyProfileFeature {
     }
     
     @Dependency(\.memberUseCase) var memberUseCase
-    
+
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
@@ -118,7 +118,10 @@ struct MyProfileFeature {
             state.isLoading = false
             return .send(.showToast(content: errorMessage))
         case .editNickname(let nickname):
-            state.nickname = nickname
+            if nickname.count > 20 {
+                state.toast = Toast(content: "닉네임은 최대 20글자까지 입력 가능합니다.")
+            }
+            state.nickname = String(nickname.prefix(20))
             return .none
         case .logout:
             // TODO: Logout
