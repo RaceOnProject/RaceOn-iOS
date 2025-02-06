@@ -34,10 +34,11 @@ public struct MatchingProcessFeature {
         
         var isReadyForNextScreen: Bool = false
         
-        public init(distance: MatchingDistance, friendId: Int, isInvited: Bool) {
+        public init(distance: MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?) {
             self.distance = distance
             self.friendId = friendId
             self.isInvited = isInvited
+            self.gameId = gameId
         }
     }
     
@@ -104,7 +105,7 @@ public struct MatchingProcessFeature {
                 print("🔴 MESSAGE 메시지 수신")
                 // Swift 객체로 변환
                 if let gameMessage = parseGameMessage(from: message) {
-                    if gameMessage.statusCode >= 200 || gameMessage.statusCode < 300 {
+                    if gameMessage.statusCode >= 200 && gameMessage.statusCode < 300 {
                         return .run { send in
                             for i in (0...3).reversed() {
                                 try await Task.sleep(nanoseconds: 1_000_000_000)
