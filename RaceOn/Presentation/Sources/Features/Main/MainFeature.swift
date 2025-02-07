@@ -28,6 +28,7 @@ public struct MainFeature {
         var toast: Toast?
 
         var isShowSheet: Bool = false
+        var isAppeard: Bool = false
     }
 
     public enum Action {
@@ -59,10 +60,13 @@ public struct MainFeature {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId),
+            guard !state.isAppeard,
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId),
                   let fcmToken: String = UserDefaultsManager.shared.get(forKey: .FCMToken) else {
                 return .none
             }
+            
+            state.isAppeard = true
             return .concatenate(
                 registerFCMToken(memberId: memberId, fcmToken: fcmToken),
                 .send(.startTimer) // 타이머 시작
