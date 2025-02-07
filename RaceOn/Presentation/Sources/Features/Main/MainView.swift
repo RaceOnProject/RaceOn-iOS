@@ -223,8 +223,6 @@ public struct MainView: View {
                     .tag(MatchingDistance.ten)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-//            .animation(.easeOut(duration: 0.2), value: viewStore.state.selectedMatchingDistance)
-//            .transition(.slide)
             .animation(.easeOut(duration: 0.2))
             
             HStack {
