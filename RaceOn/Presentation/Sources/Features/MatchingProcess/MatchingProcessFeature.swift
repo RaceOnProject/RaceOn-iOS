@@ -44,6 +44,7 @@ public struct MatchingProcessFeature {
     
     public enum Action {
         case onAppear
+        case onDisappear
         case setMatcingProcess(MatchingProcess)
         case setReadyForNextScreen(handler: Bool)
         case inviteGameResponse(BaseResponse<GameInviteResponse>)
@@ -64,20 +65,19 @@ public struct MatchingProcessFeature {
             if state.isInvited {
                 return .merge(
                     webSocketUpdatesPublisher(),
-                    Effect.run { _ in
-                        webSocketClient.connect()
-                    }
+                    .send(.setWebSocketStatus(.start))
                 )
             } else {
-                return Effect.merge(
+                return .merge(
                     webSocketUpdatesPublisher(),
                     inviteGame(friendId: friend, distance: distance, timeLimit: timeLimit)
                 )
             }
+        case .onDisappear:
+            return .cancel(id: "WebSocketUpdatesPublisher")
         case .setMatcingProcess(let process):
             state.process = process
             process.isFailed ? webSocketClient.disconnect() : nil
-            
             return .none
         case .setReadyForNextScreen(let handler):
             state.isReadyForNextScreen = handler
@@ -128,16 +128,14 @@ public struct MatchingProcessFeature {
             print("🏆 웹 소켓 Status \(status)")
             switch status {
             case .connect:
-                webSocketClient.sendConnect()
-            case .disconnect:
-                state.webSocketDisconnect = true
+                webSocketClient.sendMessage(messageType: .connect)
             case .subscribe:
                 guard let gameId = state.gameId else { break }
-                webSocketClient.sendSubscribe(to: gameId)
+                webSocketClient.sendMessage(messageType: .subsribe(gameId: gameId))
             case .start:
                 guard let gameId = state.gameId,
                       let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { break }
-                webSocketClient.sendStart(to: gameId, memberId: memberId)
+                webSocketClient.sendMessage(messageType: .start(gameId: gameId, memberId: memberId))
             default:
                 break
             }
@@ -184,6 +182,7 @@ public struct MatchingProcessFeature {
                     }
             }
         )
+        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
     // STOMP 메시지에서 JSON 추출

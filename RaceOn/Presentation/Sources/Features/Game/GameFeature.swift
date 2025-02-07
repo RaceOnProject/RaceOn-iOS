@@ -11,6 +11,7 @@ import SwiftUICore
 import CoreLocation
 import NMapsMap
 import NMapsGeometry
+import Data
 
 @Reducer
 public struct GameFeature {
@@ -48,7 +49,7 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
-        case sendMessage(String)
+        case sendMessage(WebSocketMessageType)
         case receivedMessage(String) // 메시지 수신 액션
         case noop
     }
@@ -88,8 +89,8 @@ public struct GameFeature {
             print("평균 페이스 \(state.averagePace)")
             
             return .none
-        case .sendMessage(let message):
-            webSocketClient.sendMessage(message)
+        case .sendMessage(let messageType):
+            webSocketClient.sendMessage(messageType: .process)
             return .none
         case .receivedMessage(let message):
             return .none
