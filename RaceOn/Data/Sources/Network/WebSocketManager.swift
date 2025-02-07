@@ -17,6 +17,58 @@ public enum WebSocketStatus {
     case process
 }
 
+public enum WebSocketMessageType {
+    case connect
+    case subsribe(gameId: Int)
+    case start(gameId: Int, memberId: Int)
+    case process
+    case reject(gameId: Int, memberId: Int)
+    
+    var content: String {
+        switch self {
+        case .connect:
+            return """
+            CONNECT
+            accept-version:1.1,1.0
+            heart-beat:10000,10000
+            
+            \0
+            """
+        case .subsribe(let gameId):
+            let subscriptionId = "sub-" + UUID().uuidString
+            let destination = "/topic/games/\(gameId)"
+            
+            return """
+            SUBSCRIBE
+            id:\(subscriptionId)
+            destination:\(destination)
+
+            \0
+            """
+        case .start(let gameId, let memberId):
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            return """
+            SEND
+            destination:\(destination)
+            {"command":"START", "data": null}
+            
+            \0
+            """
+        case .reject(let gameId, let memberId):
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            return """
+            SEND
+            destination:\(destination)
+            {"command": "REJECT INVITATION", "data": null}
+            
+            \0
+            """
+        default:
+            return ""
+        }
+    }
+}
+
 public final class WebSocketManager: WebSocketDelegate {
     
     public static let shared = WebSocketManager()
@@ -48,9 +100,18 @@ public final class WebSocketManager: WebSocketDelegate {
         socket?.disconnect()
     }
     
-    public func sendMessage(_ message: String) {
-        socket?.write(string: message)
-        print("🏆 WebSocket 으로 보낸 메시지 \(message)")
+    public func sendMessage(messageType: WebSocketMessageType) {
+        socket?.write(string: messageType.content)
+        print("🏆 WebSocket 으로 보낸 메시지 \(messageType.content)")
+        
+        switch messageType {
+        case .connect:
+            statusSubject.send(.subscribe)
+        case .subsribe:
+            statusSubject.send(.start)
+        default:
+            break
+        }
     }
     
     // MARK: - WebSocketDelegate Methods
@@ -79,52 +140,6 @@ public final class WebSocketManager: WebSocketDelegate {
         case .peerClosed:
             break
         }
-    }
-}
-
-extension WebSocketManager {
-    // STOMP SUBSCRIBE 프레임 생성 및 전송
-    public func sendConnect() {
-        let connectFrame = """
-        CONNECT
-        accept-version:1.1,1.0
-        heart-beat:10000,10000
-        
-        \0
-        """
-        
-        sendMessage(connectFrame)
-        statusSubject.send(.subscribe)
-    }
-    
-    // STOMP SUBSCRIBE 프레임 생성 및 전송
-    public func sendSubscribe(to gameId: Int) {
-        let subscriptionId = "sub-" + UUID().uuidString
-        let destination = "/topic/games/\(gameId)"
-        
-        let subscribeFrame = """
-        SUBSCRIBE
-        id:\(subscriptionId)
-        destination:\(destination)
-
-        \0
-        """
-        
-        sendMessage(subscribeFrame)
-        statusSubject.send(.start)
-    }
-    
-    public func sendStart(to gameId: Int, memberId: Int) {
-        let destination = "/app/games/\(gameId)/gamer/\(memberId)"
-        let startFrame = """
-        SEND
-        destination:\(destination)
-        {"command":"START", "data": null}
-        
-        \0
-        """
-        
-        sendMessage(startFrame)
     }
 }
 

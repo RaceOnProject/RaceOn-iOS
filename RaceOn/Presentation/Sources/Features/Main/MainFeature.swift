@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Combine
 import Shared
 import Domain
+import Data
 
 @Reducer
 public struct MainFeature {
@@ -42,6 +43,7 @@ public struct MainFeature {
 
     public enum Action {
         case onAppear
+        case onDisappear
         case setIsReadForNextScreen
         case startButtonTapped
 
@@ -68,6 +70,10 @@ public struct MainFeature {
         case stopTimer
         case updateConnectionStatus
         
+        // 웹소켓 관련 Action
+        case receiveMessage(String)
+        case setWebSocketStatus(WebSocketStatus)
+        
         case noAction
     }
 
@@ -80,12 +86,17 @@ public struct MainFeature {
                 return .none
             }
             
+<<<<<<< HEAD
             state.isAppeard = true
             return .concatenate(
+=======
+            return .merge(
+>>>>>>> 39b98f1 (fix: webSocket 관련 이슈 해결)
                 registerFCMToken(memberId: memberId, fcmToken: fcmToken),
                 .send(.startTimer) // 타이머 시작
             )
-
+        case .onDisappear:
+            return .cancel(id: "WebSocketUpdatesPublisher")
         case .setIsReadForNextScreen:
             state.isReadyForNextScreen = false
             return .none
@@ -131,7 +142,12 @@ public struct MainFeature {
             state.pushNotificationData = data
             state.gameId = Int(state.pushNotificationData?.gameId ?? "0")
             state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
-            return .none
+            return .concatenate(
+                .run { _ in
+                    webSocketClient.connect()
+                },
+                webSocketUpdatesPublisher()
+            )
         case .presentCustomAlert:
             state.isPresentedCustomAlert = false
             state.isInvited = true
@@ -147,8 +163,17 @@ public struct MainFeature {
             state.isReadyForNextScreen = true
             return .none
         case .dismissCustomAlert:
+            guard let gameId = state.gameId,
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
             state.isPresentedCustomAlert = false
-            return .none
+            return .concatenate(
+                Effect.run { _ in
+                    webSocketClient.sendMessage(messageType: .reject(gameId: gameId, memberId: memberId))
+                },
+                Effect.run { _ in
+                    webSocketClient.disconnect()
+                }
+            )
         // 타이머 관련 액션 처리
         case .startTimer:
             return .merge(
@@ -167,9 +192,54 @@ public struct MainFeature {
 
         case .updateConnectionStatus:
             return updateConnectionStatus()
+            
+        case .receiveMessage(let message):
+            print("🏆 receiveMessage \(message)")
+            
+            if message.starts(with: "CONNECTED") {
+                print("🟢 CONNECTED 메시지 수신")
+            } else if message.starts(with: "MESSAGE") {
+                print("🔴 MESSAGE 메시지 수신")
+            } else {
+                print("⚠️ 기타 메시지 수신")
+            }
+            return .none
+        case .setWebSocketStatus(let status):
+            print("🏆 웹 소켓 Status \(status)")
+            switch status {
+            case .connect:
+                webSocketClient.sendMessage(messageType: .connect)
+            case .subscribe:
+                guard let gameId = state.gameId else { break }
+                webSocketClient.sendMessage(messageType: .subsribe(gameId: gameId))
+            default:
+                break
+            }
+            return .none
         case .noAction:
             return .none
         }
+    }
+    
+    private func webSocketUpdatesPublisher() -> Effect<Action> {
+        return Effect.merge(
+            Effect.publisher {
+                webSocketClient.messagePublisher()
+                    .map {
+                        print("🏆 type => \(type(of: $0))")
+                        print("🏆 MessagePublisher Action 생성: \($0)")
+                        return Action.receiveMessage($0)
+                    }
+            },
+            Effect.publisher {
+                webSocketClient.statusPublisher()
+                    .map {
+                        print("🏆 StatusPublisher Action 생성: \($0)") // Action 생성 확인
+                        return Action.setWebSocketStatus($0)
+                    }
+            }
+        )
+        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
     private func updateConnectionStatus() -> Effect<Action> {
