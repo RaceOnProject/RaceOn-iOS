@@ -88,14 +88,25 @@ public struct GameView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: 152)
             .background(
+                // 앞서고 있을때
                 LinearGradient(
-                    gradient: Gradient(colors: [
-                        .init(red: 50, green: 61, blue: 22, alpha: 1),
-                        .init(red: 18, green: 18, blue: 18, alpha: 1)
+                    gradient: Gradient(stops: [
+                        Gradient.Stop(color: .init(red: 50, green: 61, blue: 22, alpha: 1), location: 0),
+                        Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
                     ]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
+                
+                // 뒤쳐질때
+//                LinearGradient(
+//                    gradient: Gradient(stops: [
+//                        Gradient.Stop(color: .init(red: 62, green: 26, blue: 22, alpha: 1), location: 0),
+//                        Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
+//                    ]),
+//                    startPoint: .top,
+//                    endPoint: .bottom
+//                )
             )
             .cornerRadius(10)
         }
