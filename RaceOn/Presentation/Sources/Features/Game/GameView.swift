@@ -171,7 +171,10 @@ public struct GameView: View {
 #Preview {
     GameView(
         store: Store(
-            initialState: GameFeature.State(distance: .three),
+            initialState: GameFeature.State(
+                gameId: 1,
+                distance: .three
+            ),
             reducer: { GameFeature() }
         )
     )

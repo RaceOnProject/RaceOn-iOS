@@ -89,7 +89,8 @@ public struct MatchingProcessView: View {
             viewStore.send(.setReadyForNextScreen(handler: false))
             
             let distance = viewStore.state.distance
-            handler ? router.push(screen: .game(distance)) : nil
+            let gameId = viewStore.state.gameId
+            handler ? router.push(screen: .game(gameId: gameId, distance)) : nil
         }
     }
     
