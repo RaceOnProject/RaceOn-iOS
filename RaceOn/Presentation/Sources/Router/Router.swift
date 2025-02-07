@@ -21,7 +21,7 @@ public enum Screen: Hashable {
     case myProfile
     case legalNotice(type: SettingCategory)
     case matchingProcess(MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?)
-    case game(MatchingDistance)
+    case game(gameId: Int?, MatchingDistance)
     case finishGame
 }
 
@@ -142,10 +142,10 @@ public final class Router: ObservableObject {
                 )
             )
             .environmentObject(self)
-        case .game(let distance):
+        case .game(let gameId, let distance):
             GameView(
                 store: Store(
-                    initialState: GameFeature.State(distance: distance),
+                    initialState: GameFeature.State(gameId: gameId, distance: distance),
                     reducer: { GameFeature() }
                 )
             ).environmentObject(self)

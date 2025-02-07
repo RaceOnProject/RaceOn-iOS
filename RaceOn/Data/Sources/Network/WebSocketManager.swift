@@ -21,7 +21,7 @@ public enum WebSocketMessageType {
     case connect
     case subsribe(gameId: Int)
     case start(gameId: Int, memberId: Int)
-    case process
+    case process(gameId: Int, memberId: Int, time: String, latitude: Double, longitude: Double, distance: Double, avgSpeed: Double, maxSpeed: Double)
     case reject(gameId: Int, memberId: Int)
     
     var content: String {
@@ -54,6 +54,25 @@ public enum WebSocketMessageType {
             
             \0
             """
+        case .process(let gameId, let memberId, let time, let latitude, let longitude, let distance, let avgSpeed, let maxSpeed):
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            return """
+            SEND
+            destination:\(destination)
+            {
+              "command": "PROCESS",
+              "data": {
+                "time": "\(time)",
+                "latitude": \(latitude),
+                "longitude": \(longitude),
+                "distance": \(distance),
+                "avgSpeed": \(avgSpeed),
+                "maxSpeed": \(maxSpeed)
+              }
+            }
+            
+            \0
+            """
         case .reject(let gameId, let memberId):
             let destination = "/app/games/\(gameId)/gamer/\(memberId)"
             return """
@@ -63,8 +82,6 @@ public enum WebSocketMessageType {
             
             \0
             """
-        default:
-            return ""
         }
     }
 }

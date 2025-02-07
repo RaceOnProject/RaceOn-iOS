@@ -12,6 +12,7 @@ import CoreLocation
 import NMapsMap
 import NMapsGeometry
 import Data
+import Shared
 
 @Reducer
 public struct GameFeature {
@@ -22,7 +23,7 @@ public struct GameFeature {
     public init() {}
     
     public struct State: Equatable {
-        
+        var gameId: Int?
         // 남은 거리, 평균 페이스, 진행 시간
         var remainingDistance: Double
         var averagePace: String = "00′00″"
@@ -37,7 +38,11 @@ public struct GameFeature {
         var userLoaction: NMGLatLng?
         var userLocationArray: [NMGLatLng] = []
         
-        public init(distance: MatchingDistance) {
+        var userLatitude: Double?
+        var userLongitude: Double?
+        
+        public init(gameId: Int?, distance: MatchingDistance) {
+            self.gameId = gameId
             self.remainingDistance = distance.distanceFormat
         }
     }
@@ -49,8 +54,10 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
+        case updateTrackingData
         case sendMessage(WebSocketMessageType)
-        case receivedMessage(String) // 메시지 수신 액션
+        case receiveMessage(String)
+        case setWebSocketStatus(WebSocketStatus)
         case noop
     }
     
@@ -58,11 +65,21 @@ public struct GameFeature {
         switch action {
         case .onAppear:
             locationService.startUpdatingLocation()
-            return subscribeToRunningUpdates()
+            return .merge(
+                subscribeToRunningUpdates(),
+                webSocketUpdatesPublisher(),
+                startTrackingDataTimer()
+            )
         case .onDisappear:
             locationService.stopUpdatingLocation()
-            return stopTimer()
+            return .merge(
+                stopTimer(),
+                stopWebSocketUpdates(),
+                stopTrackingTimer()
+            )
         case .updateLocation(let location):
+            state.userLatitude = location.0
+            state.userLongitude = location.1
             state.userLoaction = NMGLatLng(lat: location.0, lng: location.1)
             state.userLocationArray.append(NMGLatLng(lat: location.0, lng: location.1))
             
@@ -89,10 +106,50 @@ public struct GameFeature {
             print("평균 페이스 \(state.averagePace)")
             
             return .none
-        case .sendMessage(let messageType):
-            webSocketClient.sendMessage(messageType: .process)
+        case .updateTrackingData:
+            guard let gameId = state.gameId,
+                  let memberId:Int = UserDefaultsManager.shared.get(forKey: .memberId),
+                  let latitude = state.userLatitude,
+                  let longitude = state.userLongitude
+                   else { return .none }
+            
+            let time = state.runningTime
+            let distance = state.totalDistanceMoved
+            
+            
+            webSocketClient.sendMessage(messageType:
+                    .process(
+                        gameId: gameId,
+                        memberId: memberId,
+                        time: time,
+                        latitude: latitude,
+                        longitude: longitude,
+                        distance: distance,
+                        avgSpeed: 0.0,
+                        maxSpeed: 0.0
+                    )
+            )
             return .none
-        case .receivedMessage(let message):
+        case .sendMessage(let messageType):
+            webSocketClient.sendMessage(messageType: messageType)
+            return .none
+        case .receiveMessage(let message):
+            traceLog("🏆 receiveMessage \(message)")
+            
+            if message.starts(with: "CONNECTED") {
+                traceLog("🟢 CONNECTED 메시지 수신")
+            } else if message.starts(with: "MESSAGE") {
+                traceLog("🔴 MESSAGE 메시지 수신")
+            } else {
+                traceLog("⚠️ 기타 메시지 수신")
+            }
+            return .none
+        case .setWebSocketStatus(let status):
+            traceLog("🏆 웹 소켓 Status \(status)")
+            switch status {
+            default:
+                break
+            }
             return .none
         case .noop:
             return .none
@@ -172,5 +229,45 @@ public struct GameFeature {
                     }
             }
         )
+    }
+    
+    private func webSocketUpdatesPublisher() -> Effect<Action> {
+        return Effect.merge(
+            Effect.publisher {
+                webSocketClient.messagePublisher()
+                    .map {
+                        print("🏆 type => \(type(of: $0))")
+                        print("🏆 MessagePublisher Action 생성: \($0)")
+                        return Action.receiveMessage($0)
+                    }
+            },
+            Effect.publisher {
+                webSocketClient.statusPublisher()
+                    .map {
+                        print("🏆 StatusPublisher Action 생성: \($0)") // Action 생성 확인
+                        return Action.setWebSocketStatus($0)
+                    }
+            }
+        )
+        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
+    }
+    
+    private func stopWebSocketUpdates() -> Effect<Action> {
+        return .cancel(id: "WebSocketUpdatesPublisher")
+    }
+    
+    private func startTrackingDataTimer() -> Effect<Action> {
+        return Effect
+            .publisher {
+                Timer.publish(every: 3, on: .main, in: .common)
+                    .autoconnect()
+                    .map { _ in Action.updateTrackingData }
+                    .eraseToAnyPublisher()
+            }
+            .cancellable(id: "trackingTimer", cancelInFlight: true)
+    }
+
+    private func stopTrackingTimer() -> Effect<Action> {
+        return .cancel(id: "trackingTimer")
     }
 }
