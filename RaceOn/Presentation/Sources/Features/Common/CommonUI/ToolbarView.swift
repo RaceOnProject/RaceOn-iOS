@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ToolbarView {
-    static func leadingItems(onBackButtonTap: @escaping () -> Void) -> some ToolbarContent {
+    static func leadingItems(label: Image = ImageConstants.navigationBack ,onBackButtonTap: @escaping () -> Void) -> some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarLeading) {
             Button(action: {
                 onBackButtonTap()
             }, label: {
-                ImageConstants.navigationBack
+                label
             })
             .padding(10)
 //            .border(Color.red, width: 1) // 터치 영역 표시

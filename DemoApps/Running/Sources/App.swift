@@ -28,7 +28,7 @@ struct MyApp: App {
                     .background(.blue)
                     
                     Button {
-                        router.push(screen: .game)
+                        router.push(screen: .game(gameId: 1, .three))
                     } label: {
                         Text(("지도 화면으로"))
                             .foregroundColor(.white)
