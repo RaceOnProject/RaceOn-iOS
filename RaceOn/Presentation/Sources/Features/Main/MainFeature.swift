@@ -86,12 +86,8 @@ public struct MainFeature {
                 return .none
             }
             
-<<<<<<< HEAD
             state.isAppeard = true
-            return .concatenate(
-=======
             return .merge(
->>>>>>> 39b98f1 (fix: webSocket 관련 이슈 해결)
                 registerFCMToken(memberId: memberId, fcmToken: fcmToken),
                 .send(.startTimer) // 타이머 시작
             )

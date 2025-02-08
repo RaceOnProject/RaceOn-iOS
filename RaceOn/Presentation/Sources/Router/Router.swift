@@ -150,7 +150,12 @@ public final class Router: ObservableObject {
                 )
             ).environmentObject(self)
         case .finishGame:
-            FinishGameView()
+            FinishGameView(
+                store: Store(
+                    initialState: FinishGameFeature.State(),
+                    reducer: { FinishGameFeature()._printChanges() }
+                )
+            )
                 .environmentObject(self)
         }
     }
