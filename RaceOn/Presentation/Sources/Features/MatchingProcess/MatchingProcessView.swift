@@ -99,7 +99,7 @@ public struct MatchingProcessView: View {
         HStack {
             if !viewStore.state.process.isFailed {
                 Button {
-                    print("취소 탭")
+                    viewStore.send(.backButtonTapped)
                     router.pop()
                 } label: {
                     Text("취소")
@@ -143,7 +143,7 @@ public struct MatchingProcessView: View {
     @ViewBuilder
     var backButton: some View {
         Button {
-            print("돌아가기 탭")
+            viewStore.send(.backButtonTapped)
             router.pop()
         } label: {
             Text("홈으로 돌아가기")

@@ -55,7 +55,6 @@ public struct GameFeature {
         case updateAveragePace(String)
         case updateDistance(Double)
         case updateTrackingData
-        case sendMessage(WebSocketMessageType)
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
         case noop
@@ -108,7 +107,7 @@ public struct GameFeature {
             return .none
         case .updateTrackingData:
             guard let gameId = state.gameId,
-                  let memberId:Int = UserDefaultsManager.shared.get(forKey: .memberId),
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId),
                   let latitude = state.userLatitude,
                   let longitude = state.userLongitude
                    else { return .none }
@@ -116,8 +115,8 @@ public struct GameFeature {
             let time = state.runningTime
             let distance = state.totalDistanceMoved
             
-            
-            webSocketClient.sendMessage(messageType:
+            return .run { _ in
+                webSocketClient.sendWebSocketMessage(
                     .process(
                         gameId: gameId,
                         memberId: memberId,
@@ -128,28 +127,26 @@ public struct GameFeature {
                         avgSpeed: 0.0,
                         maxSpeed: 0.0
                     )
-            )
-            return .none
-        case .sendMessage(let messageType):
-            webSocketClient.sendMessage(messageType: messageType)
+                )
+            }
             return .none
         case .receiveMessage(let message):
             traceLog("🏆 receiveMessage \(message)")
             
-            if message.starts(with: "CONNECTED") {
-                traceLog("🟢 CONNECTED 메시지 수신")
-            } else if message.starts(with: "MESSAGE") {
-                traceLog("🔴 MESSAGE 메시지 수신")
-            } else {
-                traceLog("⚠️ 기타 메시지 수신")
-            }
+//            if message.starts(with: "CONNECTED") {
+//                traceLog("🟢 CONNECTED 메시지 수신")
+//            } else if message.starts(with: "MESSAGE") {
+//                traceLog("🔴 MESSAGE 메시지 수신")
+//            } else {
+//                traceLog("⚠️ 기타 메시지 수신")
+//            }
             return .none
         case .setWebSocketStatus(let status):
             traceLog("🏆 웹 소켓 Status \(status)")
-            switch status {
-            default:
-                break
-            }
+//            switch status {
+//            default:
+//                break
+//            }
             return .none
         case .noop:
             return .none
@@ -236,7 +233,6 @@ public struct GameFeature {
             Effect.publisher {
                 webSocketClient.messagePublisher()
                     .map {
-                        print("🏆 type => \(type(of: $0))")
                         print("🏆 MessagePublisher Action 생성: \($0)")
                         return Action.receiveMessage($0)
                     }
