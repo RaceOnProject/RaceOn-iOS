@@ -23,6 +23,7 @@ public struct GameFeature {
     public init() {}
     
     public struct State: Equatable {
+        var matchStatus: MatchStatus = .win(distance: 0.4)
         var gameId: Int?
         // 남은 거리, 평균 페이스, 진행 시간
         var remainingDistance: Double
@@ -124,29 +125,16 @@ public struct GameFeature {
                         latitude: latitude,
                         longitude: longitude,
                         distance: distance,
-                        avgSpeed: 0.0,
-                        maxSpeed: 0.0
+                        avgSpeed: 0.1,
+                        maxSpeed: 0.2
                     )
                 )
             }
-            return .none
         case .receiveMessage(let message):
             traceLog("🏆 receiveMessage \(message)")
-            
-//            if message.starts(with: "CONNECTED") {
-//                traceLog("🟢 CONNECTED 메시지 수신")
-//            } else if message.starts(with: "MESSAGE") {
-//                traceLog("🔴 MESSAGE 메시지 수신")
-//            } else {
-//                traceLog("⚠️ 기타 메시지 수신")
-//            }
             return .none
         case .setWebSocketStatus(let status):
             traceLog("🏆 웹 소켓 Status \(status)")
-//            switch status {
-//            default:
-//                break
-//            }
             return .none
         case .noop:
             return .none
