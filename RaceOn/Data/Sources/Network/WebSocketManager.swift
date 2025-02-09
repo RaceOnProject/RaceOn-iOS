@@ -26,6 +26,21 @@ public enum WebSocketMessageType {
     case reject(gameId: Int, memberId: Int)
 }
 
+struct ProcessData: Encodable {
+    let time: String
+    let latitude: Double
+    let longitude: Double
+    let distance: Double
+    let avgSpeed: Double
+    let maxSpeed: Double
+}
+
+struct Process: Encodable {
+    let command: String
+    let data: ProcessData
+}
+
+
 public final class WebSocketManager {
     
     public static let shared = WebSocketManager()
@@ -128,6 +143,21 @@ public final class WebSocketManager {
             ]
             
             swiftStomp?.send(body: message, to: destination)
+        case .process(let gameId, let memberId, let time, let latitude, let longitude, let distance, let avgSpeed, let maxSpeed):
+            traceLog(".process")
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let processData = ProcessData(
+                    time: time,
+                    latitude: latitude,
+                    longitude: longitude,
+                    distance: distance,
+                    avgSpeed: avgSpeed,
+                    maxSpeed: maxSpeed
+                )
+
+                let message = Process(command: "PROCESS", data: processData)
+                print(message)
+                swiftStomp?.send(body: message, to: destination)
         case .reject(let gameId, let memberId):
             traceLog(".reject")
             let destination = "/app/games/\(gameId)/gamer/\(memberId)"
@@ -137,8 +167,6 @@ public final class WebSocketManager {
             ]
             
             swiftStomp?.send(body: message, to: destination)
-        default:
-            break
         }
     }
     
