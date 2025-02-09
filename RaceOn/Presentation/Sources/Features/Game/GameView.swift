@@ -11,6 +11,52 @@ import NMapsMap
 import NMapsGeometry
 import ComposableArchitecture
 
+public enum MatchStatus: Equatable {
+    case win(distance: Double)
+    case lose(distance: Double)
+    
+    var backgroundColor: LinearGradient {
+        switch self {
+        case .win:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    Gradient.Stop(color: .init(red: 50, green: 61, blue: 22, alpha: 1), location: 0),
+                    Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        case .lose:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    Gradient.Stop(color: .init(red: 62, green: 26, blue: 22, alpha: 1), location: 0),
+                    Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .win(let distance):
+            return "\(distance)km 앞서고 있어요!"
+        case .lose(let distance):
+            return "\(distance)km 뒤처지고 있어요.."
+        }
+    }
+    
+    var barColor: Color {
+        switch self {
+        case .win:
+            return ColorConstants.emphasis
+        case .lose:
+            return ColorConstants.primaryNormal
+        }
+    }
+}
+
 public struct GameView: View {
     @EnvironmentObject var router: Router
     @ObservedObject var viewStore: ViewStore<GameFeature.State, GameFeature.Action>
@@ -74,7 +120,7 @@ public struct GameView: View {
         HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text("0.36km 앞서고 있어요!")
+                    Text(viewStore.state.matchStatus.title)
                         .font(.bold(24))
                         .foregroundColor(.white)
                         .padding(.top, 18)
@@ -82,32 +128,37 @@ public struct GameView: View {
                     
                     Spacer()
                 }
+                
                 Spacer()
                 
-//                ProgressView()
+                ZStack {
+                    HStack {
+                        Spacer()
+                            .frame(width: 20)
+                        Rectangle()
+                            .frame(height: 6)
+                            .foregroundColor(ColorConstants.gray5)
+                            .cornerRadius(30)
+                            .padding(.bottom, 20)
+                        Spacer()
+                            .frame(width: 20)
+                    }
+                    
+                    HStack {
+                        Spacer()
+                            .frame(width: 40) // 2등의 위치를 조절
+                        Rectangle()
+                            .frame(height: 6)
+                            .foregroundColor(viewStore.state.matchStatus.barColor)
+                            .cornerRadius(30)
+                            .padding(.bottom, 20)
+                        Spacer()
+                            .frame(width: 100) // 1등의 위치를 조절
+                    }
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: 152)
-            .background(
-                // 앞서고 있을때
-                LinearGradient(
-                    gradient: Gradient(stops: [
-                        Gradient.Stop(color: .init(red: 50, green: 61, blue: 22, alpha: 1), location: 0),
-                        Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                
-                // 뒤쳐질때
-//                LinearGradient(
-//                    gradient: Gradient(stops: [
-//                        Gradient.Stop(color: .init(red: 62, green: 26, blue: 22, alpha: 1), location: 0),
-//                        Gradient.Stop(color: .init(red: 18, green: 18, blue: 18, alpha: 1), location: 0.7)
-//                    ]),
-//                    startPoint: .top,
-//                    endPoint: .bottom
-//                )
-            )
+            .background(viewStore.state.matchStatus.backgroundColor)
             .cornerRadius(10)
         }
         .padding(.horizontal, 20)
