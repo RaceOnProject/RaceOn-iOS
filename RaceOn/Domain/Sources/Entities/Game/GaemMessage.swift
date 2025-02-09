@@ -20,3 +20,17 @@ public struct GameData: Decodable {
     public let startTime: String?
     public let matched: Bool
 }
+
+public struct RejectMessage: Decodable {
+    public let command: String
+    public let statusCode: Int
+    public let code: String
+    public let message: String
+    public let data: RejectData?
+    public let success: Bool
+}
+
+public struct RejectData: Decodable {
+    public let gameId: Int
+    public let failMatching: Bool
+}

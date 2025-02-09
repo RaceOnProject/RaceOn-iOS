@@ -88,8 +88,9 @@ public struct MainFeature {
             
             state.isAppeard = true
             return .merge(
-                registerFCMToken(memberId: memberId, fcmToken: fcmToken),
-                .send(.startTimer) // 타이머 시작
+                registerFCMToken(memberId: memberId, fcmToken: fcmToken)
+//                ,
+//                .send(.startTimer) // 타이머 시작
             )
         case .onDisappear:
             return .cancel(id: "WebSocketUpdatesPublisher")
@@ -134,13 +135,17 @@ public struct MainFeature {
             return .none
 
         case .receivePushNotificationData(let data):
+            
             state.isPresentedCustomAlert = true
             state.pushNotificationData = data
             state.gameId = Int(state.pushNotificationData?.gameId ?? "0")
             state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
+            
+            guard let gameId = Int(state.pushNotificationData?.gameId ?? "0") else { return .none }
+                    
             return .concatenate(
                 .run { _ in
-                    webSocketClient.connect()
+                    webSocketClient.sendWebSocketMessage(.connect)
                 },
                 webSocketUpdatesPublisher()
             )
@@ -164,7 +169,7 @@ public struct MainFeature {
             state.isPresentedCustomAlert = false
             return .concatenate(
                 Effect.run { _ in
-                    webSocketClient.sendMessage(messageType: .reject(gameId: gameId, memberId: memberId))
+                    webSocketClient.sendWebSocketMessage(.reject(gameId: gameId, memberId: memberId))
                 },
                 Effect.run { _ in
                     webSocketClient.disconnect()
@@ -190,24 +195,14 @@ public struct MainFeature {
             return updateConnectionStatus()
             
         case .receiveMessage(let message):
-            print("🏆 receiveMessage \(message)")
-            
-            if message.starts(with: "CONNECTED") {
-                print("🟢 CONNECTED 메시지 수신")
-            } else if message.starts(with: "MESSAGE") {
-                print("🔴 MESSAGE 메시지 수신")
-            } else {
-                print("⚠️ 기타 메시지 수신")
-            }
+            traceLog("🏆 receiveMessage \(message)")
             return .none
         case .setWebSocketStatus(let status):
-            print("🏆 웹 소켓 Status \(status)")
+            traceLog("🏆 웹 소켓 Status \(status)")
             switch status {
             case .connect:
-                webSocketClient.sendMessage(messageType: .connect)
-            case .subscribe:
-                guard let gameId = state.gameId else { break }
-                webSocketClient.sendMessage(messageType: .subsribe(gameId: gameId))
+                guard let gameId = state.gameId else { return .none }
+                webSocketClient.sendWebSocketMessage(.subsribe(gameId: gameId))
             default:
                 break
             }
@@ -222,7 +217,6 @@ public struct MainFeature {
             Effect.publisher {
                 webSocketClient.messagePublisher()
                     .map {
-                        print("🏆 type => \(type(of: $0))")
                         print("🏆 MessagePublisher Action 생성: \($0)")
                         return Action.receiveMessage($0)
                     }

@@ -21,7 +21,7 @@ let project = Project.framework(
         .kakaoSDK,
         .firebaseMessaging,
         .naverMapSDK,
-        .starscream
+        .swiftStomp
     ],
     resources: Project.Environment.resourceFile
 )

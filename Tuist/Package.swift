@@ -15,7 +15,7 @@ let packageSettings = PackageSettings(
     "KakaoSDK": .framework,
     "FirebaseMessaging": .staticFramework,
     "NaverMapSDK": .framework,
-    "Starscream": .framework
+    "SwiftStomp": .framework
   ]
 )
 #endif
@@ -32,6 +32,6 @@ let package = Package(
     .package(url: "https://github.com/kakao/kakao-ios-sdk", branch: "master"),
     .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.6.0"),
     .package(url: "https://github.com/slr-09/Naver-Map-iOS-SPM.git", from: "0.1.0"),
-    .package(url: "https://github.com/daltoniam/Starscream.git", from: "4.0.8")
+    .package(url: "https://github.com/Romixery/SwiftStomp.git", from: "1.2.1")
   ]
 )

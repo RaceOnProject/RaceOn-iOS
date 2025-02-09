@@ -52,6 +52,7 @@ public struct MatchingProcessFeature {
         case setWebSocketStatus(WebSocketStatus)
         case setErrorMessage(String)
         case showToast(content: String)
+        case backButtonTapped
         case dismissToast
     }
     
@@ -63,9 +64,13 @@ public struct MatchingProcessFeature {
             let timeLimit = state.distance.timeLimit
             
             if state.isInvited {
+                guard let gameId = state.gameId,
+                      let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
                 return .merge(
-                    webSocketUpdatesPublisher(),
-                    .send(.setWebSocketStatus(.start))
+                    .run { _ in
+                        webSocketClient.sendWebSocketMessage(.start(gameId: gameId, memberId: memberId))
+                    },
+                    webSocketUpdatesPublisher()
                 )
             } else {
                 return .merge(
@@ -90,52 +95,45 @@ public struct MatchingProcessFeature {
             state.gameId = gameId
             
             if response.success {
-                webSocketClient.connect()
+                return .run { _ in
+                    webSocketClient.sendWebSocketMessage(.connect)
+                }
             } else {
                 return .send(.setMatcingProcess(.failed(reason: response.message)))
             }
-            
-            return .none
         case .receiveMessage(let message):
-            print("🏆 receiveMessage \(message)")
-            
-            if message.starts(with: "CONNECTED") {
-                print("🟢 CONNECTED 메시지 수신")
-            } else if message.starts(with: "MESSAGE") {
-                print("🔴 MESSAGE 메시지 수신")
-                // Swift 객체로 변환
-                if let gameMessage = parseGameMessage(from: message) {
-                    if gameMessage.statusCode >= 200 && gameMessage.statusCode < 300 {
+            traceLog("🏆 receiveMessage \(message)")
+            if let gameMessage = parseGameMessage(from: message) {
+                if gameMessage.statusCode >= 200 && gameMessage.statusCode < 300 {
+                    if gameMessage.data?.startTime != nil { // 경쟁상대 대기 상태
                         return .run { send in
-                            for i in (0...3).reversed() {
+                            for index in (0...3).reversed() {
                                 try await Task.sleep(nanoseconds: 1_000_000_000)
-                                await send(.setMatcingProcess(.successed(seconds: i)))
+                                await send(.setMatcingProcess(.successed(seconds: index)))
                             }
                             
                             await send(.setReadyForNextScreen(handler: true))
                         }
-                    } else {
-                        return .send(.setMatcingProcess(.failed(reason: gameMessage.message)))
                     }
                 } else {
-                    return .send(.setMatcingProcess(.failed(reason: "Client Error(Decoding Failed)")))
+                    return .send(.setMatcingProcess(.failed(reason: gameMessage.message)))
                 }
+            } else if let rejectMessage = parseRejectMessage(from: message) {
+                return .send(.setMatcingProcess(.failed(reason: "친구의 거절로 매칭이 실패했어요")))
             } else {
-                print("⚠️ 기타 메시지 수신")
+                return .send(.setMatcingProcess(.failed(reason: "Client Error(Decoding Failed)")))
             }
             return .none
         case .setWebSocketStatus(let status):
             print("🏆 웹 소켓 Status \(status)")
             switch status {
             case .connect:
-                webSocketClient.sendMessage(messageType: .connect)
+                guard let gameId = state.gameId else { return .none }
+                webSocketClient.sendWebSocketMessage(.subsribe(gameId: gameId))
             case .subscribe:
-                guard let gameId = state.gameId else { break }
-                webSocketClient.sendMessage(messageType: .subsribe(gameId: gameId))
-            case .start:
                 guard let gameId = state.gameId,
                       let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { break }
-                webSocketClient.sendMessage(messageType: .start(gameId: gameId, memberId: memberId))
+                webSocketClient.sendWebSocketMessage(.start(gameId: gameId, memberId: memberId))
             default:
                 break
             }
@@ -144,6 +142,9 @@ public struct MatchingProcessFeature {
             return .send(.showToast(content: errorMessage))
         case .showToast(let content):
             state.toast = Toast(content: content)
+            return .none
+        case .backButtonTapped:
+            webSocketClient.disconnect()
             return .none
         case .dismissToast:
             state.toast = nil
@@ -169,7 +170,6 @@ public struct MatchingProcessFeature {
             Effect.publisher {
                 webSocketClient.messagePublisher()
                     .map {
-                        print("🏆 type => \(type(of: $0))")
                         print("🏆 MessagePublisher Action 생성: \($0)")
                         return Action.receiveMessage($0)
                     }
@@ -185,25 +185,9 @@ public struct MatchingProcessFeature {
         .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
-    // STOMP 메시지에서 JSON 추출
-    func extractJSON(from stompMessage: String) -> String? {
-        let components = stompMessage.components(separatedBy: "\n\n")
-        
-        // JSON 데이터가 있는지 확인
-        guard components.count > 1 else {
-            print("JSON 데이터가 없습니다.")
-            return nil
-        }
-        
-        // 마지막 부분이 JSON 데이터 (NULL 문자 제거)
-        let jsonString = components.last?.trimmingCharacters(in: .controlCharacters)
-        return jsonString
-    }
-
     // JSON을 Swift 객체로 변환
     func parseGameMessage(from stompMessage: String) -> GameMessage? {
-        guard let jsonString = extractJSON(from: stompMessage),
-              let jsonData = jsonString.data(using: .utf8) else {
+        guard let jsonData = stompMessage.data(using: .utf8) else {
             return nil
         }
         
@@ -216,4 +200,18 @@ public struct MatchingProcessFeature {
         }
     }
 
+    // JSON을 Swift 객체로 변환
+    func parseRejectMessage(from stompMessage: String) -> RejectMessage? {
+        guard let jsonData = stompMessage.data(using: .utf8) else {
+            return nil
+        }
+        
+        do {
+            let decodedMessage = try JSONDecoder().decode(RejectMessage.self, from: jsonData)
+            return decodedMessage
+        } catch {
+            print("JSON 디코딩 실패: \(error)")
+            return nil
+        }
+    }
 }

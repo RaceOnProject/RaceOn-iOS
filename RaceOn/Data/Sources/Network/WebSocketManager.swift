@@ -7,7 +7,8 @@
 
 import Foundation
 import Combine
-import Starscream
+import SwiftStomp
+import Shared
 
 public enum WebSocketStatus {
     case connect
@@ -23,70 +24,9 @@ public enum WebSocketMessageType {
     case start(gameId: Int, memberId: Int)
     case process(gameId: Int, memberId: Int, time: String, latitude: Double, longitude: Double, distance: Double, avgSpeed: Double, maxSpeed: Double)
     case reject(gameId: Int, memberId: Int)
-    
-    var content: String {
-        switch self {
-        case .connect:
-            return """
-            CONNECT
-            accept-version:1.1,1.0
-            heart-beat:10000,10000
-            
-            \0
-            """
-        case .subsribe(let gameId):
-            let subscriptionId = "sub-" + UUID().uuidString
-            let destination = "/topic/games/\(gameId)"
-            
-            return """
-            SUBSCRIBE
-            id:\(subscriptionId)
-            destination:\(destination)
-
-            \0
-            """
-        case .start(let gameId, let memberId):
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
-            return """
-            SEND
-            destination:\(destination)
-            {"command":"START", "data": null}
-            
-            \0
-            """
-        case .process(let gameId, let memberId, let time, let latitude, let longitude, let distance, let avgSpeed, let maxSpeed):
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
-            return """
-            SEND
-            destination:\(destination)
-            {
-              "command": "PROCESS",
-              "data": {
-                "time": "\(time)",
-                "latitude": \(latitude),
-                "longitude": \(longitude),
-                "distance": \(distance),
-                "avgSpeed": \(avgSpeed),
-                "maxSpeed": \(maxSpeed)
-              }
-            }
-            
-            \0
-            """
-        case .reject(let gameId, let memberId):
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
-            return """
-            SEND
-            destination:\(destination)
-            {"command": "REJECT INVITATION", "data": null}
-            
-            \0
-            """
-        }
-    }
 }
 
-public final class WebSocketManager: WebSocketDelegate {
+public final class WebSocketManager {
     
     public static let shared = WebSocketManager()
     
@@ -98,67 +38,142 @@ public final class WebSocketManager: WebSocketDelegate {
     #endif
     }
     
-    var socket: WebSocket?
+    private var swiftStomp: SwiftStomp?
+    private var cancellables = Set<AnyCancellable>()
+    
+    @Published var isConnected = false
+    @Published var receivedMessages: [String] = []
+    
     let statusSubject = PassthroughSubject<WebSocketStatus, Never>()
     let messageSubject = PassthroughSubject<String, Never>() // 메시지 전송 스트림
     
     public init() {
-        var request = URLRequest(url: URL(string: Constants.url)!)
-        request.timeoutInterval = 5
-        socket = WebSocket(request: request)
-        socket?.delegate = self
+        setupStompClient()
     }
     
-    public func connect() {
-        socket?.connect()
-    }
-    
-    public func disconnect() {
-        socket?.disconnect()
-    }
-    
-    public func sendMessage(messageType: WebSocketMessageType) {
-        socket?.write(string: messageType.content)
-        print("🏆 WebSocket 으로 보낸 메시지 \(messageType.content)")
+    private func setupStompClient() {
+        guard let url = URL(string: Constants.url) else { return }
+        swiftStomp = SwiftStomp(host: url)
+        swiftStomp?.delegate = self
         
-        switch messageType {
+        // ** Subscribe to connection events **
+        swiftStomp?.eventsUpstream
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in
+                switch event {
+                case let .connected(type):
+                    traceLog("Connected with type: \(type)")
+                    self?.isConnected = true
+                    self?.statusSubject.send(.connect)
+                case let .disconnected(type):
+                    traceLog("Disconnected with type: \(type)")
+                    self?.isConnected = false
+                case let .error(error):
+                    traceLog("Error: \(error)")
+                }
+            }
+            .store(in: &cancellables)
+        
+        // ** Subscribe to messages **
+        swiftStomp?.messagesUpstream
+            .receive(on: RunLoop.main)
+            .sink { [weak self] message in
+                switch message {
+                case let .text(message, messageId, destination, _):
+                    let formattedMessage = "\(Date().formatted()) [\(destination)] (\(messageId)): \(message)"
+                    traceLog(formattedMessage)
+                    self?.receivedMessages.append(formattedMessage)
+                    
+                case let .data(data, messageId, destination, _):
+                    let formattedMessage = "Binary message at `\(destination)`, ID: \(messageId), Size: \(data.count) bytes"
+                    traceLog(formattedMessage)
+                    self?.receivedMessages.append(formattedMessage)
+                }
+            }
+            .store(in: &cancellables)
+        
+        // ** Subscribe to receipt IDs **
+        swiftStomp?.receiptUpstream
+            .sink { receiptId in
+                print("SwiftStomp: Receipt received: \(receiptId)")
+            }
+            .store(in: &cancellables)
+    }
+    
+    public func sendWebSocketMessage(_ type: WebSocketMessageType) {
+        switch type {
         case .connect:
-            statusSubject.send(.subscribe)
-        case .subsribe:
-            statusSubject.send(.start)
+            traceLog(".connect")
+            swiftStomp?.connect(acceptVersion: "1.1,1.0", autoReconnect: false)
+        case .subsribe(let gameId):
+            traceLog(".subsribe")
+            let subscriptionId = UUID().uuidString // 고유한 구독 ID 생성
+            let destination = "/topic/games/\(gameId)"
+            
+            swiftStomp?.subscribe(
+                to: destination,
+                mode: .clientIndividual,
+                headers: [
+                "id": "sub-\(subscriptionId)"
+                ]
+            )
+            
+            self.statusSubject.send(.subscribe)
+        case .start(let gameId, let memberId):
+            traceLog(".start")
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let message = [
+                "command": "START",
+                "data": "null"
+            ]
+            
+            swiftStomp?.send(body: message, to: destination)
+        case .reject(let gameId, let memberId):
+            traceLog(".reject")
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let message = [
+                "command": "REJECT INVITATION",
+                "data": "null"
+            ]
+            
+            swiftStomp?.send(body: message, to: destination)
         default:
             break
         }
     }
     
-    // MARK: - WebSocketDelegate Methods
-    public func didReceive(event: WebSocketEvent, client: WebSocketClient) {
-        switch event {
-        case .connected(let headers):
-            print("🏆 WebSocket 연결됨: \(headers)")
-            statusSubject.send(.connect)
-        case .disconnected(let reason, let code):
-            print("🏆 WebSocket 연결 해제됨: \(reason) (코드: \(code))")
-        case .text(let text):
-            messageSubject.send(text)
-            print("🏆 WebSocket 받은 메시지: \(text)")
-        case .binary(let data):
-            print("🏆 WebSocket 받은 바이너리 데이터: \(data)")
-        case .pong(_):
-            print("🏆 WebSocket Pong 수신")
-        case .ping:
-            print("🏆 WebSocket Ping 송신")
-        case .error(let error):
-            print("🏆 WebSocket 오류 발생: \(String(describing: error))")
-        case .cancelled:
-            print("🏆 WebSocket 연결 취소됨")
-        case .viabilityChanged(_), .reconnectSuggested(_):
-            break
-        case .peerClosed:
-            break
-        }
+    public func disconnect() {
+        swiftStomp?.disconnect()
     }
 }
+
+extension WebSocketManager: SwiftStompDelegate {
+    public func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
+        self.isConnected = true
+    }
+    
+    public func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
+        self.isConnected = false
+    }
+    
+    public func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String: String]) {
+        if let textMessage = message as? String {
+            let formattedMessage = "[\(destination)] (\(messageId)): \(textMessage)"
+            traceLog(formattedMessage)
+            self.messageSubject.send(textMessage)
+            self.receivedMessages.append(formattedMessage)
+        }
+    }
+    
+    public func onReceipt(swiftStomp: SwiftStomp, receiptId: String) {
+        traceLog("Receipt received: \(receiptId)")
+    }
+    
+    public func onError(swiftStomp: SwiftStomp, briefDescription: String, fullDescription: String?, receiptId: String?, type: StompErrorType) {
+        traceLog("STOMP Error: \(briefDescription)")
+    }
+}
+
 
 extension WebSocketManager {
     public func statusPublisher() -> AnyPublisher<WebSocketStatus, Never> {
