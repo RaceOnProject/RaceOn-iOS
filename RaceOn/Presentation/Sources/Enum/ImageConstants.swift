@@ -60,6 +60,7 @@ enum ImageConstants {
     static let graphicInvite = PresentationAsset.graphicInvite.swiftUIImage
     static let graphicMatching = PresentationAsset.graphicMatching.swiftUIImage
     static let graphicRefuse = PresentationAsset.graphicRefuse.swiftUIImage
+    static let graphicStop = PresentationAsset.graphicStop.swiftUIImage
     static let graphicWaiting = PresentationAsset.graphicWaiting.swiftUIImage
     static let graphicLogo = PresentationAsset.graphicLogo.swiftUIImage
     static let iconSetting = PresentationAsset.iconSetting.swiftUIImage

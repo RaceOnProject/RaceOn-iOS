@@ -46,6 +46,8 @@ public struct GameFeature {
         var userLatitude: Double?
         var userLongitude: Double?
         
+        var isPresentedCustomAlert: Bool = false
+        
         public init(gameId: Int?, distance: MatchingDistance) {
             self.gameId = gameId
             self.remainingDistance = distance.distanceFormat
@@ -63,6 +65,8 @@ public struct GameFeature {
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
         case stopCompetition
+        case presentCustomAlert
+        case dismissCustomAlert
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -142,11 +146,18 @@ public struct GameFeature {
             traceLog("🏆 웹 소켓 Status \(status)")
             return .none
         case .stopCompetition:
+            state.isPresentedCustomAlert = true
+            return .none
+        case .presentCustomAlert:
             guard let gameId = state.gameId,
                   let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+            state.isPresentedCustomAlert = false
             return .run { _ in
                 webSocketClient.sendWebSocketMessage(.stop(gameId: gameId, memberId: memberId, handler: true))
             }
+        case .dismissCustomAlert:
+            state.isPresentedCustomAlert = false
+            return .none
         }
     }
     

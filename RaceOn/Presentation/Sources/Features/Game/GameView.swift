@@ -109,6 +109,16 @@ public struct GameView: View {
         .onDisappear {
             viewStore.send(.onDisappear)
         }
+        .customAlert(
+            isPresented: viewStore.isPresentedCustomAlert,
+            alertType: .stop(nickname: ""),
+            presentAction: {
+                viewStore.send(.presentCustomAlert)
+            },
+            dismissAction: {
+                viewStore.send(.dismissCustomAlert)
+            }
+        )
         .navigationBarBackButtonHidden(true)
     }
     

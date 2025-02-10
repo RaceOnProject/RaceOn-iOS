@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "graphic-matching.svg",
+      "filename" : "graphic-matching.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "graphic-matching@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "graphic-matching@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
