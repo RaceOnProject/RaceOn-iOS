@@ -211,7 +211,7 @@ public struct GameView: View {
     @ViewBuilder
     var gameStopButton: some View {
         Button {
-            print("경쟁 그만두기")
+            viewStore.send(.stopCompetition)
         } label: {
             HStack {
                 Rectangle()
