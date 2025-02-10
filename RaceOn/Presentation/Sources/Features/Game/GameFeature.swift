@@ -30,8 +30,12 @@ public struct GameFeature {
         var averagePace: String = "00′00″"
         var runningTime: String = "00:00:00"
 
-        // 총 뛴 거리
-        var totalDistanceMoved: Double = 0.0
+        // 내가 총 뛴 거리, 상대가 총 뛴 거리
+        var myTotalDistance: Double = 1.5
+        var opponentTotalDistance: Double = 1.0
+        
+        var leadingLocation: Double?
+        var trailingLocation: Double?
         
         // 총 뛴 시간(초)
         var elapsedTimeInSeconds: Int = 0
@@ -65,6 +69,7 @@ public struct GameFeature {
         switch action {
         case .onAppear:
             locationService.startUpdatingLocation()
+            updateMatchStatus(into: &state)
             return .merge(
                 subscribeToRunningUpdates(),
                 webSocketUpdatesPublisher(),
@@ -95,12 +100,12 @@ public struct GameFeature {
             updateRunningTime(state: &state)
             return .none
         case .updateDistance(let distance):
-            state.totalDistanceMoved += distance
+            state.myTotalDistance += distance
             state.remainingDistance -= distance
-            state.averagePace = formatPace(timeInSeconds: state.elapsedTimeInSeconds, distanceInKilometers: state.totalDistanceMoved)
+            state.averagePace = formatPace(timeInSeconds: state.elapsedTimeInSeconds, distanceInKilometers: state.myTotalDistance)
             
             print("뛴 거리 \(distance) km")
-            print("총 뛴거리 \(state.totalDistanceMoved) km")
+            print("총 뛴거리 \(state.myTotalDistance) km")
             print("남은 거리 \(state.remainingDistance)")
             print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
             print("평균 페이스 \(state.averagePace)")
@@ -114,7 +119,7 @@ public struct GameFeature {
                    else { return .none }
             
             let time = state.runningTime
-            let distance = state.totalDistanceMoved
+            let distance = state.myTotalDistance
             
             return .run { _ in
                 webSocketClient.sendWebSocketMessage(
@@ -218,6 +223,19 @@ public struct GameFeature {
                     }
             }
         )
+    }
+    
+    private func updateMatchStatus(into state: inout State) {
+        if state.myTotalDistance > state.opponentTotalDistance {
+            state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
+            
+            state.leadingLocation = state.opponentTotalDistance / state.remainingDistance
+            state.trailingLocation = 1.00 - state.myTotalDistance / state.remainingDistance
+        } else {
+            state.matchStatus = .lose(distance: state.opponentTotalDistance - state.myTotalDistance)
+            state.leadingLocation = state.myTotalDistance / state.remainingDistance
+            state.trailingLocation = 1.00 - state.opponentTotalDistance / state.remainingDistance
+        }
     }
     
     private func webSocketUpdatesPublisher() -> Effect<Action> {
