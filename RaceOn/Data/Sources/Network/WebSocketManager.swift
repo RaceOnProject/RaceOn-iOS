@@ -24,8 +24,10 @@ public enum WebSocketMessageType {
     case start(gameId: Int, memberId: Int)
     case process(gameId: Int, memberId: Int, time: String, latitude: Double, longitude: Double, distance: Double, avgSpeed: Double, maxSpeed: Double)
     case reject(gameId: Int, memberId: Int)
+    case stop(gameId: Int, memberId: Int, handler: Bool)
 }
 
+// MARK: - Process
 struct ProcessData: Encodable {
     let time: String
     let latitude: Double
@@ -40,6 +42,16 @@ struct Process: Encodable {
     let data: ProcessData
 }
 
+// MARK: - Stop
+struct StopData: Encodable {
+    let requestMemberId: Int
+    let isAgree: Bool
+}
+
+struct Stop: Encodable {
+    let command: String
+    let data: StopData
+}
 
 public final class WebSocketManager {
     
@@ -165,6 +177,14 @@ public final class WebSocketManager {
                 "command": "REJECT INVITATION",
                 "data": "null"
             ]
+            
+            swiftStomp?.send(body: message, to: destination)
+        case .stop(let gameId, let memberId, let handler):
+            traceLog(".stop")
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            
+            let stopData = StopData(requestMemberId: memberId, isAgree: handler)
+            let message = Stop(command: "STOP", data: stopData)
             
             swiftStomp?.send(body: message, to: destination)
         }

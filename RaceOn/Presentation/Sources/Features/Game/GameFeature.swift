@@ -58,7 +58,7 @@ public struct GameFeature {
         case updateTrackingData
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
-        case noop
+        case stopCompetition
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -136,8 +136,12 @@ public struct GameFeature {
         case .setWebSocketStatus(let status):
             traceLog("🏆 웹 소켓 Status \(status)")
             return .none
-        case .noop:
-            return .none
+        case .stopCompetition:
+            guard let gameId = state.gameId,
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+            return .run { _ in
+                webSocketClient.sendWebSocketMessage(.stop(gameId: gameId, memberId: memberId, handler: true))
+            }
         }
     }
     
