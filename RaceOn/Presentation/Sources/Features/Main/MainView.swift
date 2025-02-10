@@ -98,7 +98,7 @@ public struct MainView: View {
             }
             .customAlert(
                 isPresented: viewStore.isPresentedCustomAlert,
-                title: "\(viewStore.pushNotificationData?.requestNickname ?? "") 님이\n경쟁에 초대했어요 🏃🏻‍♂️",
+                alertType: .invite(nickname: "\(viewStore.pushNotificationData?.requestNickname ?? "")"),
                 presentAction: {
                     viewStore.send(.presentCustomAlert)
                 },

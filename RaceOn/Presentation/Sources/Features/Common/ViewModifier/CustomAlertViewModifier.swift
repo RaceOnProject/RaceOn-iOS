@@ -5,12 +5,51 @@
 //  Created by ukBook on 2/1/25.
 //
 
-
 import SwiftUI
+
+public enum CustomAlertType {
+    case invite(nickname: String)
+    case stop(nickname: String)
+    
+    var title: String {
+        switch self {
+        case .invite(let nickname): return "\(nickname) 님이\n경쟁에 초대했어요 🏃🏻‍♂️"
+        case .stop(let nickname): return "\(nickname) 님이\n경쟁 중단을 요청했어요"
+        }
+    }
+    
+    var centerImage: Image {
+        switch self {
+        case .invite: return ImageConstants.graphicInvite
+        case .stop: return ImageConstants.graphicStop
+        }
+    }
+    
+    var imageFrame: (CGFloat, CGFloat) {
+        switch self {
+        case .invite: return (154, 140)
+        case .stop: return (120, 120)
+        }
+    }
+    
+    var presentButtonTitle: String {
+        switch self {
+        case .invite: return "초대 수락"
+        case .stop: return "경쟁 종료하기"
+        }
+    }
+    
+    var dismissButtonTitle: String {
+        switch self {
+        case .invite: return "다음에 경쟁할게요"
+        case .stop: return "취소"
+        }
+    }
+}
 
 struct CustomAlertViewModifier: ViewModifier {
     let isPresented: Bool
-    let title: String
+    let alertType: CustomAlertType
     let presentAction: () -> Void
     let dismissAction: () -> Void
 
@@ -23,19 +62,19 @@ struct CustomAlertViewModifier: ViewModifier {
                 VStack {
                     Spacer()
                     VStack {
-                        Text(title)
+                        Text(alertType.title)
                             .multilineTextAlignment(.center)
                             .lineSpacing(5.0)
                             .padding(.vertical, 20)
                             .font(.semiBold(20))
                             .foregroundColor(.white)
                         
-                        ImageConstants.graphicInvite
-                            .frame(width: 154, height: 140)
+                        alertType.centerImage
+                            .frame(width: alertType.imageFrame.0, height: alertType.imageFrame.1)
                             .padding(.bottom, 20)
                         
                         Button(action: presentAction) {
-                            Text("초대 수락")
+                            Text(alertType.presentButtonTitle)
                                 .frame(width: 260, height: 30)
                                 .foregroundColor(.black)
                                 .padding()
@@ -44,7 +83,7 @@ struct CustomAlertViewModifier: ViewModifier {
                         }
                         
                         Button(action: dismissAction) {
-                            Text("다음에 경쟁할게요")
+                            Text(alertType.dismissButtonTitle)
                                 .font(.regular(17))
                                 .foregroundColor(ColorConstants.gray3)
                                 .padding()
@@ -66,14 +105,14 @@ struct CustomAlertViewModifier: ViewModifier {
 extension View {
     func customAlert(
         isPresented: Bool,
-        title: String,
+        alertType: CustomAlertType,
         presentAction: @escaping () -> Void,
         dismissAction: @escaping () -> Void
     ) -> some View {
         self.modifier(
             CustomAlertViewModifier(
                 isPresented: isPresented,
-                title: title,
+                alertType: alertType,
                 presentAction: presentAction,
                 dismissAction: dismissAction
             )

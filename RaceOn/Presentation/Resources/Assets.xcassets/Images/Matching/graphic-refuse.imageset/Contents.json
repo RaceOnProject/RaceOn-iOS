@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "graphic-refuse.svg",
+      "filename" : "graphic-refuse.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "graphic-refuse@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "graphic-refuse@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
