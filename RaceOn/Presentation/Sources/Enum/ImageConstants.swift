@@ -67,7 +67,12 @@ enum ImageConstants {
     static let iconChevronLeft = PresentationAsset.iconChevronLeft.swiftUIImage
     static let iconChevronRight = PresentationAsset.iconChevronRight.swiftUIImage
     
-    // Game
+    // GameFinish
     static let iconWin = PresentationAsset.iconWin.swiftUIImage
     static let iconLose = PresentationAsset.iconLose.swiftUIImage
+    
+    // Game
+    static let iconMeWin = PresentationAsset.iconMeWin.swiftUIImage
+    static let iconMeLose = PresentationAsset.iconMeLose.swiftUIImage
+    static let iconOpponent = PresentationAsset.iconOpponent.swiftUIImage
 }
