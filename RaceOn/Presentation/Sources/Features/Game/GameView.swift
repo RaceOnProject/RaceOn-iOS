@@ -41,9 +41,9 @@ public enum MatchStatus: Equatable {
     var title: String {
         switch self {
         case .win(let distance):
-            return "\(distance)km 앞서고 있어요!"
+            return "\(distance.roundedToDecimal(2))km 앞서고 있어요!"
         case .lose(let distance):
-            return "\(distance)km 뒤처지고 있어요.."
+            return "\(distance.roundedToDecimal(2))km 뒤처지고 있어요.."
         }
     }
     
@@ -117,51 +117,49 @@ public struct GameView: View {
     
     @ViewBuilder
     var floatingView: some View {
-        HStack {
-            VStack(alignment: .leading) {
+        if !(viewStore.state.myTotalDistance == viewStore.state.opponentTotalDistance) {
+            GeometryReader { proxy in
+                let totalWidth = proxy.size.width - 80 // 진행바의 width
+                
                 HStack {
-                    Text(viewStore.state.matchStatus.title)
-                        .font(.bold(24))
-                        .foregroundColor(.white)
-                        .padding(.top, 18)
-                        .padding(.leading, 20)
-                    
-                    Spacer()
-                }
-                
-                Spacer()
-                
-                ZStack {
-                    HStack {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(viewStore.state.matchStatus.title)
+                                .font(.bold(24))
+                                .foregroundColor(.white)
+                                .padding(.top, 18)
+                                .padding(.leading, 20)
+                            
+                            Spacer()
+                        }
+                        
                         Spacer()
-                            .frame(width: 20)
-                        Rectangle()
-                            .frame(height: 6)
-                            .foregroundColor(ColorConstants.gray5)
-                            .cornerRadius(30)
-                            .padding(.bottom, 20)
-                        Spacer()
-                            .frame(width: 20)
+                        
+                        ZStack {
+                            Rectangle()
+                                .frame(height: 6)
+                                .foregroundColor(ColorConstants.gray5)
+                                .cornerRadius(30)
+                                .padding(.bottom, 20)
+                                .padding(.horizontal, 20)
+                            
+                            Rectangle()
+                                .frame(height: 6)
+                                .foregroundColor(viewStore.state.matchStatus.barColor)
+                                .cornerRadius(30)
+                                .padding(.bottom, 20)
+                                .padding(.horizontal, 20)
+                                .padding(.leading, totalWidth * (viewStore.leadingLocation ?? 0.0))
+                                .padding(.trailing, totalWidth * (viewStore.trailingLocation ?? 0.0))
+                        }
                     }
-                    
-                    HStack {
-                        Spacer()
-                            .frame(width: 40) // 2등의 위치를 조절
-                        Rectangle()
-                            .frame(height: 6)
-                            .foregroundColor(viewStore.state.matchStatus.barColor)
-                            .cornerRadius(30)
-                            .padding(.bottom, 20)
-                        Spacer()
-                            .frame(width: 100) // 1등의 위치를 조절
-                    }
+                    .frame(maxWidth: .infinity, maxHeight: 152)
+                    .background(viewStore.state.matchStatus.backgroundColor)
+                    .cornerRadius(10)
                 }
+                .padding(.horizontal, 20)
             }
-            .frame(maxWidth: .infinity, maxHeight: 152)
-            .background(viewStore.state.matchStatus.backgroundColor)
-            .cornerRadius(10)
         }
-        .padding(.horizontal, 20)
     }
     
     @ViewBuilder
