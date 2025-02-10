@@ -47,6 +47,13 @@ public enum MatchStatus: Equatable {
         }
     }
     
+    var profileIcon: Image {
+        switch self {
+        case .win: return ImageConstants.iconMeWin
+        case .lose: return ImageConstants.iconMeLose
+        }
+    }
+    
     var barColor: Color {
         switch self {
         case .win:
@@ -123,17 +130,38 @@ public struct GameView: View {
                 
                 HStack {
                     VStack(alignment: .leading) {
-                        HStack {
-                            Text(viewStore.state.matchStatus.title)
-                                .font(.bold(24))
-                                .foregroundColor(.white)
-                                .padding(.top, 18)
-                                .padding(.leading, 20)
-                            
-                            Spacer()
-                        }
+                        Text(viewStore.state.matchStatus.title)
+                            .font(.bold(24))
+                            .foregroundColor(.white)
+                            .padding(.top, 18)
+                            .padding(.leading, 20)
                         
                         Spacer()
+                        
+                        ZStack(alignment: .leading) {
+                            ZStack(alignment: .top) {
+                                ImageConstants.iconOpponent
+                                    .frame(width: 40, height: 48)
+                                
+                                ImageConstants.profile2
+                                    .resizable()
+                                    .frame(width: 34, height: 34)
+                                    .padding(.top, 3)
+                            }
+                            .padding(.leading, totalWidth * (viewStore.state.opponentTotalDistance / viewStore.state.remainingDistance))
+                            
+                            ZStack(alignment: .top) {
+                                viewStore.state.matchStatus.profileIcon
+                                    .frame(width: 40, height: 48)
+                                
+                                ImageConstants.profileDefault
+                                    .resizable()
+                                    .frame(width: 34, height: 34)
+                                    .padding(.top, 3)
+                            }
+                            .zIndex(0)
+                            .padding(.leading, totalWidth * (viewStore.state.myTotalDistance / viewStore.state.remainingDistance))
+                    }
                         
                         ZStack {
                             Rectangle()
