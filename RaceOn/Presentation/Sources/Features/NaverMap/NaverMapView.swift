@@ -20,13 +20,67 @@ import Dependencies
 // TODO: 진행 시간 [v]
 // TODO: 경쟁 그만두기
 
+enum NaverMapType {
+    case game
+    case finishGame
+    
+    var isScrollGestureEnabled: Bool {
+        switch self {
+        case .game: return false
+        case .finishGame: return true
+        }
+    }
+    
+    var zoomLevel: Double {
+        switch self {
+        case .game: return 17
+        case .finishGame: return 13
+        }
+    }
+    
+    var showLocationButton: Bool {
+        switch self {
+        case .game: return false
+        case .finishGame: return true
+        }
+    }
+    
+    var showZoomControls: Bool {
+        switch self {
+        case .game: return false
+        case .finishGame: return true
+        }
+    }
+    
+    var showCompass: Bool {
+        switch self {
+        case .game: return false
+        case .finishGame: return true
+        }
+    }
+    
+    var showScaleBar: Bool {
+        switch self {
+        case .game: return false
+        case .finishGame: return true
+        }
+    }
+}
+
 struct NaverMap: UIViewRepresentable {
     
+    var mapType: NaverMapType
     var currentLocation: NMGLatLng
     var userLocationArray: [NMGLatLng]
     
+    init(mapType: NaverMapType, currentLocation: NMGLatLng, userLocationArray: [NMGLatLng]) {
+        self.mapType = mapType
+        self.currentLocation = currentLocation
+        self.userLocationArray = userLocationArray
+    }
+    
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        Coordinator(mapType: mapType)
     }
     
     func makeUIView(context: Context) -> NMFNaverMapView {
@@ -59,24 +113,33 @@ final class Coordinator: NSObject, ObservableObject, NMFMapViewCameraDelegate, N
     // Coordinator 클래스 안의 코드
     // 클래스 상단에 변수 설정을 해줘야 한다.
     let view = NMFNaverMapView(frame: .zero)
+    var mapType: NaverMapType
     
     // Coordinator 클래스 안의 코드
     func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {} // 카메라 이동이 시작되기 전 호출되는 함수
     
     func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {} // 카메라의 위치가 변경되면 호출되는 함수
     
-    override init() {
+    init(mapType: NaverMapType) {
+        self.mapType = mapType
         super.init()
+        
+        let zoomLevel = mapType.zoomLevel
+        let isScrollGestureEnabled = mapType.isScrollGestureEnabled
+        let showLocationButton = mapType.showLocationButton
+        let showZoomControls = mapType.showZoomControls
+        let showCompass = mapType.showCompass
+        let showScaleBar = mapType.showScaleBar
         
         view.mapView.positionMode = .compass
         view.mapView.isNightModeEnabled = true
-        view.mapView.zoomLevel = 17
+        view.mapView.zoomLevel = zoomLevel
         view.mapView.maxZoomLevel = 19
-        view.mapView.isScrollGestureEnabled = false
-        view.showLocationButton = false
-        view.showZoomControls = false
-        view.showCompass = false
-        view.showScaleBar = false
+        view.mapView.isScrollGestureEnabled = isScrollGestureEnabled
+        view.showLocationButton = showLocationButton
+        view.showZoomControls = showZoomControls
+        view.showCompass = showCompass
+        view.showScaleBar = showScaleBar
         
         view.mapView.addCameraDelegate(delegate: self)
         view.mapView.touchDelegate = self

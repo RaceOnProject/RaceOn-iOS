@@ -31,8 +31,8 @@ public struct GameFeature {
         var runningTime: String = "00:00:00"
 
         // 내가 총 뛴 거리, 상대가 총 뛴 거리
-        var myTotalDistance: Double = 1.5
-        var opponentTotalDistance: Double = 1.0
+        var myTotalDistance: Double = 0.0
+        var opponentTotalDistance: Double = 0.0
         
         var leadingLocation: Double?
         var trailingLocation: Double?
@@ -75,7 +75,6 @@ public struct GameFeature {
         switch action {
         case .onAppear:
             locationService.startUpdatingLocation()
-            updateMatchStatus(into: &state)
             return .merge(
                 subscribeToRunningUpdates(),
                 webSocketUpdatesPublisher(),
@@ -94,9 +93,6 @@ public struct GameFeature {
             state.userLoaction = NMGLatLng(lat: location.0, lng: location.1)
             state.userLocationArray.append(NMGLatLng(lat: location.0, lng: location.1))
             
-            if state.userLocationArray.count > 3 {
-                state.userLocationArray.removeFirst()
-            }
             return .none
         case .updateAveragePace(let averagePace):
             print("!평균 페이스 \(averagePace)")
@@ -115,6 +111,17 @@ public struct GameFeature {
             print("남은 거리 \(state.remainingDistance)")
             print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
             print("평균 페이스 \(state.averagePace)")
+            
+            if state.myTotalDistance > state.opponentTotalDistance {
+                state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
+                
+                state.leadingLocation = state.opponentTotalDistance / state.remainingDistance
+                state.trailingLocation = 1.00 - state.myTotalDistance / state.remainingDistance
+            } else {
+                state.matchStatus = .lose(distance: state.opponentTotalDistance - state.myTotalDistance)
+                state.leadingLocation = state.myTotalDistance / state.remainingDistance
+                state.trailingLocation = 1.00 - state.opponentTotalDistance / state.remainingDistance
+            }
             
             return state.remainingDistance > 0 ? .none : .send(.setReadyForNextScreen(true))
         case .setReadyForNextScreen(let handler):
@@ -239,19 +246,6 @@ public struct GameFeature {
                     }
             }
         )
-    }
-    
-    private func updateMatchStatus(into state: inout State) {
-        if state.myTotalDistance > state.opponentTotalDistance {
-            state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
-            
-            state.leadingLocation = state.opponentTotalDistance / state.remainingDistance
-            state.trailingLocation = 1.00 - state.myTotalDistance / state.remainingDistance
-        } else {
-            state.matchStatus = .lose(distance: state.opponentTotalDistance - state.myTotalDistance)
-            state.leadingLocation = state.myTotalDistance / state.remainingDistance
-            state.trailingLocation = 1.00 - state.opponentTotalDistance / state.remainingDistance
-        }
     }
     
     private func webSocketUpdatesPublisher() -> Effect<Action> {
