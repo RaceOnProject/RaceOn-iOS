@@ -109,6 +109,10 @@ public struct GameView: View {
         .onDisappear {
             viewStore.send(.onDisappear)
         }
+//        .onChange(of: viewStore.state.isReadyForNextScreen) {
+//            viewStore.send(.setReadyForNextScreen(false))
+//            $0 ? router.push(screen: .finishGame) : nil
+//        }
         .customAlert(
             isPresented: viewStore.isPresentedCustomAlert,
             alertType: .stop(nickname: ""),

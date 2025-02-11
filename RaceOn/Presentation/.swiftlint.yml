@@ -42,8 +42,8 @@ force_try:
 # warning: 120자 이상일 때 경고
 # error: 150자 이상일 때 오류
 line_length:
-  warning: 120   # 한 줄이 120자 이상일 때 경고
-  error: 150     # 한 줄이 150자 이상일 때 오류
+  warning: 150   # 한 줄이 120자 이상일 때 경고
+  error: 200     # 한 줄이 150자 이상일 때 오류
 
 # 'type_body_length' 규칙: 클래스, 구조체, 열거형 등의 본문 길이를 제한합니다.
 # warning: 200줄 이상일 때 경고

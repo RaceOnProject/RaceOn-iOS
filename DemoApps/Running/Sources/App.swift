@@ -37,7 +37,8 @@ struct MyApp: App {
                     .background(.blue)
                     
                     Button {
-                        router.push(screen: .finishGame)
+                        print("경쟁 완료 화면으로")
+//                        router.push(screen: .finishGame)
                     } label: {
                         Text(("경쟁 완료 화면으로"))
                             .foregroundColor(.white)
