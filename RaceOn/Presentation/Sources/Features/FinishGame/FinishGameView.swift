@@ -190,6 +190,7 @@ public struct FinishGameView: View {
         // FIXME: 실제 mapView
         GeometryReader { proxy in
             NaverMap(
+                mapType: .finishGame,
                 currentLocation: viewStore.state.cameraLocation ?? NMGLatLng(lat: 37.55450, lng: 126.9666),
                 userLocationArray: viewStore.state.userLocationArray
             )

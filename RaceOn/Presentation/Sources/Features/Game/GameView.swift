@@ -130,6 +130,7 @@ public struct GameView: View {
     var mapView: some View {
         VStack {
             NaverMap(
+                mapType: .game,
                 currentLocation: viewStore.state.userLoaction ?? NMGLatLng(lat: 0.0, lng: 0.0),
                 userLocationArray: viewStore.state.userLocationArray
             )
