@@ -8,12 +8,14 @@
 import SwiftUI
 import Shared
 import ComposableArchitecture
+import Kingfisher
+import NMapsMap
 
 public enum GameResult: Equatable {
     case win(runningDistanceGap: Double)
     case lose(runningDistanceGap: Double)
     
-    var gardientBackgroundColor: LinearGradient {
+    var gradientBackgroundColor: LinearGradient {
         switch self {
         case .win:
             return LinearGradient(
@@ -60,9 +62,9 @@ public enum GameResult: Equatable {
     var subTitle: String {
         switch self {
         case .win(let runningDistanceGap):
-            return "\(runningDistanceGap)km 차이로 이겼어요 💫"
+            return "\(runningDistanceGap.roundedToDecimal(2))km 차이로 이겼어요 💫"
         case .lose(let runningDistanceGap):
-            return "\(runningDistanceGap)km 차이로 졌어요 🥲"
+            return "\(runningDistanceGap.roundedToDecimal(2))km 차이로 졌어요 🥲"
         }
     }
 }
@@ -79,8 +81,10 @@ public struct FinishGameView: View {
     
     public var body: some View {
         ZStack {
-            viewStore.gameResult.gardientBackgroundColor
-                .ignoresSafeArea()
+            if let gameResult = viewStore.state.gameResult {
+                gameResult.gradientBackgroundColor
+                    .ignoresSafeArea()
+            }
             
             VStack {
                 topView
@@ -100,6 +104,9 @@ public struct FinishGameView: View {
                 Spacer()
             }
         }
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarView.leadingItems(label: ImageConstants.iconClose) {
@@ -114,21 +121,27 @@ public struct FinishGameView: View {
     var topView: some View {
         HStack {
             ZStack(alignment: .bottomTrailing) {
-                Circle()
+                KFImage(URL(string: viewStore.state.myProfileURL))
+                    .placeholder { progress in
+                        ProgressView(progress)
+                    }
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 70, height: 70)
-                    .foregroundColor(.white)
+                    .clipShape(Circle()) // 이미지를 동그랗게 클리핑
                 
-                viewStore.state.gameResult
-                    .resultIcon
-                    .frame(width: 26, height: 26)
+                if let gameResult = viewStore.state.gameResult {
+                    gameResult.resultIcon
+                        .frame(width: 26, height: 26)
+                }
             }
             
             VStack(alignment: .leading) {
-                Text(viewStore.gameResult.title)
-                    .foregroundColor(viewStore.gameResult.titleColor)
+                Text(viewStore.gameResult?.title ?? "")
+                    .foregroundColor(viewStore.gameResult?.titleColor ?? .white)
                     .font(.bold(30))
                     .padding(.bottom, 2)
-                Text(viewStore.gameResult.subTitle)
+                Text(viewStore.gameResult?.subTitle ?? "")
                     .foregroundColor(ColorConstants.gray3)
                     .font(.regular(16))
             }
@@ -162,7 +175,7 @@ public struct FinishGameView: View {
                     .foregroundColor(ColorConstants.gray3)
                     .padding(.bottom, 2)
                 
-                Text("\(viewStore.state.distanceMoved)km")
+                Text("\(viewStore.state.myTotalDistance.roundedToDecimal(2))km")
                     .font(.bold(24))
                     .foregroundColor(ColorConstants.gray1)
             }
@@ -176,7 +189,10 @@ public struct FinishGameView: View {
     var mapView: some View {
         // FIXME: 실제 mapView
         GeometryReader { proxy in
-            Rectangle()
+            NaverMap(
+                currentLocation: viewStore.state.cameraLocation ?? NMGLatLng(lat: 37.55450, lng: 126.9666),
+                userLocationArray: viewStore.state.userLocationArray
+            )
                 .frame(width: proxy.size.width - 40, height: proxy.size.width - 40)
                 .cornerRadius(24)
                 .padding(.leading, 20)
@@ -195,16 +211,21 @@ public struct FinishGameView: View {
                     .padding(.bottom, 8)
                 
                 HStack {
-                    Circle()
+                    KFImage(URL(string: viewStore.state.opponentURL))
+                        .placeholder { progress in
+                            ProgressView(progress)
+                        }
+                        .resizable()
+                        .scaledToFill()
                         .frame(width: 48, height: 48)
-                        .foregroundColor(.white)
+                        .clipShape(Circle()) // 이미지를 동그랗게 클리핑
                     
                     VStack(alignment: .leading) {
-                        Text("이지윤")
+                        Text("\(viewStore.state.opponentNickname)")
                             .foregroundColor(ColorConstants.gray3)
                             .font(.semiBold(17))
                             .padding(.bottom, 2)
-                        Text("진행 거리 00km")
+                        Text("진행 거리 \(viewStore.state.opponentTotalDistance.roundedToDecimal(2))km")
                             .foregroundColor(ColorConstants.gray3)
                             .font(.regular(14))
                     }
@@ -220,7 +241,20 @@ public struct FinishGameView: View {
 #Preview {
     FinishGameView(
         store: Store(
-            initialState: FinishGameFeature.State(),
+            initialState: FinishGameFeature.State(
+                myProfileURL: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
+                opponentURL: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
+                opponentNickname: "조용한여우1234",
+                myTotalDistance: 3.00,
+                opponentTotalDistance: 2.55,
+                averagePace: "4′35″",
+                userLocationArray: [
+                    NMGLatLng(lat: 37.55474, lng: 126.9704),
+                    NMGLatLng(lat: 37.5547421, lng: 126.9704338),
+                    NMGLatLng(lat: 37.55450, lng: 126.9666),
+                    NMGLatLng(lat: 37.55290, lng: 126.9643)
+                ]
+            ),
             reducer: { FinishGameFeature()._printChanges() }
         )
     )

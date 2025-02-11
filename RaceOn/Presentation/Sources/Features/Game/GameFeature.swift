@@ -47,6 +47,7 @@ public struct GameFeature {
         var userLongitude: Double?
         
         var isPresentedCustomAlert: Bool = false
+        var isReadyForNextScreen: Bool = false
         
         public init(gameId: Int?, distance: MatchingDistance) {
             self.gameId = gameId
@@ -61,6 +62,7 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
+        case setReadyForNextScreen(Bool)
         case updateTrackingData
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
@@ -114,6 +116,9 @@ public struct GameFeature {
             print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
             print("평균 페이스 \(state.averagePace)")
             
+            return state.remainingDistance > 0 ? .none : .send(.setReadyForNextScreen(true))
+        case .setReadyForNextScreen(let handler):
+            state.isReadyForNextScreen = handler
             return .none
         case .updateTrackingData:
             guard let gameId = state.gameId,

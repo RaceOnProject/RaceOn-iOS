@@ -10,6 +10,7 @@
 import ComposableArchitecture
 import SwiftUI
 import Domain
+import NMapsMap
 
 public enum Screen: Hashable {
     case main
@@ -22,7 +23,7 @@ public enum Screen: Hashable {
     case legalNotice(type: SettingCategory)
     case matchingProcess(MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?)
     case game(gameId: Int?, MatchingDistance)
-    case finishGame
+    case finishGame(myProfileURL: String, opponentURL: String, opponentNickname: String, myTotalDistance: Double, opponentTotalDistance: Double, averagePace: String, userLocationArray: [NMGLatLng])
 }
 
 public final class Router: ObservableObject {
@@ -149,10 +150,18 @@ public final class Router: ObservableObject {
                     reducer: { GameFeature() }
                 )
             ).environmentObject(self)
-        case .finishGame:
+        case .finishGame(let myProfileURL, let opponentURL, let opponentNickname, let myTotalDistance, let opponentTotalDistance, let averagePace, let userLocationArray):
             FinishGameView(
                 store: Store(
-                    initialState: FinishGameFeature.State(),
+                    initialState: FinishGameFeature.State(
+                        myProfileURL: myProfileURL,
+                        opponentURL: opponentURL,
+                        opponentNickname: opponentNickname,
+                        myTotalDistance: myTotalDistance,
+                        opponentTotalDistance: opponentTotalDistance,
+                        averagePace: averagePace,
+                        userLocationArray: userLocationArray
+                    ),
                     reducer: { FinishGameFeature()._printChanges() }
                 )
             )
