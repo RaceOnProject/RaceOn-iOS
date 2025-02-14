@@ -107,7 +107,6 @@ public struct FinishGameView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
-        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarView.leadingItems(label: ImageConstants.iconClose) {
                 router.popToRoot()
@@ -115,6 +114,9 @@ public struct FinishGameView: View {
             
             ToolbarView.principalItem(title: "경쟁 종료")
         }
+        .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(ColorConstants.gray6, for: .navigationBar)
     }
     
     @ViewBuilder
