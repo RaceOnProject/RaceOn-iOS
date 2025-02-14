@@ -88,9 +88,8 @@ public struct MainFeature {
             
             state.isAppeard = true
             return .merge(
-                registerFCMToken(memberId: memberId, fcmToken: fcmToken)
-//                ,
-//                .send(.startTimer) // 타이머 시작
+                registerFCMToken(memberId: memberId, fcmToken: fcmToken),
+                .send(.startTimer) // 타이머 시작
             )
         case .onDisappear:
             return .cancel(id: "WebSocketUpdatesPublisher")
