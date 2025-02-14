@@ -176,7 +176,7 @@ public struct GameView: View {
                                     .frame(width: 34, height: 34)
                                     .padding(.top, 3)
                             }
-                            .padding(.leading, totalWidth * (viewStore.state.opponentTotalDistance / viewStore.state.remainingDistance))
+                            .padding(.leading, totalWidth * (viewStore.state.opponentTotalDistance / viewStore.state.totalDistance))
                             
                             ZStack(alignment: .top) {
                                 viewStore.state.matchStatus.profileIcon
@@ -188,7 +188,7 @@ public struct GameView: View {
                                     .padding(.top, 3)
                             }
                             .zIndex(0)
-                            .padding(.leading, totalWidth * (viewStore.state.myTotalDistance / viewStore.state.remainingDistance))
+                            .padding(.leading, totalWidth * (viewStore.state.myTotalDistance / viewStore.state.totalDistance))
                     }
                         
                         ZStack {
