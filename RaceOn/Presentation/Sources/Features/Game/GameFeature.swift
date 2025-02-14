@@ -26,6 +26,7 @@ public struct GameFeature {
         var matchStatus: MatchStatus = .win(distance: 0.4)
         var gameId: Int?
         // 남은 거리, 평균 페이스, 진행 시간
+        var totalDistance: Double
         var remainingDistance: Double
         var averagePace: String = "00′00″"
         var runningTime: String = "00:00:00"
@@ -51,6 +52,7 @@ public struct GameFeature {
         
         public init(gameId: Int?, distance: MatchingDistance) {
             self.gameId = gameId
+            self.totalDistance = distance.distanceFormat
             self.remainingDistance = distance.distanceFormat
         }
     }
@@ -123,7 +125,13 @@ public struct GameFeature {
                 state.trailingLocation = 1.00 - state.opponentTotalDistance / state.remainingDistance
             }
             
-            return state.remainingDistance > 0 ? .none : .send(.setReadyForNextScreen(true))
+            if state.totalDistance - state.myTotalDistance <= 0 ||
+               state.totalDistance - state.opponentTotalDistance <= 0 {
+                return .send(.setReadyForNextScreen(true))
+            } else {
+                return .none
+            }
+            
         case .setReadyForNextScreen(let handler):
             state.isReadyForNextScreen = handler
             return .none
