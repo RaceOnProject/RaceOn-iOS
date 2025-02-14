@@ -117,12 +117,12 @@ public struct GameFeature {
             if state.myTotalDistance > state.opponentTotalDistance {
                 state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
                 
-                state.leadingLocation = state.opponentTotalDistance / state.remainingDistance
-                state.trailingLocation = 1.00 - state.myTotalDistance / state.remainingDistance
+                state.leadingLocation = state.opponentTotalDistance / state.totalDistance
+                state.trailingLocation = 1.00 - state.myTotalDistance / state.totalDistance
             } else {
                 state.matchStatus = .lose(distance: state.opponentTotalDistance - state.myTotalDistance)
-                state.leadingLocation = state.myTotalDistance / state.remainingDistance
-                state.trailingLocation = 1.00 - state.opponentTotalDistance / state.remainingDistance
+                state.leadingLocation = state.myTotalDistance / state.totalDistance
+                state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
             
             if state.totalDistance - state.myTotalDistance <= 0 ||
