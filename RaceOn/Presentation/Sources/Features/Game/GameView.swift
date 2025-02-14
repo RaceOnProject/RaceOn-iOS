@@ -109,10 +109,23 @@ public struct GameView: View {
         .onDisappear {
             viewStore.send(.onDisappear)
         }
-//        .onChange(of: viewStore.state.isReadyForNextScreen) {
-//            viewStore.send(.setReadyForNextScreen(false))
-//            $0 ? router.push(screen: .finishGame) : nil
-//        }
+        .onChange(of: viewStore.state.isReadyForNextScreen) { handler in
+            viewStore.send(.setReadyForNextScreen(false))
+            
+            if handler {
+                router.push(screen:
+                    .finishGame(
+                        myProfileURL: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
+                        opponentURL: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
+                        opponentNickname: "조용한여우1234",
+                        myTotalDistance: viewStore.state.myTotalDistance,
+                        opponentTotalDistance: viewStore.state.opponentTotalDistance,
+                        averagePace: viewStore.state.averagePace,
+                        userLocationArray: viewStore.state.userLocationArray
+                    )
+                )
+            }
+        }
         .customAlert(
             isPresented: viewStore.isPresentedCustomAlert,
             alertType: .stop(nickname: ""),
@@ -123,7 +136,7 @@ public struct GameView: View {
                 viewStore.send(.dismissCustomAlert)
             }
         )
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder
