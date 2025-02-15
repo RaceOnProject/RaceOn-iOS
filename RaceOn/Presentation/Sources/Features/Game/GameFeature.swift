@@ -125,8 +125,8 @@ public struct GameFeature {
                 state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
             
-            if state.totalDistance - state.myTotalDistance <= 0 ||
-               state.totalDistance - state.opponentTotalDistance <= 0 {
+            if state.totalDistance - state.myTotalDistance < 0 ||
+               state.totalDistance - state.opponentTotalDistance < 0 {
                 return .send(.setReadyForNextScreen(true))
             } else {
                 return .none
