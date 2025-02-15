@@ -201,7 +201,7 @@ public struct MainFeature {
             switch status {
             case .connect:
                 guard let gameId = state.gameId else { return .none }
-                webSocketClient.sendWebSocketMessage(.subsribe(gameId: gameId))
+                webSocketClient.sendWebSocketMessage(.subscribe(gameId: gameId))
             default:
                 break
             }

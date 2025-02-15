@@ -129,7 +129,7 @@ public struct MatchingProcessFeature {
             switch status {
             case .connect:
                 guard let gameId = state.gameId else { return .none }
-                webSocketClient.sendWebSocketMessage(.subsribe(gameId: gameId))
+                webSocketClient.sendWebSocketMessage(.subscribe(gameId: gameId))
             case .subscribe:
                 guard let gameId = state.gameId,
                       let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { break }
