@@ -20,7 +20,7 @@ public enum WebSocketStatus {
 
 public enum WebSocketMessageType {
     case connect
-    case subsribe(gameId: Int)
+    case subscribe(gameId: Int)
     case start(gameId: Int, memberId: Int)
     case process(gameId: Int, memberId: Int, time: String, latitude: Double, longitude: Double, distance: Double, avgSpeed: Double, maxSpeed: Double)
     case reject(gameId: Int, memberId: Int)
@@ -132,8 +132,8 @@ public final class WebSocketManager {
         case .connect:
             traceLog(".connect")
             swiftStomp?.connect(acceptVersion: "1.1,1.0", autoReconnect: false)
-        case .subsribe(let gameId):
-            traceLog(".subsribe")
+        case .subscribe(let gameId):
+            traceLog(".subscribe")
             let subscriptionId = UUID().uuidString // 고유한 구독 ID 생성
             let destination = "/topic/games/\(gameId)"
             
