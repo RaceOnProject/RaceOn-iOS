@@ -135,10 +135,20 @@ public final class WebSocketManager {
         case .subscribe(let gameId):
             traceLog(".subscribe")
             let subscriptionId = UUID().uuidString // 고유한 구독 ID 생성
-            let destination = "/topic/games/\(gameId)"
+            let destination1 = "/topic/games/\(gameId)"
             
             swiftStomp?.subscribe(
-                to: destination,
+                to: destination1,
+                mode: .clientIndividual,
+                headers: [
+                "id": "sub-\(subscriptionId)"
+                ]
+            )
+            
+            let destination2 = "/user/queue/errors"
+            
+            swiftStomp?.subscribe(
+                to: destination2,
                 mode: .clientIndividual,
                 headers: [
                 "id": "sub-\(subscriptionId)"
@@ -148,7 +158,7 @@ public final class WebSocketManager {
             self.statusSubject.send(.subscribe)
         case .start(let gameId, let memberId):
             traceLog(".start")
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)/start"
             let message = [
                 "command": "START",
                 "data": "null"
@@ -157,7 +167,7 @@ public final class WebSocketManager {
             swiftStomp?.send(body: message, to: destination)
         case .process(let gameId, let memberId, let time, let latitude, let longitude, let distance, let avgSpeed, let maxSpeed):
             traceLog(".process")
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)/process"
             let processData = ProcessData(
                     time: time,
                     latitude: latitude,
@@ -172,7 +182,7 @@ public final class WebSocketManager {
                 swiftStomp?.send(body: message, to: destination)
         case .reject(let gameId, let memberId):
             traceLog(".reject")
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)/reject"
             let message = [
                 "command": "REJECT INVITATION",
                 "data": "null"
@@ -181,7 +191,7 @@ public final class WebSocketManager {
             swiftStomp?.send(body: message, to: destination)
         case .stop(let gameId, let memberId, let handler):
             traceLog(".stop")
-            let destination = "/app/games/\(gameId)/gamer/\(memberId)"
+            let destination = "/app/games/\(gameId)/gamer/\(memberId)/stop"
             
             let stopData = StopData(requestMemberId: memberId, isAgree: handler)
             let message = Stop(command: "STOP", data: stopData)
