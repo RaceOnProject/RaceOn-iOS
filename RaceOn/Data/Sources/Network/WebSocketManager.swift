@@ -108,12 +108,12 @@ public final class WebSocketManager {
                 switch message {
                 case let .text(message, messageId, destination, _):
                     let formattedMessage = "\(Date().formatted()) [\(destination)] (\(messageId)): \(message)"
-                    traceLog(formattedMessage)
+//                    traceLog(formattedMessage)
                     self?.receivedMessages.append(formattedMessage)
                     
                 case let .data(data, messageId, destination, _):
                     let formattedMessage = "Binary message at `\(destination)`, ID: \(messageId), Size: \(data.count) bytes"
-                    traceLog(formattedMessage)
+//                    traceLog(formattedMessage)
                     self?.receivedMessages.append(formattedMessage)
                 }
             }

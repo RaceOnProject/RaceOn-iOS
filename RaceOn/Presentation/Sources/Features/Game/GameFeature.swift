@@ -13,6 +13,7 @@ import NMapsMap
 import NMapsGeometry
 import Data
 import Shared
+import Domain
 
 @Reducer
 public struct GameFeature {
@@ -64,6 +65,8 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
+        case updateOpponentDistance(GameResponse)
+        case updateMyDistance(GameResponse)
         case setReadyForNextScreen(Bool)
         case updateTrackingData
         case receiveMessage(String)
@@ -125,13 +128,30 @@ public struct GameFeature {
                 state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
             
-            if state.totalDistance - state.myTotalDistance < 0 ||
-               state.totalDistance - state.opponentTotalDistance < 0 {
-                return .send(.setReadyForNextScreen(true))
+//            if state.totalDistance - state.myTotalDistance < 0 ||
+//               state.totalDistance - state.opponentTotalDistance < 0 {
+//                return .send(.setReadyForNextScreen(true))
+//            } else {
+//                return .none
+//            }
+            return .none
+        case .updateOpponentDistance(let response):
+            state.opponentTotalDistance = response.distance
+            
+            if state.myTotalDistance > state.opponentTotalDistance {
+                state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
+                
+                state.leadingLocation = state.opponentTotalDistance / state.totalDistance
+                state.trailingLocation = 1.00 - state.myTotalDistance / state.totalDistance
             } else {
-                return .none
+                state.matchStatus = .lose(distance: state.opponentTotalDistance - state.myTotalDistance)
+                state.leadingLocation = state.myTotalDistance / state.totalDistance
+                state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
             
+            return response.finished ? .send(.setReadyForNextScreen(true)) : .none
+        case .updateMyDistance(let response):
+            return response.finished ? .send(.setReadyForNextScreen(true)) : .none
         case .setReadyForNextScreen(let handler):
             state.isReadyForNextScreen = handler
             return .none
@@ -139,8 +159,7 @@ public struct GameFeature {
             guard let gameId = state.gameId,
                   let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId),
                   let latitude = state.userLatitude,
-                  let longitude = state.userLongitude
-                   else { return .none }
+                  let longitude = state.userLongitude else { return .none }
             
             let time = state.runningTime
             let distance = state.myTotalDistance
@@ -154,13 +173,28 @@ public struct GameFeature {
                         latitude: latitude,
                         longitude: longitude,
                         distance: distance,
-                        avgSpeed: 0.1,
-                        maxSpeed: 0.2
+                        avgSpeed: 0.0,
+                        maxSpeed: 0.0
                     )
                 )
             }
         case .receiveMessage(let message):
-            traceLog("🏆 receiveMessage \(message)")
+            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+            
+            if let jsonData = message.data(using: .utf8) {
+                do {
+                    let decodedData = try JSONDecoder().decode(ResponseData.self, from: jsonData)
+                    if decodedData.data.memberId != memberId {
+                        traceLog("🏃🏻 상대방이 뛴 정보 \(decodedData)")
+                        return .send(.updateOpponentDistance(decodedData.data))
+                    } else {
+                        traceLog("🔥 내가 뛴 정보 \(decodedData)")
+                        return .send(.updateMyDistance(decodedData.data))
+                    }
+                } catch {
+                    print("디코딩 오류: \(error)")
+                }
+            }
             return .none
         case .setWebSocketStatus(let status):
             traceLog("🏆 웹 소켓 Status \(status)")
