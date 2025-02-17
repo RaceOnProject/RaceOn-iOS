@@ -19,8 +19,12 @@ public enum FriendAPI {
 
 extension FriendAPI: TargetType {
     public var baseURL: URL {
-        return URL(string: "https://api.runner-dev.shop")!
-    }
+#if DEBUG
+    return URL(string: "https://api.runner-dev.shop")!
+#else
+    return URL(string: "https://api.runner-prod.shop")!
+#endif
+}
     
     public var path: String {
         switch self {

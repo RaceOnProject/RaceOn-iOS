@@ -29,7 +29,12 @@ public final class APIRequestRetrier: RequestInterceptor {
         static let retryLimit = 1
         static let retryDelay: TimeInterval = 1
         static let s3UrlString: String = "https://s3.ap-northeast-2.amazonaws.com/race-on/profileimage"
+        
+        #if DEBUG
         static let reissueUrlString: String = "https://api.runner-dev.shop/auth/reissue"
+        #else
+        static let reissueUrlString: String = "https://api.runner-prod.shop/auth/reissue"
+        #endif
     }
     
     public func adapt(

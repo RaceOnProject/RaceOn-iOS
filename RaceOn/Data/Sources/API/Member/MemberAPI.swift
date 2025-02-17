@@ -21,7 +21,11 @@ extension MemberAPI: TargetType {
     public var baseURL: URL {
         switch self {
         case .fetchMemberInfo, .deleteAccount, .requestImageEditPermission, .updateProfile:
-            return URL(string: "https://api.runner-dev.shop")!
+            #if DEBUG
+                return URL(string: "https://api.runner-dev.shop")!
+            #else
+                return URL(string: "https://api.runner-prod.shop")!
+            #endif
         case .uploadImageS3(let url, _):
             return URL(string: url)!
         }
