@@ -20,6 +20,8 @@ public struct FriendView: View {
     public init(store: StoreOf<FriendFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: { $0 })
+        
+        store.send(.onAppear)
     }
     
     public var body: some View {
@@ -114,9 +116,6 @@ public struct FriendView: View {
         .disabled(viewStore.state.isLoading)
         .navigationDestination(for: Screen.self) { type in
             router.screenView(type: type)
-        }
-        .onAppear {
-            viewStore.send(.onAppear)
         }
         .onDisappear {
             viewStore.send(.onDisappear)
