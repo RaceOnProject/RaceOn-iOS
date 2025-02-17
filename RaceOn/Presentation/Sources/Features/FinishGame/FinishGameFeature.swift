@@ -64,6 +64,13 @@ final public class FinishGameFeature {
             } else {
                 state.gameResult = .lose(runningDistanceGap: state.opponentTotalDistance - state.myTotalDistance)
             }
+            
+            // 중간 위치를 cameraLocation으로 설정
+            if !state.userLocationArray.isEmpty {
+                let midIndex = state.userLocationArray.count / 2
+                state.cameraLocation = state.userLocationArray[midIndex]
+            }
+            
             return .none
         }
     }

@@ -34,7 +34,7 @@ enum NaverMapType {
     var zoomLevel: Double {
         switch self {
         case .game: return 17
-        case .finishGame: return 13
+        case .finishGame: return 12
         }
     }
     
