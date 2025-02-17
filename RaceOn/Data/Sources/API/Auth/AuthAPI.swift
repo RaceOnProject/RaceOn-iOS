@@ -19,7 +19,11 @@ public enum AuthAPI {
 
 extension AuthAPI: TargetType {
     public var baseURL: URL {
+    #if DEBUG
         return URL(string: "https://api.runner-dev.shop")!
+    #else
+        return URL(string: "https://api.runner-prod.shop")!
+    #endif
     }
     
     public var path: String {
