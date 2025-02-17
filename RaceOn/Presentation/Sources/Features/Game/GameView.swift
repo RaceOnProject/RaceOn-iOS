@@ -126,6 +126,12 @@ public struct GameView: View {
                 )
             }
         }
+        .toastView(
+            toast: viewStore.binding(
+                get: \.toast,
+                send: .dismissToast
+            )
+        )
         .customAlert(
             isPresented: viewStore.isPresentedCustomAlert,
             alertType: .stop(nickname: ""),
