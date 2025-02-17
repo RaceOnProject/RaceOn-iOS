@@ -51,6 +51,8 @@ public struct GameFeature {
         var isPresentedCustomAlert: Bool = false
         var isReadyForNextScreen: Bool = false
         
+        var toast: Toast?
+        
         public init(gameId: Int?, distance: MatchingDistance) {
             self.gameId = gameId
             self.totalDistance = distance.distanceFormat
@@ -74,6 +76,7 @@ public struct GameFeature {
         case stopCompetition
         case presentCustomAlert
         case dismissCustomAlert
+        case dismissToast
     }
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -185,10 +188,10 @@ public struct GameFeature {
                 do {
                     let decodedData = try JSONDecoder().decode(ResponseData.self, from: jsonData)
                     if decodedData.data.memberId != memberId {
-                        traceLog("🏃🏻 상대방이 뛴 정보 \(decodedData)")
+//                        traceLog("🏃🏻 상대방이 뛴 정보 \(decodedData)")
                         return .send(.updateOpponentDistance(decodedData.data))
                     } else {
-                        traceLog("🔥 내가 뛴 정보 \(decodedData)")
+//                        traceLog("🔥 내가 뛴 정보 \(decodedData)")
                         return .send(.updateMyDistance(decodedData.data))
                     }
                 } catch {
@@ -200,7 +203,18 @@ public struct GameFeature {
             traceLog("🏆 웹 소켓 Status \(status)")
             return .none
         case .stopCompetition:
-            state.isPresentedCustomAlert = true
+            guard let gameId = state.gameId,
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+            
+            state.toast = Toast(content: "경쟁 종료를 요청했습니다.")
+            
+            webSocketClient.sendWebSocketMessage(
+                .stop(
+                    gameId: gameId,
+                    memberId: memberId,
+                    handler: true
+                )
+            )
             return .none
         case .presentCustomAlert:
             guard let gameId = state.gameId,
@@ -211,6 +225,9 @@ public struct GameFeature {
             }
         case .dismissCustomAlert:
             state.isPresentedCustomAlert = false
+            return .none
+        case .dismissToast:
+            state.toast = nil
             return .none
         }
     }
@@ -295,7 +312,7 @@ public struct GameFeature {
             Effect.publisher {
                 webSocketClient.messagePublisher()
                     .map {
-                        print("🏆 MessagePublisher Action 생성: \($0)")
+//                        print("🏆 MessagePublisher Action 생성: \($0)")
                         return Action.receiveMessage($0)
                     }
             },
