@@ -105,6 +105,11 @@ public struct FinishGameView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
+        .gesture(
+            DragGesture().onEnded { _ in
+                router.popToRoot()
+            }
+        )
         .toolbar {
             ToolbarView.leadingItems(label: ImageConstants.iconClose) {
                 router.popToRoot()
