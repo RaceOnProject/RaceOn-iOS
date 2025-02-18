@@ -48,15 +48,24 @@ public struct GameFeature {
         var userLatitude: Double?
         var userLongitude: Double?
         
+        // 상대 닉네임, 상대 프로필 이미지, 내 프로필 이미지
+        var opponentNickname: String
+        var opponentProfileImageUrl: String
+        var myProfileImageUrl: String
+        
         var isPresentedCustomAlert: Bool = false
         var isReadyForNextScreen: Bool = false
         
         var toast: Toast?
         
-        public init(gameId: Int?, distance: MatchingDistance) {
+        public init(gameId: Int?, distance: MatchingDistance, opponentNickname: String, opponentProfileImageUrl: String, myProfileImageUrl: String) {
             self.gameId = gameId
             self.totalDistance = distance.distanceFormat
             self.remainingDistance = distance.distanceFormat
+            
+            self.opponentNickname = opponentNickname
+            self.opponentProfileImageUrl = opponentProfileImageUrl
+            self.myProfileImageUrl = myProfileImageUrl
         }
     }
     
@@ -130,13 +139,6 @@ public struct GameFeature {
                 state.leadingLocation = state.myTotalDistance / state.totalDistance
                 state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
-            
-//            if state.totalDistance - state.myTotalDistance < 0 ||
-//               state.totalDistance - state.opponentTotalDistance < 0 {
-//                return .send(.setReadyForNextScreen(true))
-//            } else {
-//                return .none
-//            }
             return .none
         case .updateOpponentDistance(let response):
             state.opponentTotalDistance = response.distance

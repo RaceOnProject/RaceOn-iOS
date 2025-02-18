@@ -90,7 +90,15 @@ public struct MatchingProcessView: View {
             
             let distance = viewStore.state.distance
             let gameId = viewStore.state.gameId
-            handler ? router.push(screen: .game(gameId: gameId, distance)) : nil
+            handler ? router.push(
+                screen: .game(
+                    gameId: gameId,
+                    distance,
+                    opponentNickname: viewStore.state.opponentNickname ?? "",
+                    opponentProfileImageUrl: viewStore.state.opponentProfileImageUrl ?? "",
+                    myProfileImageUrl: viewStore.state.myProfileImageUrl ?? ""
+                )
+            ) : nil
         }
     }
     

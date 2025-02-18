@@ -25,6 +25,11 @@ public struct MatchingProcessFeature {
         var friendId: Int
         var isInvited: Bool
         var gameId: Int?
+
+        // 상대방 닉네임, 상대방 프로필 이미지, 내 프로필 이미지(Push로 화면에 진입하는경우 initalize에서 값 Set)
+        var opponentNickname: String?
+        var opponentProfileImageUrl: String?
+        var myProfileImageUrl: String?
         
         var process: MatchingProcess = .waiting
         
@@ -34,11 +39,22 @@ public struct MatchingProcessFeature {
         
         var isReadyForNextScreen: Bool = false
         
-        public init(distance: MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?) {
+        public init(
+            distance: MatchingDistance,
+            friendId: Int,
+            isInvited: Bool,
+            gameId: Int?,
+            opponentNickname: String?,
+            opponentProfileImageUrl: String?,
+            myProfileImageUrl: String?
+        ) {
             self.distance = distance
             self.friendId = friendId
             self.isInvited = isInvited
             self.gameId = gameId
+            self.opponentNickname = opponentNickname
+            self.opponentProfileImageUrl = opponentProfileImageUrl
+            self.myProfileImageUrl = myProfileImageUrl
         }
     }
     
@@ -93,6 +109,9 @@ public struct MatchingProcessFeature {
             }
             
             state.gameId = gameId
+            state.opponentNickname = response.data?.gameInfo.receivedNickname
+            state.opponentProfileImageUrl = response.data?.gameInfo.receivedProfileImageUrl
+            state.myProfileImageUrl = response.data?.gameInfo.requestProfileImageUrl
             
             if response.success {
                 return .run { _ in

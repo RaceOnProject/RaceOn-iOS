@@ -31,6 +31,10 @@ public struct MainFeature {
         
         var friendId: Int?
         var gameId: Int?
+        
+        var opponentNickname: String?
+        var opponentProfileImageUrl: String?
+        var myProfileImageUrl: String?
 
         var toast: Toast?
         
@@ -140,8 +144,10 @@ public struct MainFeature {
             state.gameId = Int(state.pushNotificationData?.gameId ?? "0")
             state.friendId = Int(state.pushNotificationData?.requestMemberId ?? "0")
             
-            guard let gameId = Int(state.pushNotificationData?.gameId ?? "0") else { return .none }
-                    
+            state.opponentNickname = state.pushNotificationData?.requestNickname
+            state.opponentProfileImageUrl = state.pushNotificationData?.requestProfileImageUrl
+            state.myProfileImageUrl = state.pushNotificationData?.receivedProfileImageUrl
+            
             return .concatenate(
                 .run { _ in
                     webSocketClient.sendWebSocketMessage(.connect)

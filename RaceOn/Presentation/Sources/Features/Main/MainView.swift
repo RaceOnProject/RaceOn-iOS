@@ -87,8 +87,22 @@ public struct MainView: View {
                 let isInvited = viewStore.state.isInvited
                 let gameId = viewStore.state.gameId
                 
+                let opponentNickname = viewStore.state.opponentNickname
+                let opponentProfileImageUrl = viewStore.state.opponentProfileImageUrl
+                let myProfileImageUrl = viewStore.state.myProfileImageUrl
+                
                 viewStore.send(.setIsReadForNextScreen)
-                $0 ? router.push(screen: .matchingProcess(distance, friendId: friendId, isInvited: isInvited, gameId: gameId)) : nil
+                $0 ? router.push(screen:
+                        .matchingProcess(
+                            distance,
+                            friendId: friendId,
+                            isInvited: isInvited,
+                            gameId: gameId,
+                            opponentNickname: opponentNickname,
+                            opponentProfileImageUrl: opponentProfileImageUrl,
+                            myProfileImageUrl: myProfileImageUrl
+                        )
+                ) : nil
             }
             .onReceive(AppState.shared.receivedPushData) { newValue in
                 if let newValue = newValue {

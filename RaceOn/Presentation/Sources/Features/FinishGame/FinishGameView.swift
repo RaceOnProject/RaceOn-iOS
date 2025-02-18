@@ -123,7 +123,7 @@ public struct FinishGameView: View {
     var topView: some View {
         HStack {
             ZStack(alignment: .bottomTrailing) {
-                KFImage(URL(string: viewStore.state.myProfileURL))
+                KFImage(URL(string: viewStore.state.myProfileImageUrl))
                     .placeholder { progress in
                         ProgressView(progress)
                     }
@@ -214,7 +214,7 @@ public struct FinishGameView: View {
                     .padding(.bottom, 8)
                 
                 HStack {
-                    KFImage(URL(string: viewStore.state.opponentURL))
+                    KFImage(URL(string: viewStore.state.opponentProfileImageUrl))
                         .placeholder { progress in
                             ProgressView(progress)
                         }
@@ -245,9 +245,9 @@ public struct FinishGameView: View {
     FinishGameView(
         store: Store(
             initialState: FinishGameFeature.State(
-                myProfileURL: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
-                opponentURL: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
                 opponentNickname: "조용한여우1234",
+                opponentProfileImageUrl: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
+                myProfileImageUrl: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
                 myTotalDistance: 3.00,
                 opponentTotalDistance: 2.55,
                 averagePace: "4′35″",

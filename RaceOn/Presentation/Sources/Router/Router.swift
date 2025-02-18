@@ -21,9 +21,25 @@ public enum Screen: Hashable {
     case setting
     case myProfile
     case legalNotice(type: SettingCategory)
-    case matchingProcess(MatchingDistance, friendId: Int, isInvited: Bool, gameId: Int?)
-    case game(gameId: Int?, MatchingDistance)
-    case finishGame(myProfileURL: String, opponentURL: String, opponentNickname: String, myTotalDistance: Double, opponentTotalDistance: Double, averagePace: String, userLocationArray: [NMGLatLng])
+    case matchingProcess(
+        MatchingDistance,
+        friendId: Int,
+        isInvited: Bool,
+        gameId: Int?,
+        opponentNickname: String?,
+        opponentProfileImageUrl: String?,
+        myProfileImageUrl: String?
+    )
+    case game(gameId: Int?, MatchingDistance, opponentNickname: String, opponentProfileImageUrl: String, myProfileImageUrl: String)
+    case finishGame(
+        opponentNickname: String,
+        opponentProfileImageUrl: String,
+        myProfileImageUrl: String,
+        myTotalDistance: Double,
+        opponentTotalDistance: Double,
+        averagePace: String,
+        userLocationArray: [NMGLatLng]
+    )
 }
 
 public final class Router: ObservableObject {
@@ -130,33 +146,42 @@ public final class Router: ObservableObject {
                 .environmentObject(self)
             default: Text("화면 이동 오류")
             }
-        case .matchingProcess(let distance, let friendId, let isInvited, let gameId):
+        case .matchingProcess(let distance, let friendId, let isInvited, let gameId, let opponentNickname, let opponentProfileImageUrl, let myProfileImageUrl):
             MatchingProcessView(
                 store: Store(
                     initialState: MatchingProcessFeature.State(
                         distance: distance,
                         friendId: friendId,
                         isInvited: isInvited,
-                        gameId: gameId
+                        gameId: gameId,
+                        opponentNickname: opponentNickname,
+                        opponentProfileImageUrl: opponentProfileImageUrl,
+                        myProfileImageUrl: myProfileImageUrl
                     ),
                     reducer: { MatchingProcessFeature()._printChanges() }
                 )
             )
             .environmentObject(self)
-        case .game(let gameId, let distance):
+        case .game(let gameId, let distance, let opponentNickname, let opponentProfileImageUrl, let myProfileImageUrl):
             GameView(
                 store: Store(
-                    initialState: GameFeature.State(gameId: gameId, distance: distance),
+                    initialState: GameFeature.State(
+                        gameId: gameId,
+                        distance: distance,
+                        opponentNickname: opponentNickname,
+                        opponentProfileImageUrl: opponentProfileImageUrl,
+                        myProfileImageUrl: myProfileImageUrl
+                    ),
                     reducer: { GameFeature() }
                 )
             ).environmentObject(self)
-        case .finishGame(let myProfileURL, let opponentURL, let opponentNickname, let myTotalDistance, let opponentTotalDistance, let averagePace, let userLocationArray):
+        case .finishGame(let opponentNickname, let opponentProfileImageUrl, let myProfileImageUrl, let myTotalDistance, let opponentTotalDistance, let averagePace, let userLocationArray):
             FinishGameView(
                 store: Store(
                     initialState: FinishGameFeature.State(
-                        myProfileURL: myProfileURL,
-                        opponentURL: opponentURL,
                         opponentNickname: opponentNickname,
+                        opponentProfileImageUrl: opponentProfileImageUrl,
+                        myProfileImageUrl: myProfileImageUrl,
                         myTotalDistance: myTotalDistance,
                         opponentTotalDistance: opponentTotalDistance,
                         averagePace: averagePace,

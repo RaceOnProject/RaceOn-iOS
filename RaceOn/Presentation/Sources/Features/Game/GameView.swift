@@ -10,6 +10,7 @@ import SwiftUI
 import NMapsMap
 import NMapsGeometry
 import ComposableArchitecture
+import Kingfisher
 
 public enum MatchStatus: Equatable {
     case win(distance: Double)
@@ -115,9 +116,9 @@ public struct GameView: View {
             if handler {
                 router.push(screen:
                     .finishGame(
-                        myProfileURL: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
-                        opponentURL: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
-                        opponentNickname: "조용한여우1234",
+                        opponentNickname: viewStore.state.opponentNickname,
+                        opponentProfileImageUrl: viewStore.state.opponentProfileImageUrl,
+                        myProfileImageUrl: viewStore.state.myProfileImageUrl,
                         myTotalDistance: viewStore.state.myTotalDistance,
                         opponentTotalDistance: viewStore.state.opponentTotalDistance,
                         averagePace: viewStore.state.averagePace,
@@ -173,24 +174,26 @@ public struct GameView: View {
                         Spacer()
                         
                         ZStack(alignment: .leading) {
-                            ZStack(alignment: .top) {
+                            ZStack(alignment: .top) { // 상대 아이콘
                                 ImageConstants.iconOpponent
                                     .frame(width: 40, height: 48)
                                 
-                                ImageConstants.profile2
+                                KFImage(URL(string: viewStore.state.opponentProfileImageUrl))
                                     .resizable()
                                     .frame(width: 34, height: 34)
+                                    .clipShape(Circle())
                                     .padding(.top, 3)
                             }
                             .padding(.leading, totalWidth * (viewStore.state.opponentTotalDistance / viewStore.state.totalDistance))
                             
-                            ZStack(alignment: .top) {
+                            ZStack(alignment: .top) { // 나의 아이콘
                                 viewStore.state.matchStatus.profileIcon
                                     .frame(width: 40, height: 48)
                                 
-                                ImageConstants.profileDefault
+                                KFImage(URL(string: viewStore.state.myProfileImageUrl))
                                     .resizable()
                                     .frame(width: 34, height: 34)
+                                    .clipShape(Circle())
                                     .padding(.top, 3)
                             }
                             .zIndex(0)
@@ -295,7 +298,10 @@ public struct GameView: View {
         store: Store(
             initialState: GameFeature.State(
                 gameId: 1,
-                distance: .three
+                distance: .three,
+                opponentNickname: "조용한여우1234",
+                opponentProfileImageUrl: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",
+                myProfileImageUrl: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png"
             ),
             reducer: { GameFeature() }
         )
