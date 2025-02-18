@@ -56,6 +56,9 @@ public struct GameFeature {
         var isPresentedCustomAlert: Bool = false
         var isReadyForNextScreen: Bool = false
         
+        // 게임 결과
+        var gameResult: GameResult?
+        
         var toast: Toast?
         
         public init(gameId: Int?, distance: MatchingDistance, opponentNickname: String, opponentProfileImageUrl: String, myProfileImageUrl: String) {
@@ -158,6 +161,11 @@ public struct GameFeature {
         case .updateMyDistance(let response):
             return response.finished ? .send(.setReadyForNextScreen(true)) : .none
         case .setReadyForNextScreen(let handler):
+            if state.myTotalDistance > state.opponentTotalDistance {
+                state.gameResult = .win(runningDistanceGap: state.myTotalDistance - state.opponentTotalDistance)
+            } else {
+                state.gameResult = .lose(runningDistanceGap: state.opponentTotalDistance - state.myTotalDistance)
+            }
             state.isReadyForNextScreen = handler
             return .none
         case .updateTrackingData:
