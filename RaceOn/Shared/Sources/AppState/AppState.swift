@@ -8,8 +8,6 @@
 import Combine
 import Foundation
 
-import Foundation
-
 public struct PushNotificationData: Equatable {
     public let title: String
     public let message: String
@@ -21,6 +19,8 @@ public struct PushNotificationData: Equatable {
     public let receivedNickname: String?
     public let requestMemberId: String?
     public let receivedMemberId: String?
+    public let requestProfileImageUrl: String?
+    public let receivedProfileImageUrl: String?
 
     public init?(from userInfo: [AnyHashable: Any]) {
         guard let aps = userInfo["aps"] as? [String: Any],
@@ -40,6 +40,8 @@ public struct PushNotificationData: Equatable {
         self.receivedNickname = userInfo["receivedNickname"] as? String
         self.requestMemberId = userInfo["requestMemberId"] as? String
         self.receivedMemberId = userInfo["receivedMemberId"] as? String
+        self.requestProfileImageUrl = userInfo["requestProfileImageUrl"] as? String
+        self.receivedProfileImageUrl = userInfo["receivedProfileImageUrl"] as? String
     }
 }
 

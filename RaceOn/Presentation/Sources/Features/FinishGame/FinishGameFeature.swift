@@ -16,10 +16,10 @@ final public class FinishGameFeature {
     public struct State: Equatable {
         var gameResult: GameResult?
         
-        // 내 프로필 사진, 상대 프로필 사진, 상대 닉네임
-        var myProfileURL: String
-        var opponentURL: String
+        // 상대 프로필 사진, 상대 닉네임, 내 프로필 사진
         var opponentNickname: String
+        var opponentProfileImageUrl: String
+        var myProfileImageUrl: String
         
         // 내가 뛴 거리, 상대가 뛴 거리
         var myTotalDistance: Double
@@ -33,18 +33,18 @@ final public class FinishGameFeature {
         
         public init(
             gameResult: GameResult? = nil,
-            myProfileURL: String,
-            opponentURL: String,
             opponentNickname: String,
+            opponentProfileImageUrl: String,
+            myProfileImageUrl: String,
             myTotalDistance: Double,
             opponentTotalDistance: Double,
             averagePace: String,
             userLocationArray: [NMGLatLng]
         ) {
             self.gameResult = gameResult
-            self.myProfileURL = myProfileURL
-            self.opponentURL = opponentURL
             self.opponentNickname = opponentNickname
+            self.opponentProfileImageUrl = opponentProfileImageUrl
+            self.myProfileImageUrl = myProfileImageUrl
             self.myTotalDistance = myTotalDistance
             self.opponentTotalDistance = opponentTotalDistance
             self.averagePace = averagePace

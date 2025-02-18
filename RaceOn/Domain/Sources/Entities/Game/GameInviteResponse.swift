@@ -13,8 +13,10 @@ public struct GameInfo: Decodable {
     public let gameId: Int
     public let requestMemberId: Int
     public let requestNickname: String
+    public let requestProfileImageUrl: String
     public let receivedMemberId: Int
     public let receivedNickname: String
+    public let receivedProfileImageUrl: String
     public let distance: Double
     public let timeLimit: Int
 }
