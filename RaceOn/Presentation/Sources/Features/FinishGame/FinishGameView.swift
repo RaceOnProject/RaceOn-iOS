@@ -11,7 +11,7 @@ import ComposableArchitecture
 import Kingfisher
 import NMapsMap
 
-public enum GameResult: Equatable {
+public enum GameResult: Hashable, Equatable {
     case win(runningDistanceGap: Double)
     case lose(runningDistanceGap: Double)
     
@@ -81,10 +81,8 @@ public struct FinishGameView: View {
     
     public var body: some View {
         ZStack {
-            if let gameResult = viewStore.state.gameResult {
-                gameResult.gradientBackgroundColor
+            viewStore.state.gameResult.gradientBackgroundColor
                     .ignoresSafeArea()
-            }
             
             VStack {
                 topView
@@ -132,18 +130,16 @@ public struct FinishGameView: View {
                     .frame(width: 70, height: 70)
                     .clipShape(Circle()) // 이미지를 동그랗게 클리핑
                 
-                if let gameResult = viewStore.state.gameResult {
-                    gameResult.resultIcon
+                    viewStore.state.gameResult.resultIcon
                         .frame(width: 26, height: 26)
-                }
             }
             
             VStack(alignment: .leading) {
-                Text(viewStore.gameResult?.title ?? "")
-                    .foregroundColor(viewStore.gameResult?.titleColor ?? .white)
+                Text(viewStore.state.gameResult.title)
+                    .foregroundColor(viewStore.state.gameResult.titleColor)
                     .font(.bold(30))
                     .padding(.bottom, 2)
-                Text(viewStore.gameResult?.subTitle ?? "")
+                Text(viewStore.state.gameResult.subTitle)
                     .foregroundColor(ColorConstants.gray3)
                     .font(.regular(16))
             }
@@ -245,6 +241,7 @@ public struct FinishGameView: View {
     FinishGameView(
         store: Store(
             initialState: FinishGameFeature.State(
+                gameResult: .win(runningDistanceGap: 2.0),
                 opponentNickname: "조용한여우1234",
                 opponentProfileImageUrl: "https://race-on.s3.ap-northeast-2.amazonaws.com/profileimage/basic_profile.png",
                 myProfileImageUrl: "https://k.kakaocdn.net/dn/bf8Afk/btsDfp2vKkG/hu9Yrq95AyLMm1K9DCFqiK/img_640x640.jpg",

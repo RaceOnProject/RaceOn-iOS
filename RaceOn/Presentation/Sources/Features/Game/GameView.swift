@@ -111,11 +111,14 @@ public struct GameView: View {
             viewStore.send(.onDisappear)
         }
         .onChange(of: viewStore.state.isReadyForNextScreen) { handler in
+            guard let gameResult = viewStore.state.gameResult else { return }
+            
             viewStore.send(.setReadyForNextScreen(false))
             
             if handler {
                 router.push(screen:
                     .finishGame(
+                        gameResult: gameResult,
                         opponentNickname: viewStore.state.opponentNickname,
                         opponentProfileImageUrl: viewStore.state.opponentProfileImageUrl,
                         myProfileImageUrl: viewStore.state.myProfileImageUrl,

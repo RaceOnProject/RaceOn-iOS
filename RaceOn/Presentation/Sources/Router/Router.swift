@@ -32,6 +32,7 @@ public enum Screen: Hashable {
     )
     case game(gameId: Int?, MatchingDistance, opponentNickname: String, opponentProfileImageUrl: String, myProfileImageUrl: String)
     case finishGame(
+        gameResult: GameResult,
         opponentNickname: String,
         opponentProfileImageUrl: String,
         myProfileImageUrl: String,
@@ -175,10 +176,20 @@ public final class Router: ObservableObject {
                     reducer: { GameFeature() }
                 )
             ).environmentObject(self)
-        case .finishGame(let opponentNickname, let opponentProfileImageUrl, let myProfileImageUrl, let myTotalDistance, let opponentTotalDistance, let averagePace, let userLocationArray):
+        case .finishGame(
+            let gameResult,
+            let opponentNickname,
+            let opponentProfileImageUrl,
+            let myProfileImageUrl,
+            let myTotalDistance,
+            let opponentTotalDistance,
+            let averagePace,
+            let userLocationArray
+        ):
             FinishGameView(
                 store: Store(
                     initialState: FinishGameFeature.State(
+                        gameResult: gameResult,
                         opponentNickname: opponentNickname,
                         opponentProfileImageUrl: opponentProfileImageUrl,
                         myProfileImageUrl: myProfileImageUrl,

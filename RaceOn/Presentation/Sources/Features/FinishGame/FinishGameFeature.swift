@@ -14,7 +14,7 @@ import NMapsMap
 final public class FinishGameFeature {
     public init() {}
     public struct State: Equatable {
-        var gameResult: GameResult?
+        var gameResult: GameResult
         
         // 상대 프로필 사진, 상대 닉네임, 내 프로필 사진
         var opponentNickname: String
@@ -32,7 +32,7 @@ final public class FinishGameFeature {
         var cameraLocation: NMGLatLng?
         
         public init(
-            gameResult: GameResult? = nil,
+            gameResult: GameResult,
             opponentNickname: String,
             opponentProfileImageUrl: String,
             myProfileImageUrl: String,
@@ -59,12 +59,6 @@ final public class FinishGameFeature {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            if state.myTotalDistance > state.opponentTotalDistance {
-                state.gameResult = .win(runningDistanceGap: state.myTotalDistance - state.opponentTotalDistance)
-            } else {
-                state.gameResult = .lose(runningDistanceGap: state.opponentTotalDistance - state.myTotalDistance)
-            }
-            
             // 중간 위치를 cameraLocation으로 설정
             if !state.userLocationArray.isEmpty {
                 let midIndex = state.userLocationArray.count / 2
