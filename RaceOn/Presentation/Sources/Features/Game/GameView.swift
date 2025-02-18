@@ -110,6 +110,11 @@ public struct GameView: View {
         .onDisappear {
             viewStore.send(.onDisappear)
         }
+        .gesture(
+            DragGesture().onEnded { _ in
+                router.popToRoot()
+            }
+        )
         .onChange(of: viewStore.state.isReadyForNextScreen) { handler in
             guard let gameResult = viewStore.state.gameResult else { return }
             
