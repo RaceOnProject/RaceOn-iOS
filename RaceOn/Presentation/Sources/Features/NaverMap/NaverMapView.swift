@@ -102,6 +102,14 @@ struct NaverMap: UIViewRepresentable {
         pathOverlay.outlineWidth = 0
         pathOverlay.mapView = uiView.mapView // 지도에 오버레이 연결
         
+        let marker = NMFMarker()
+        marker.position = userLocationArray.isEmpty ? NMGLatLng(lat: 0, lng: 0) : userLocationArray[0]
+        marker.mapView = uiView.mapView
+        marker.iconImage = NMF_MARKER_IMAGE_BLACK
+        marker.iconTintColor = .systemBlue
+        marker.width = CGFloat(NMF_MARKER_SIZE_AUTO)
+        marker.height = CGFloat(NMF_MARKER_SIZE_AUTO)
+        
         print("userLocationArray => \(userLocationArray)")
     }
 }
