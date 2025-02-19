@@ -143,7 +143,7 @@ public struct GameView: View {
         )
         .customAlert(
             isPresented: viewStore.isPresentedCustomAlert,
-            alertType: .stop(nickname: ""),
+            alertType: .stop(nickname: viewStore.state.opponentNickname),
             presentAction: {
                 viewStore.send(.presentCustomAlert)
             },

@@ -79,8 +79,8 @@ public struct GameFeature {
         case updateLocation((Double, Double))
         case updateAveragePace(String)
         case updateDistance(Double)
-        case updateOpponentDistance(GameResponse)
-        case updateMyDistance(GameResponse)
+        case updateOpponentDistance(ProcessResponse)
+        case updateMyDistance(ProcessResponse)
         case setReadyForNextScreen(Bool)
         case updateTrackingData
         case receiveMessage(String)
@@ -97,8 +97,9 @@ public struct GameFeature {
             locationService.startUpdatingLocation()
             return .merge(
                 subscribeToRunningUpdates(),
-                webSocketUpdatesPublisher(),
-                startTrackingDataTimer()
+                webSocketUpdatesPublisher()
+//                ,
+//                startTrackingDataTimer()
             )
         case .onDisappear:
             locationService.stopUpdatingLocation()
@@ -194,15 +195,43 @@ public struct GameFeature {
         case .receiveMessage(let message):
             guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
             
+            traceLog(message)
+            
             if let jsonData = message.data(using: .utf8) {
                 do {
-                    let decodedData = try JSONDecoder().decode(ResponseData.self, from: jsonData)
-                    if decodedData.data.memberId != memberId {
-//                        traceLog("🏃🏻 상대방이 뛴 정보 \(decodedData)")
-                        return .send(.updateOpponentDistance(decodedData.data))
+                    let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                    traceLog("📌 JSON 데이터: \(jsonObject ?? [:])")
+                    
+                    if let type = jsonObject?["command"] as? String {
+                        switch type {
+                        case "PROCESS":
+                            let decodedData = try JSONDecoder().decode(ProcessData.self, from: jsonData)
+                            if decodedData.data.memberId != memberId {
+                                traceLog("🏃🏻 상대방이 뛴 정보 \(decodedData)")
+                                return .send(.updateOpponentDistance(decodedData.data))
+                            } else {
+                                traceLog("🔥 내가 뛴 정보 \(decodedData)")
+                                return .send(.updateMyDistance(decodedData.data))
+                            }
+                        case "STOP":
+                            guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+                            let decodedData = try JSONDecoder().decode(StopData.self, from: jsonData)
+                            if decodedData.data.requestMemberId != memberId { // 내가 중단하지 않음
+                                if decodedData.data.inProgress && !decodedData.data.isAgree { // 중단 요청 알림
+                                    state.isPresentedCustomAlert = true
+                                }
+                            } else {
+                                if !decodedData.data.inProgress && decodedData.data.isAgree { // 상대가 중단을 수락한 Case
+                                    return .send(.setReadyForNextScreen(true))
+                                } else { // 중단 거절
+                                    state.toast = Toast(content: "상대방이 중단을 거절했습니다.")
+                                }
+                            }
+                        default:
+                            print("⚠️ 예상하지 못한 타입: \(type)")
+                        }
                     } else {
-//                        traceLog("🔥 내가 뛴 정보 \(decodedData)")
-                        return .send(.updateMyDistance(decodedData.data))
+                        print("⚠️ 'command' 필드 없음, 기본 처리 수행")
                     }
                 } catch {
                     print("디코딩 오류: \(error)")
