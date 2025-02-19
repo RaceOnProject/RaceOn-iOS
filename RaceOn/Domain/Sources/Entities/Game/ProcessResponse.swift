@@ -7,16 +7,16 @@
 
 import Foundation
 
-public struct ResponseData: Decodable {
+public struct ProcessData: Decodable {
     public let command: String
     public let statusCode: Int
     public let code: String
     public let message: String
-    public let data: GameResponse
+    public let data: ProcessResponse
     public let success: Bool
 }
 
-public struct GameResponse: Decodable {
+public struct ProcessResponse: Decodable {
     public let gameId: Int
     public let memberId: Int
     public let time: String

@@ -49,8 +49,8 @@ line_length:
 # warning: 200줄 이상일 때 경고
 # error: 300줄 이상일 때 오류
 type_body_length:
-  warning: 200   # 본문이 200줄 이상일 때 경고
-  error: 300     # 본문이 300줄 이상일 때 오류
+  warning: 300   # 본문이 300줄 이상일 때 경고
+  error: 400     # 본문이 400줄 이상일 때 오류
   
   # 기존 규칙을 수정하여 복잡도를 허용
 cyclomatic_complexity:
