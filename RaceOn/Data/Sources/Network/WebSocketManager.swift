@@ -24,7 +24,7 @@ public enum WebSocketMessageType {
     case start(gameId: Int, memberId: Int)
     case process(gameId: Int, memberId: Int, time: String, latitude: Double, longitude: Double, distance: Double, avgSpeed: Double, maxSpeed: Double)
     case reject(gameId: Int, memberId: Int)
-    case stop(gameId: Int, memberId: Int, handler: Bool)
+    case stop(gameId: Int, memberId: Int, requestMemberId: Int, handler: Bool)
 }
 
 // MARK: - Process
@@ -189,11 +189,11 @@ public final class WebSocketManager {
             ]
             
             swiftStomp?.send(body: message, to: destination)
-        case .stop(let gameId, let memberId, let handler):
+        case .stop(let gameId, let memberId, let requestMemberId, let handler):
             traceLog(".stop")
             let destination = "/app/games/\(gameId)/gamer/\(memberId)/stop"
             
-            let stopData = StopData(requestMemberId: memberId, isAgree: handler)
+            let stopData = StopData(requestMemberId: requestMemberId, isAgree: handler)
             let message = Stop(command: "STOP", data: stopData)
             
             swiftStomp?.send(body: message, to: destination)
