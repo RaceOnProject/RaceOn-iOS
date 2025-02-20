@@ -61,6 +61,8 @@ public struct GameFeature {
         
         var toast: Toast?
         
+        var reqeustMemberId: Int?
+        
         public init(gameId: Int?, distance: MatchingDistance, opponentNickname: String, opponentProfileImageUrl: String, myProfileImageUrl: String) {
             self.gameId = gameId
             self.totalDistance = distance.distanceFormat
@@ -96,16 +98,17 @@ public struct GameFeature {
             locationService.startUpdatingLocation()
             return .merge(
                 subscribeToRunningUpdates(),
-                webSocketUpdatesPublisher()
-//                ,
-//                startTrackingDataTimer()
+                webSocketUpdatesPublisher(),
+                startTrackingDataTimer(),
+                .run { _ in timerService.stop() }
             )
         case .onDisappear:
             locationService.stopUpdatingLocation()
             return .merge(
                 stopTimer(),
                 stopWebSocketUpdates(),
-                stopTrackingTimer()
+                stopTrackingTimer(),
+                .run { _ in timerService.start() }
             )
         case .updateLocation(let location):
             state.userLatitude = location.0
@@ -215,13 +218,22 @@ public struct GameFeature {
                         case "STOP":
                             guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
                             let decodedData = try JSONDecoder().decode(StopData.self, from: jsonData)
-                            if decodedData.data.requestMemberId != memberId { // 내가 중단하지 않음
-                                if decodedData.data.inProgress && !decodedData.data.isAgree { // 중단 요청 알림
+                            
+                            let requestMemberId = decodedData.data.requestMemberId
+                            let curMemberId = decodedData.data.curMemberId
+                            let isProgress = decodedData.data.inProgress
+                            let isAgree = decodedData.data.isAgree
+                            
+                            if requestMemberId == curMemberId && requestMemberId != memberId { // 중단 요청 알림
+                                if isProgress && !isAgree {
                                     state.isPresentedCustomAlert = true
-                                } else if !decodedData.data.inProgress && decodedData.data.isAgree { // 상대가 중단을 수락한 Case
+                                    state.reqeustMemberId = decodedData.data.requestMemberId
+                                }
+                            } else if requestMemberId != curMemberId {
+                                if !isProgress && isAgree { // 중단 승락
                                     return .send(.setReadyForNextScreen(true))
                                 } else {
-                                    traceLog("🔥else🔥")
+                                    state.toast = Toast(content: "게임 중단이 거절되었습니다.")
                                 }
                             }
                         default:
@@ -248,16 +260,26 @@ public struct GameFeature {
                 .stop(
                     gameId: gameId,
                     memberId: memberId,
+                    requestMemberId: memberId,
                     handler: true
                 )
             )
             return .none
         case .handleCustomAlert(let handler):
             guard let gameId = state.gameId,
-                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
+                  let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId),
+                  let reqeustMemberId = state.reqeustMemberId else { return .none }
             state.isPresentedCustomAlert = false
+            
             return .run { _ in
-                webSocketClient.sendWebSocketMessage(.stop(gameId: gameId, memberId: memberId, handler: handler))
+                webSocketClient.sendWebSocketMessage(
+                    .stop(
+                        gameId: gameId,
+                        memberId: memberId,
+                        requestMemberId: reqeustMemberId,
+                        handler: handler
+                    )
+                )
             }
         case .dismissToast:
             state.toast = nil
