@@ -145,10 +145,10 @@ public struct GameView: View {
             isPresented: viewStore.isPresentedCustomAlert,
             alertType: .stop(nickname: viewStore.state.opponentNickname),
             presentAction: {
-                viewStore.send(.presentCustomAlert)
+                viewStore.send(.handleCustomAlert(handler: true))
             },
             dismissAction: {
-                viewStore.send(.dismissCustomAlert)
+                viewStore.send(.handleCustomAlert(handler: false))
             }
         )
         .navigationBarBackButtonHidden()

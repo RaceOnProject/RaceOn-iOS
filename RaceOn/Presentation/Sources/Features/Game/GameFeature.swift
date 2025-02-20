@@ -86,8 +86,7 @@ public struct GameFeature {
         case receiveMessage(String)
         case setWebSocketStatus(WebSocketStatus)
         case stopCompetition
-        case presentCustomAlert
-        case dismissCustomAlert
+        case handleCustomAlert(handler: Bool)
         case dismissToast
     }
     
@@ -219,12 +218,10 @@ public struct GameFeature {
                             if decodedData.data.requestMemberId != memberId { // 내가 중단하지 않음
                                 if decodedData.data.inProgress && !decodedData.data.isAgree { // 중단 요청 알림
                                     state.isPresentedCustomAlert = true
-                                }
-                            } else {
-                                if !decodedData.data.inProgress && decodedData.data.isAgree { // 상대가 중단을 수락한 Case
+                                } else if !decodedData.data.inProgress && decodedData.data.isAgree { // 상대가 중단을 수락한 Case
                                     return .send(.setReadyForNextScreen(true))
-                                } else { // 중단 거절
-                                    state.toast = Toast(content: "상대방이 중단을 거절했습니다.")
+                                } else {
+                                    traceLog("🔥else🔥")
                                 }
                             }
                         default:
@@ -255,16 +252,13 @@ public struct GameFeature {
                 )
             )
             return .none
-        case .presentCustomAlert:
+        case .handleCustomAlert(let handler):
             guard let gameId = state.gameId,
                   let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
             state.isPresentedCustomAlert = false
             return .run { _ in
-                webSocketClient.sendWebSocketMessage(.stop(gameId: gameId, memberId: memberId, handler: true))
+                webSocketClient.sendWebSocketMessage(.stop(gameId: gameId, memberId: memberId, handler: handler))
             }
-        case .dismissCustomAlert:
-            state.isPresentedCustomAlert = false
-            return .none
         case .dismissToast:
             state.toast = nil
             return .none
