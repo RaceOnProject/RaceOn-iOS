@@ -82,6 +82,7 @@ public struct GameView: View {
             VStack {
                 ZStack {
                     mapView
+                        .ignoresSafeArea()
                     
                     VStack {
                         floatingView
