@@ -46,6 +46,7 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     
     public func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
+        previousLocation = nil
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
