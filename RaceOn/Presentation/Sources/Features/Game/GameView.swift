@@ -92,7 +92,7 @@ public struct GameView: View {
                 }
                 
                 Spacer()
-                    .frame(height: 15)
+                    .frame(height: 24)
                 
                 gameDescriptionView
                 
@@ -170,7 +170,7 @@ public struct GameView: View {
     var floatingView: some View {
         if !(viewStore.state.myTotalDistance == viewStore.state.opponentTotalDistance) {
             GeometryReader { proxy in
-                let totalWidth = proxy.size.width - 80 // 진행바의 width
+                let totalWidth = proxy.size.width - 120 // 진행바의 width
                 
                 HStack {
                     VStack(alignment: .leading) {
@@ -193,6 +193,7 @@ public struct GameView: View {
                                     .clipShape(Circle())
                                     .padding(.top, 3)
                             }
+                            .padding(.leading, 20)
                             .padding(.leading, totalWidth * (viewStore.state.opponentTotalDistance / viewStore.state.totalDistance))
                             
                             ZStack(alignment: .top) { // 나의 아이콘
@@ -206,6 +207,7 @@ public struct GameView: View {
                                     .padding(.top, 3)
                             }
                             .zIndex(0)
+                            .padding(.leading, 20)
                             .padding(.leading, totalWidth * (viewStore.state.myTotalDistance / viewStore.state.totalDistance))
                     }
                         
@@ -215,21 +217,21 @@ public struct GameView: View {
                                 .foregroundColor(ColorConstants.gray5)
                                 .cornerRadius(30)
                                 .padding(.bottom, 20)
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, 40)
                             
                             Rectangle()
                                 .frame(height: 6)
                                 .foregroundColor(viewStore.state.matchStatus.barColor)
                                 .cornerRadius(30)
                                 .padding(.bottom, 20)
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, 40)
                                 .padding(.leading, totalWidth * (viewStore.leadingLocation ?? 0.0))
                                 .padding(.trailing, totalWidth * (viewStore.trailingLocation ?? 0.0))
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: 152)
                     .background(viewStore.state.matchStatus.backgroundColor)
-                    .cornerRadius(10)
+                    .cornerRadius(24)
                 }
                 .padding(.horizontal, 20)
             }
