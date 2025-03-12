@@ -1,0 +1,79 @@
+on:  
+  push:  
+    branches:  
+      - feat/*  
+      - fix/*  
+  pull_request:  
+    branches:  
+      - release/**  
+      - develop  
+    
+jobs:    
+  build:  
+    runs-on: macos-15  
+    strategy:  
+      matrix:  
+        xcodebuild-scheme: ['App']  
+          
+    steps:  
+      - uses: actions/checkout@v3  
+      - uses: jdx/mise-action@v2  
+      - uses: ruby/setup-ruby@v1  
+        with:   
+          ruby-version: '3.2.0'  
+​  
+​  
+      - name: Setup Xcode version  
+        uses: maxim-lobanov/setup-xcode@v1  
+        with:  
+            xcode-version: '15.0'  
+              
+      - name: Checkout branch  
+        uses: actions/checkout@v3  
+        with:  
+          token: ${{ secrets.GITHUB_TOKEN }}  
+​  
+      - name: Bring Bibbi ignored file with Config  
+        uses: actions/checkout@v3  
+        with:   
+          repository: depromeet/14th-team5-iOS-ignored  
+          path: depromeet/14th-team5-iOS/14th-team5-iOS/XCConfig  
+          token: ${{secrets.ACTION_TOKEN}}  
+          
+      - name: Install Tuist CLI  
+        run: bash <(curl -Ls https://install.tuist.io)  
+          
+      - name: Install FastLane   
+        uses: ruby/setup-ruby@v1  
+        with:  
+          ruby-version: '3.2.0'  
+      - run: brew install fastlane  
+​  
+      - name: Tuist Clean Command  
+        run: tuist clean  
+        
+      - name: Tuist Fetch Command  
+        run: tuist fetch  
+​  
+      - name: Tuist Generate Commnad  
+        run: tuist generate 
+​  
+      - name: fastlane upload_prd_testflight  
+        if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
+        env:  
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}  
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}  
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}  
+          MATCH_PASSWORD: ${{secrets.MATCH_PASSWORD}}  
+          DISCORD_URL: ${{secrets.DISCORD_URL}}  
+          GIT_BASIC_AUTHORIZATION: ${{ secrets.GIT_BASIC_AUTHORIZATION}}
+          BUNDLE_ID: ${{secrets.BUNDLE_ID}}  
+          APP_NAME: ${{secrets.APP_NAME}}  
+          APPLE_ID: ${{secrets.APPLE_ID}}  
+          TEAM_ID: ${{secrets.TEAM_ID}}  
+        run: fastlane github_action_stg_upload_testflight  
+​  
+      - name: Upload coverage to Codecov  
+        uses: codecov/codecov-action@v1.2.1  
+        env:  
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
