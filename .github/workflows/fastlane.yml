@@ -72,8 +72,3 @@ jobs:
           APPLE_ID: ${{secrets.APPLE_ID}}  
           TEAM_ID: ${{secrets.TEAM_ID}}  
         run: fastlane github_action_stg_upload_testflight  
-​  
-      - name: Upload coverage to Codecov  
-        uses: codecov/codecov-action@v1.2.1  
-        env:  
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
