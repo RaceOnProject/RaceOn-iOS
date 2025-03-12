@@ -30,15 +30,8 @@ jobs:
       - name: Checkout branch  
         uses: actions/checkout@v3  
         with:  
-          token: ${{ secrets.GITHUB_TOKEN }}  
+          token: ${{ secrets.GIT_BASIC_AUTHORIZATION }}  
 
-      - name: Bring Bibbi ignored file with Config  
-        uses: actions/checkout@v3  
-        with:   
-          repository: depromeet/14th-team5-iOS-ignored  
-          path: depromeet/14th-team5-iOS/14th-team5-iOS/XCConfig  
-          token: ${{secrets.ACTION_TOKEN}}  
-          
       - name: Install Tuist CLI  
         run: bash <(curl -Ls https://install.tuist.io)  
           
