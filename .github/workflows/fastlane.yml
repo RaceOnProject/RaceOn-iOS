@@ -41,14 +41,8 @@ jobs:
           ruby-version: '3.2.0'  
       - run: brew install fastlane  
 
-      - name: Tuist Clean Command  
-        run: tuist clean  
-        
-      - name: Tuist Fetch Command  
-        run: tuist fetch  
-
-      - name: Tuist Generate Commnad  
-        run: tuist generate 
+      - name: Tuist Make Project
+        run: make project
 
       - name: fastlane upload_prd_testflight  
         if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
