@@ -1,0 +1,130 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+########## Appfile ##########
+TEAM_ID = ENV['TEAM_ID']
+
+########## 디스코드 URL ##########
+DISCORD_URL = ENV['DISCORD_URL']
+
+########## 앱스토어 커넥트 API ##########
+APP_STORE_CONNECT_API_KEY_KEY_ID = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]
+APP_STORE_CONNECT_API_KEY_ISSUER_ID = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+APP_STORE_CONNECT_API_KEY_KEY = ENV["APP_STORE_CONNECT_API_KEY_KEY"]
+
+########## match ##########
+GIT_BASIC_AUTHORIZATION = ENV["GIT_BASIC_AUTHORIZATION"]
+
+
+default_platform(:ios)
+
+platform :ios do
+
+  lane :github_action_stg_upload_testflight do |options|
+    app_store_connect_api_key(
+      key_id: "#{APP_STORE_CONNECT_API_KEY_KEY_ID}",
+      issuer_id: "#{APP_STORE_CONNECT_API_KEY_ISSUER_ID}",
+      key_content: "#{APP_STORE_CONNECT_API_KEY_KEY}",
+      is_key_content_base64: true,
+      in_house: false
+    )
+    
+    setup_ci
+
+    match(
+      storage_mode: "git",
+      type: "appstore",
+      app_identifier: ["com.undefined.RaceOn"],
+      readonly: is_ci,
+      git_basic_authorization: Base64.strict_encode64("#{GIT_BASIC_AUTHORIZATION}"),
+      generate_apple_certs: false
+    )
+  
+    increment_build_number(
+      xcodeproj: "RaceOn/App/RaceOn.xcodeproj",
+      build_number: date_based_build_number
+    )
+
+    update_project_team(
+      path: "RaceOn/App/RaceOn.xcodeproj",
+      teamid: "#{TEAM_ID}"
+    )
+  
+    clear_derived_data
+    build_app(
+       workspace: "RaceOn.xcworkspace",
+       scheme: "RaceOn",
+       export_options: {
+         method: "app-store",
+         signingStyle: "manual",
+         provisioningProfiles: {
+           "com.undefined.RaceOn" => "match AppStore com.undefined.RaceOn",
+         }
+       }
+    )
+
+    upload_to_testflight(skip_waiting_for_build_processing: true)
+    mac_notification should_notify:true
+    discord_webhook should_notify:true
+  end
+  
+
+############## 로컬 MacOS Notifiaction ##############
+  desc "Show macOS notification based on condition"
+  lane :mac_notification do |options|
+    should_notify = options[:should_notify] || false
+
+    if should_notify
+      notification(
+        title: "FastLane",
+        subtitle: "Finished Building",
+        message: "✅ TestFlight 배포 됐습니다 😎"
+      )
+    else
+      notification(
+        title: "FastLane",
+        subtitle: "Finished Building",
+        message: "❌ TestFlight 배포 실패했습니다"
+      )
+    end
+  end
+
+############## 디스코드 웹훅 ##############
+  desc "discord webhook"
+  lane :discord_webhook do |options|
+  should_notify = options[:should_notify] || false
+
+  if should_notify 
+    sh "curl -X POST -H 'Content-Type: application/json' -d '{\"content\": \"🚀 TestFlight 배포가 성공적으로 완료되었습니다!\"}' #{DISCORD_URL}"
+  
+  else
+    sh "curl -X POST -H 'Content-Type: application/json' -d '{\"content\": \"❌ TestFlight 배포가 실패했습니다!\"}' #{DISCORD_URL}"
+
+  end
+  end
+
+############## 빌드 번호 Print ##############
+  desc "Print the current date-based build number"
+  lane :print_date do
+    puts "📅 Current Build Number: #{date_based_build_number}"
+    puts "#{APP_STORE_CONNECT_API_KEY_ISSUER_ID}"
+  end
+
+############## 오늘 날짜 함수 ##############
+  def date_based_build_number
+    ENV['TZ'] = 'Asia/Seoul'
+    Time.now.strftime("%Y.%m%d.%H%M")
+  end
+end
