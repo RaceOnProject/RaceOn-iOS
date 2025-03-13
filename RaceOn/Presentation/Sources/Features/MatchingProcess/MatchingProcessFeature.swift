@@ -84,6 +84,7 @@ public struct MatchingProcessFeature {
                       let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
                 return .merge(
                     .run { _ in
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
                         webSocketClient.sendWebSocketMessage(.start(gameId: gameId, memberId: memberId))
                     },
                     webSocketUpdatesPublisher()
