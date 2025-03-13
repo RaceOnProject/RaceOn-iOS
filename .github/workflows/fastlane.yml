@@ -22,10 +22,8 @@ jobs:
         with:   
           ruby-version: '3.2.0'  
 
-      - name: Setup Xcode version  
-        uses: maxim-lobanov/setup-xcode@v1  
-        with:  
-            xcode-version: '16.2'
+      - name: Setup Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_16.2.app
               
       - name: Checkout branch  
         uses: actions/checkout@v3  
@@ -52,8 +50,8 @@ jobs:
       - name: Tuist Install Command
         run: tuist install
         
-      - name: Tuist Generate Command
-        run: tuist generate --no-open
+      - name: Tuist Generate Command with verbose
+        run: tuist generate --no-open --verbose
 
       - name: fastlane upload_prd_testflight  
         if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
