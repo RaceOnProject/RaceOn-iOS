@@ -10,7 +10,7 @@ on:
     
 jobs:    
   build:  
-    runs-on: macos-15
+    runs-on: macos-15  
     strategy:  
       matrix:  
         xcodebuild-scheme: ['App']  
@@ -20,7 +20,7 @@ jobs:
       - uses: jdx/mise-action@v2  
       - uses: ruby/setup-ruby@v1  
         with:   
-          ruby-version: '2.6.10'
+          ruby-version: '3.2.0'  
 
       - name: Setup Xcode version  
         uses: maxim-lobanov/setup-xcode@v1  
