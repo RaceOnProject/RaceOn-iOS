@@ -16,7 +16,7 @@ jobs:
         xcodebuild-scheme: ['App']  
           
     steps:  
-      - uses: actions/checkout@v3  
+      - uses: actions/checkout@v4  
       - uses: jdx/mise-action@v2  
       - uses: ruby/setup-ruby@v1  
         with:   
@@ -26,7 +26,7 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_16.2.app
               
       - name: Checkout branch  
-        uses: actions/checkout@v3  
+        uses: actions/checkout@v4
         with:  
           token: ${{ secrets.GIT_BASIC_AUTHORIZATION }}  
 
@@ -51,8 +51,8 @@ jobs:
         run: tuist install
         
       - name: Tuist Generate Command with verbose
-        run: tuist generate --no-open --verbose
-
+        run: tuist build
+        
       - name: fastlane upload_prd_testflight  
         if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
         env:  
