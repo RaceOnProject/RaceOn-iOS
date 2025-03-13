@@ -32,8 +32,10 @@ jobs:
         with:  
           token: ${{ secrets.GIT_BASIC_AUTHORIZATION }}  
 
-      - name: Install Tuist CLI  
-        run: bash <(curl -Ls https://install.tuist.io)  
+      - name: Install Specific Tuist Version    
+        run: |
+          export TUIST_VERSION="4.35.0"
+          bash <(curl -Ls https://install.tuist.io)
           
       - name: Install FastLane   
         uses: ruby/setup-ruby@v1  
