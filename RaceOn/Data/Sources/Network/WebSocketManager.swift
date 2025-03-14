@@ -178,7 +178,7 @@ public final class WebSocketManager {
                 )
 
                 let message = Process(command: "PROCESS", data: processData)
-                print(message)
+//                print(message)
                 swiftStomp?.send(body: message, to: destination)
         case .reject(let gameId, let memberId):
             traceLog(".reject")

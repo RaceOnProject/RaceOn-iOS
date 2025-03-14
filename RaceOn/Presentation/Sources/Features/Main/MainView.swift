@@ -79,6 +79,9 @@ public struct MainView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .onDisappear {
+                viewStore.send(.onDisappear)
+            }
             .onChange(of: viewStore.state.isReadyForNextScreen) {
                 guard let friendId = viewStore.state.friendId else {
                     return
