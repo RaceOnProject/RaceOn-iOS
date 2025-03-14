@@ -24,5 +24,5 @@ public struct ProcessResponse: Decodable {
     public let longitude: Double
     public let distance: Double
     public let winMemberId: Int?
-    public let finished: Bool
+    public let isFinished: Bool
 }
