@@ -96,7 +96,7 @@ public struct MainFeature {
                 .send(.startTimer) // 타이머 시작
             )
         case .onDisappear:
-            return .cancel(id: "WebSocketUpdatesPublisher")
+            return .cancel(id: "MainWebSocketUpdatesPublisher")
         case .setIsReadForNextScreen:
             state.isReadyForNextScreen = false
             return .none
@@ -234,7 +234,7 @@ public struct MainFeature {
                     }
             }
         )
-        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
+        .cancellable(id: "MainWebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
     private func updateConnectionStatus() -> Effect<Action> {

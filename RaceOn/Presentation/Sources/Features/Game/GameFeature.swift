@@ -129,11 +129,11 @@ public struct GameFeature {
             state.remainingDistance -= distance
             state.averagePace = formatPace(timeInSeconds: state.elapsedTimeInSeconds, distanceInKilometers: state.myTotalDistance)
             
-            print("뛴 거리 \(distance) km")
-            print("총 뛴거리 \(state.myTotalDistance) km")
-            print("남은 거리 \(state.remainingDistance)")
-            print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
-            print("평균 페이스 \(state.averagePace)")
+//            print("뛴 거리 \(distance) km")
+//            print("총 뛴거리 \(state.myTotalDistance) km")
+//            print("남은 거리 \(state.remainingDistance)")
+//            print("총 뛴 시간(초) \(state.elapsedTimeInSeconds)")
+//            print("평균 페이스 \(state.averagePace)")
             
             if state.myTotalDistance > state.opponentTotalDistance {
                 state.matchStatus = .win(distance: state.myTotalDistance - state.opponentTotalDistance)
@@ -160,9 +160,9 @@ public struct GameFeature {
                 state.trailingLocation = 1.00 - state.opponentTotalDistance / state.totalDistance
             }
             
-            return response.finished ? .send(.setReadyForNextScreen(true)) : .none
+            return response.isFinished ? .send(.setReadyForNextScreen(true)) : .none
         case .updateMyDistance(let response):
-            return response.finished ? .send(.setReadyForNextScreen(true)) : .none
+            return response.isFinished ? .send(.setReadyForNextScreen(true)) : .none
         case .setReadyForNextScreen(let handler):
             if state.myTotalDistance > state.opponentTotalDistance {
                 state.gameResult = .win(runningDistanceGap: state.myTotalDistance - state.opponentTotalDistance)
@@ -202,7 +202,7 @@ public struct GameFeature {
             if let jsonData = message.data(using: .utf8) {
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-                    traceLog("📌 JSON 데이터: \(jsonObject ?? [:])")
+//                    traceLog("📌 JSON 데이터: \(jsonObject ?? [:])")
                     
                     if let type = jsonObject?["command"] as? String {
                         switch type {
@@ -216,21 +216,22 @@ public struct GameFeature {
                                 return .send(.updateMyDistance(decodedData.data))
                             }
                         case "STOP":
+                            traceLog("📌 JSON 데이터: \(jsonObject ?? [:])")
                             guard let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
                             let decodedData = try JSONDecoder().decode(StopData.self, from: jsonData)
                             
                             let requestMemberId = decodedData.data.requestMemberId
                             let curMemberId = decodedData.data.curMemberId
-                            let isProgress = decodedData.data.inProgress
+                            let isInProgress = decodedData.data.isInProgress
                             let isAgree = decodedData.data.isAgree
                             
                             if requestMemberId == curMemberId && requestMemberId != memberId { // 중단 요청 알림
-                                if isProgress && !isAgree {
+                                if isInProgress && !isAgree {
                                     state.isPresentedCustomAlert = true
                                     state.reqeustMemberId = decodedData.data.requestMemberId
                                 }
                             } else if requestMemberId != curMemberId {
-                                if !isProgress && isAgree { // 중단 승락
+                                if !isInProgress && isAgree { // 중단 승락
                                     return .send(.setReadyForNextScreen(true))
                                 } else {
                                     state.toast = Toast(content: "게임 중단이 거절되었습니다.")
@@ -379,11 +380,11 @@ public struct GameFeature {
                     }
             }
         )
-        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
+        .cancellable(id: "GameWebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
     private func stopWebSocketUpdates() -> Effect<Action> {
-        return .cancel(id: "WebSocketUpdatesPublisher")
+        return .cancel(id: "GameWebSocketUpdatesPublisher")
     }
     
     private func startTrackingDataTimer() -> Effect<Action> {

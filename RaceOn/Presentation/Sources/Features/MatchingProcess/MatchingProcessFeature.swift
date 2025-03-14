@@ -65,6 +65,7 @@ public struct MatchingProcessFeature {
         case setReadyForNextScreen(handler: Bool)
         case inviteGameResponse(BaseResponse<GameInviteResponse>)
         case receiveMessage(String)
+        case startWebSocketUpdates
         case setWebSocketStatus(WebSocketStatus)
         case setErrorMessage(String)
         case showToast(content: String)
@@ -82,21 +83,25 @@ public struct MatchingProcessFeature {
             if state.isInvited {
                 guard let gameId = state.gameId,
                       let memberId: Int = UserDefaultsManager.shared.get(forKey: .memberId) else { return .none }
-                return .merge(
-                    .run { _ in
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        webSocketClient.sendWebSocketMessage(.start(gameId: gameId, memberId: memberId))
+                return .concatenate(
+                    .run { send in
+                        await send(.startWebSocketUpdates)
                     },
-                    webSocketUpdatesPublisher()
+                    .run { _ in
+                        try? await Task.sleep(nanoseconds: 2_000_000_00)
+                        webSocketClient.sendWebSocketMessage(.start(gameId: gameId, memberId: memberId))
+                    }
                 )
             } else {
-                return .merge(
-                    webSocketUpdatesPublisher(),
+                return .concatenate(
+                    .run { send in
+                        await send(.startWebSocketUpdates)
+                    },
                     inviteGame(friendId: friend, distance: distance, timeLimit: timeLimit)
                 )
             }
         case .onDisappear:
-            return .cancel(id: "WebSocketUpdatesPublisher")
+            return .cancel(id: "MatchingProcessWebSocketUpdatesPublisher")
         case .setMatcingProcess(let process):
             state.process = process
             process.isFailed ? webSocketClient.disconnect() : nil
@@ -144,6 +149,8 @@ public struct MatchingProcessFeature {
                 return .send(.setMatcingProcess(.failed(reason: "Client Error(Decoding Failed)")))
             }
             return .none
+        case .startWebSocketUpdates:
+            return webSocketUpdatesPublisher()
         case .setWebSocketStatus(let status):
             print("🏆 웹 소켓 Status \(status)")
             switch status {
@@ -202,7 +209,7 @@ public struct MatchingProcessFeature {
                     }
             }
         )
-        .cancellable(id: "WebSocketUpdatesPublisher", cancelInFlight: true)
+        .cancellable(id: "MatchingProcessWebSocketUpdatesPublisher", cancelInFlight: true)
     }
     
     // JSON을 Swift 객체로 변환

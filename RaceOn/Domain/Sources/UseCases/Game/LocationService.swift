@@ -56,7 +56,7 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
         if let previousLocation = previousLocation {
             // 두 좌표 간 거리 계산 (미터 단위)
             let distance = currentLocation.distance(from: previousLocation)
-            print("이동 거리: \(Double(distance) / 1000) km")
+//            print("이동 거리: \(Double(distance) / 1000) km")
             
             distanceMoved.send(Double(distance) / 1000)
         }

@@ -89,7 +89,7 @@ struct NaverMap: UIViewRepresentable {
     
     func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
 //         카메라 이동
-        print("currentLocation => \(currentLocation)")
+//        print("currentLocation => \(currentLocation)")
         let cameraUpdate = NMFCameraUpdate(scrollTo: currentLocation)
         cameraUpdate.animation = .easeIn
         cameraUpdate.animationDuration = 1
@@ -110,7 +110,7 @@ struct NaverMap: UIViewRepresentable {
         marker.width = CGFloat(NMF_MARKER_SIZE_AUTO)
         marker.height = CGFloat(NMF_MARKER_SIZE_AUTO)
         
-        print("userLocationArray => \(userLocationArray)")
+//        print("userLocationArray => \(userLocationArray)")
     }
 }
 
