@@ -20,6 +20,6 @@ public struct StopResponse: Decodable {
     public let gameId: Int
     public let requestMemberId: Int
     public let curMemberId: Int
-    public let inProgress: Bool
+    public let isInProgress: Bool
     public let isAgree: Bool
 }

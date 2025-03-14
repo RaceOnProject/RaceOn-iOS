@@ -18,7 +18,7 @@ public struct GameMessage: Decodable {
 public struct GameData: Decodable {
     public let gameId: Int
     public let startTime: String?
-    public let matched: Bool
+    public let isMatched: Bool
 }
 
 public struct RejectMessage: Decodable {
