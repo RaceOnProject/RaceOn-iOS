@@ -54,7 +54,7 @@ jobs:
         run: tuist generate --no-open
         
       - name: fastlane upload_prd_testflight  
-        if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
+        # if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
         env:  
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}  
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}  
