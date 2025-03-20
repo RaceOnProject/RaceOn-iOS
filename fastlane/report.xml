@@ -5,7 +5,72 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000169">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000205">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.002529">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="02: setup_ci" time="0.000148">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="03: is_ci" time="7.6e-05">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="04: match" time="6.494341">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="05: increment_build_number" time="0.722108">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="06: update_project_team" time="0.063239">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="07: clear_derived_data" time="13.337946">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: build_app" time="369.985057">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: upload_to_testflight" time="52.127754">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: Switch to ios mac_notification lane" time="0.000249">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="11: notification" time="0.288873">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="12: Switch to ios discord_webhook lane" time="0.001722">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="13: curl -X POST -H &apos;Content-Type: application/json&apos; -d &apos;{&quot;content&quot;: &quot;🚀 TestFlight 배포가 성공적으로 완료되었습니다!&quot;}&apos; https://discord.com/api/webhooks/1321005001023422525/z0Yfj98nXlm2n4n-K0b6cZhqVBTb2MhqZMIwvRbzIdq6vGEC3PP7Yp8TFbGXVbEptJI1" time="0.489659">
         
       </testcase>
     

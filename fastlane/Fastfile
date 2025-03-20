@@ -72,7 +72,8 @@ platform :ios do
          provisioningProfiles: {
            "com.undefined.RaceOn" => "match AppStore com.undefined.RaceOn",
          }
-       }
+       },
+       xcargs: "-allowProvisioningUpdates"
     )
 
     upload_to_testflight(skip_waiting_for_build_processing: true)
