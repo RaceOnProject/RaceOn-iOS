@@ -57,13 +57,21 @@ platform :ios do
     
     setup_ci
 
+    # match(
+    #   storage_mode: "git",
+    #   type: "appstore",
+    #   app_identifier: ["com.undefined.RaceOn"],
+    #   readonly: is_ci,
+    #   git_basic_authorization: Base64.strict_encode64("#{GIT_BASIC_AUTHORIZATION}"),
+    #   generate_apple_certs: false
+    # )
     match(
+      git_url: "https://github.com/RaceOnProject/RaceOn-Match.git",
       storage_mode: "git",
       type: "appstore",
-      app_identifier: ["com.undefined.RaceOn"],
-      readonly: is_ci,
-      git_basic_authorization: Base64.strict_encode64("#{GIT_BASIC_AUTHORIZATION}"),
-      generate_apple_certs: false
+      readonly: true,
+      keychain_name: ENV["KEYCHAIN_NAME"],
+      keychain_password: ENV["KEYCHAIN_PASSWORD"]
     )
   
     increment_build_number(
