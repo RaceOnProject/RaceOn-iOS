@@ -52,6 +52,9 @@ jobs:
         
       - name: Tuist Generate Command with verbose
         run: tuist generate --no-open
+
+      - name: fasltane print_date
+        run: fastlane print_date
         
       - name: fastlane upload_prd_testflight  
         # if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  

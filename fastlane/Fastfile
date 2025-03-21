@@ -120,7 +120,9 @@ platform :ios do
   desc "Print the current date-based build number"
   lane :print_date do
     puts "📅 Current Build Number: #{date_based_build_number}"
-    puts "#{APP_STORE_CONNECT_API_KEY_ISSUER_ID}"
+    puts "#{APP_STORE_CONNECT_API_KEY_KEY_ID}\n"
+    puts "#{APP_STORE_CONNECT_API_KEY_ISSUER_ID}\n"
+    puts "#{APP_STORE_CONNECT_API_KEY_KEY}\n"
   end
 
 ############## 오늘 날짜 함수 ##############
