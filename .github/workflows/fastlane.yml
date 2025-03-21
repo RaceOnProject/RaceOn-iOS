@@ -55,6 +55,9 @@ jobs:
 
       - name: fasltane print_date
         run: fastlane print_date
+
+      - name: fastlane discord_webhook should_notify:true
+        run: fastlane discord_webhook should_notify:true
         
       - name: fastlane upload_prd_testflight  
         # if: github.event.pull_request.base.ref == 'develop' && github.head_ref == 'feature'  
