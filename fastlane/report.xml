@@ -5,12 +5,7 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000267">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="1: curl -X POST -H &apos;Content-Type: application/json&apos; -d &apos;{&quot;content&quot;: &quot;🚀 TestFlight 배포가 성공적으로 완료되었습니다!&quot;}&apos; https://discord.com/api/webhooks/1321005001023422525/z0Yfj98nXlm2n4n-K0b6cZhqVBTb2MhqZMIwvRbzIdq6vGEC3PP7Yp8TFbGXVbEptJI1" time="0.403048">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000194">
         
       </testcase>
     

@@ -72,7 +72,7 @@ jobs:
           DISCORD_URL: ${{secrets.DISCORD_URL}}  
           GIT_BASIC_AUTHORIZATION: ${{ secrets.GIT_BASIC_AUTHORIZATION}}
           BUNDLE_ID: ${{secrets.BUNDLE_ID}}  
-          APP_NAME: ${{secrets.APP_NAME}}  
+          APP_NAME: ${{secrets.APP_NAME}} >> .env 
           APPLE_ID: ${{secrets.APPLE_ID}}  
           TEAM_ID: ${{secrets.TEAM_ID}}  
         run: fastlane github_action_stg_upload_testflight  
