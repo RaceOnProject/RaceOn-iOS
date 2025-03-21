@@ -65,6 +65,8 @@ jobs:
           echo "APP_NAME=${{ secrets.APP_NAME }}" >> .env
           echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> .env
           echo "TEAM_ID=${{ secrets.TEAM_ID }}" >> .env
+          echo "KEYCHAIN_NAME=${{ secrets.KEYCHAIN_NAME }}" >> .env
+          echo "KEYCHAIN_PASSWORD=${{ secrets.KEYCHAIN_PASSWORD }}" >> .env
 
       - name: fasltane print_date
         run: fastlane print_date
@@ -85,4 +87,6 @@ jobs:
           APP_NAME: ${{secrets.APP_NAME}}
           APPLE_ID: ${{secrets.APPLE_ID}}  
           TEAM_ID: ${{secrets.TEAM_ID}}  
+          KEYCHAIN_NAME: ${{secrets.KEYCHAIN_NAME}}
+          KEYCHAIN_PASSWORD: ${{secrets.KEYCHAIN_PASSWORD}}
         run: fastlane github_action_stg_upload_testflight  
