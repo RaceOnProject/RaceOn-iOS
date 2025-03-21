@@ -53,6 +53,9 @@ jobs:
       - name: Tuist Generate Command with verbose
         run: tuist generate --no-open
 
+      - name: .env setting
+        run: echo "APP_STORE_CONNECT_API_KEY_KEY_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}" >> .env
+
       - name: fasltane print_date
         run: fastlane print_date
 
