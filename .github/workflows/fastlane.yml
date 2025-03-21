@@ -54,7 +54,17 @@ jobs:
         run: tuist generate --no-open
 
       - name: .env setting
-        run: echo "APP_STORE_CONNECT_API_KEY_KEY_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}" >> .env
+        run: |
+          echo "APP_STORE_CONNECT_API_KEY_KEY_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}" >> .env
+          echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}" >> .env
+          echo "APP_STORE_CONNECT_API_KEY_KEY=${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}" >> .env
+          echo "MATCH_PASSWORD=${{ secrets.MATCH_PASSWORD }}" >> .env
+          echo "DISCORD_URL=${{ secrets.DISCORD_URL }}" >> .env
+          echo "GIT_BASIC_AUTHORIZATION=${{ secrets.GIT_BASIC_AUTHORIZATION }}" >> .env
+          echo "BUNDLE_ID=${{ secrets.BUNDLE_ID }}" >> .env
+          echo "APP_NAME=${{ secrets.APP_NAME }}" >> .env
+          echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> .env
+          echo "TEAM_ID=${{ secrets.TEAM_ID }}" >> .env
 
       - name: fasltane print_date
         run: fastlane print_date
@@ -72,7 +82,7 @@ jobs:
           DISCORD_URL: ${{secrets.DISCORD_URL}}  
           GIT_BASIC_AUTHORIZATION: ${{ secrets.GIT_BASIC_AUTHORIZATION}}
           BUNDLE_ID: ${{secrets.BUNDLE_ID}}  
-          APP_NAME: ${{secrets.APP_NAME}} >> .env 
+          APP_NAME: ${{secrets.APP_NAME}}
           APPLE_ID: ${{secrets.APPLE_ID}}  
           TEAM_ID: ${{secrets.TEAM_ID}}  
         run: fastlane github_action_stg_upload_testflight  
