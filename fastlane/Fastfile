@@ -33,10 +33,15 @@ default_platform(:ios)
 platform :ios do
 
   lane :github_action_stg_upload_testflight do |options|
+
+    puts "APP_STORE_CONNECT_API_KEY_KEY_ID => #{ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]}\n"
+    puts "APP_STORE_CONNECT_API_KEY_ISSUER_ID => #{ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]}\n"
+    puts "APP_STORE_CONNECT_API_KEY_KEY => #{ENV["APP_STORE_CONNECT_API_KEY_KEY"]}\n"
+
     app_store_connect_api_key(
-      key_id: "#{APP_STORE_CONNECT_API_KEY_KEY_ID}",
-      issuer_id: "#{APP_STORE_CONNECT_API_KEY_ISSUER_ID}",
-      key_content: "#{APP_STORE_CONNECT_API_KEY_KEY}",
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
       is_key_content_base64: true,
       in_house: false
     )
